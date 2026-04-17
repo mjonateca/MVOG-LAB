@@ -1,0 +1,2075 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MVOG Control Room</title>
+  <style>
+    :root {
+      --bg: #080a09;
+      --panel: rgba(255, 255, 255, 0.075);
+      --panel-strong: rgba(255, 255, 255, 0.12);
+      --line: rgba(255, 255, 255, 0.16);
+      --line-strong: rgba(255, 255, 255, 0.28);
+      --text: #f4f7f5;
+      --muted: #aab5af;
+      --soft: #dce5e0;
+      --green: #2bf59a;
+      --green-dark: #0d8f5c;
+      --aqua: #35d2d9;
+      --yellow: #f3c969;
+      --red: #ff6868;
+      --violet: #b994ff;
+      --radius: 8px;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      color-scheme: dark;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 18% 10%, rgba(43, 245, 154, 0.22), transparent 30rem),
+        radial-gradient(circle at 85% 2%, rgba(53, 210, 217, 0.17), transparent 28rem),
+        linear-gradient(145deg, #080a09 0%, #101410 54%, #080a09 100%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+      background-size: 52px 52px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent 84%);
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+      letter-spacing: 0;
+    }
+
+    button {
+      border: 0;
+      border-radius: var(--radius);
+      cursor: pointer;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 17.5rem minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1rem;
+      background: rgba(8, 10, 9, 0.72);
+      border-right: 1px solid var(--line);
+      backdrop-filter: blur(20px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.8rem;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 2.7rem;
+      height: 2.7rem;
+      color: #06100c;
+      background: linear-gradient(135deg, var(--green), var(--aqua));
+      border-radius: var(--radius);
+      font-weight: 900;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.1;
+    }
+
+    .brand p {
+      margin: 0.2rem 0 0;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .nav {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .nav button {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      min-height: 2.9rem;
+      padding: 0.75rem 0.85rem;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid transparent;
+      font-weight: 760;
+      text-align: left;
+    }
+
+    .nav button[aria-selected="true"] {
+      color: var(--text);
+      background: var(--panel);
+      border-color: var(--line);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .mini-panel {
+      margin-top: auto;
+      padding: 0.9rem;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .mini-panel strong {
+      display: block;
+      margin-bottom: 0.45rem;
+    }
+
+    .mini-panel p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.45;
+    }
+
+    main {
+      min-width: 0;
+      padding: 1.25rem clamp(1rem, 3vw, 2rem) 2rem;
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .page-title {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      margin: 0 0 0.45rem;
+      color: var(--green);
+      font-size: 0.78rem;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .topline .eyebrow {
+      margin: 0 0 0.45rem;
+      color: var(--green);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4.6rem);
+      line-height: 0.95;
+      max-width: 13ch;
+      overflow-wrap: anywhere;
+    }
+
+    .topline p {
+      margin: 0.8rem 0 0;
+      max-width: 48rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      min-height: 2.6rem;
+      padding: 0.72rem 0.95rem;
+      color: #05100b;
+      background: var(--green);
+      font-weight: 850;
+      box-shadow: 0 14px 34px rgba(43, 245, 154, 0.16);
+    }
+
+    .btn.secondary {
+      color: var(--text);
+      background: var(--panel-strong);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .btn.ghost {
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .btn.danger {
+      color: #fff;
+      background: rgba(255, 104, 104, 0.22);
+      border: 1px solid rgba(255, 104, 104, 0.45);
+      box-shadow: none;
+    }
+
+    .btn.small {
+      min-height: 2.05rem;
+      padding: 0.42rem 0.62rem;
+      font-size: 0.8rem;
+    }
+
+    .module {
+      display: none;
+    }
+
+    .module.active {
+      display: block;
+    }
+
+    .grid-kpis {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .card,
+    .kpi,
+    .column,
+    .idea-card,
+    dialog {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .kpi {
+      text-align: left;
+      color: var(--text);
+      min-height: 8.4rem;
+      padding: 1rem;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .kpi:hover,
+    .kpi.active {
+      transform: translateY(-2px);
+      border-color: rgba(43, 245, 154, 0.56);
+      background: rgba(43, 245, 154, 0.1);
+    }
+
+    .kpi small {
+      display: block;
+      margin-top: 0.5rem;
+      color: var(--muted);
+      font-size: 0.72rem;
+      line-height: 1.35;
+    }
+
+    .kpi span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .kpi b {
+      display: block;
+      margin-top: 0.45rem;
+      font-size: 2.2rem;
+      line-height: 1;
+    }
+
+    .spark {
+      display: flex;
+      align-items: end;
+      gap: 0.28rem;
+      height: 2.4rem;
+      margin-top: 1rem;
+    }
+
+    .spark i {
+      display: block;
+      flex: 1;
+      min-width: 0.4rem;
+      background: linear-gradient(180deg, var(--green), rgba(53, 210, 217, 0.2));
+      border-radius: 4px 4px 0 0;
+    }
+
+    .lab-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 21rem;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .board-wrap {
+      min-width: 0;
+    }
+
+    .board-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .filter-strip {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin: -0.2rem 0 0.85rem;
+    }
+
+    .filter-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      min-height: 2rem;
+      padding: 0.3rem 0.62rem;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 850;
+    }
+
+    .filter-pill.active {
+      color: #06100c;
+      background: var(--green);
+      border-color: transparent;
+    }
+
+    .search {
+      width: min(28rem, 100%);
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 0.75rem 0.85rem;
+      outline: none;
+    }
+
+    .search:focus,
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(43, 245, 154, 0.75);
+      box-shadow: 0 0 0 3px rgba(43, 245, 154, 0.13);
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(var(--columns), minmax(17rem, 1fr));
+      gap: 0.8rem;
+      overflow-x: auto;
+      padding: 0.15rem 0 0.65rem;
+      scroll-snap-type: x proximity;
+    }
+
+    .column {
+      min-width: 17rem;
+      min-height: 31rem;
+      padding: 0.75rem;
+      scroll-snap-align: start;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.105), rgba(255, 255, 255, 0.052)),
+        rgba(255, 255, 255, 0.045);
+    }
+
+    .column.drag-over {
+      border-color: var(--green);
+      background: rgba(43, 245, 154, 0.08);
+    }
+
+    .column-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.55rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .column-title {
+      min-width: 0;
+    }
+
+    .column-title h3 {
+      margin: 0;
+      font-size: 0.98rem;
+      overflow-wrap: anywhere;
+    }
+
+    .column-title span {
+      display: block;
+      margin-top: 0.2rem;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 760;
+    }
+
+    .wip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 1.45rem;
+      padding: 0.16rem 0.45rem;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 850;
+    }
+
+    .wip.hot {
+      color: #fff;
+      background: rgba(255, 104, 104, 0.2);
+      border-color: rgba(255, 104, 104, 0.42);
+    }
+
+    .dot {
+      width: 0.7rem;
+      height: 0.7rem;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 0 5px rgba(43, 245, 154, 0.1);
+    }
+
+    .idea-list {
+      display: grid;
+      gap: 0.65rem;
+      min-height: 24rem;
+    }
+
+    .idea-card {
+      display: grid;
+      gap: 0.7rem;
+      padding: 0.85rem;
+      background: rgba(255, 255, 255, 0.09);
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.22);
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .idea-card[draggable="true"] {
+      cursor: grab;
+    }
+
+    .idea-card:hover,
+    .idea-card.selected {
+      transform: translateY(-2px);
+      border-color: rgba(53, 210, 217, 0.48);
+      background: rgba(255, 255, 255, 0.125);
+    }
+
+    .idea-card.dragging {
+      opacity: 0.45;
+    }
+
+    .idea-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 0.55rem;
+    }
+
+    .idea-top h4 {
+      margin: 0;
+      font-size: 0.98rem;
+      line-height: 1.28;
+      overflow-wrap: anywhere;
+    }
+
+    .idea-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.45;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 1.55rem;
+      padding: 0.22rem 0.5rem;
+      color: var(--soft);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 820;
+    }
+
+    .tag.hot {
+      color: #06100c;
+      background: var(--green);
+      border-color: transparent;
+    }
+
+    .tag.money {
+      color: #251800;
+      background: var(--yellow);
+      border-color: transparent;
+    }
+
+    .tag.risk {
+      color: #fff;
+      background: rgba(255, 104, 104, 0.2);
+      border-color: rgba(255, 104, 104, 0.4);
+    }
+
+    .progress {
+      display: grid;
+      gap: 0.4rem;
+    }
+
+    .progress-line {
+      height: 0.55rem;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: var(--value);
+      background: linear-gradient(90deg, var(--green), var(--aqua));
+      border-radius: inherit;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 780;
+    }
+
+    .side-stack {
+      display: grid;
+      gap: 1rem;
+      position: sticky;
+      top: 1rem;
+    }
+
+    .card {
+      padding: 1rem;
+    }
+
+    .card h3 {
+      margin: 0 0 0.8rem;
+      font-size: 1rem;
+    }
+
+    .focus-card {
+      min-height: 18rem;
+    }
+
+    .focus-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.55rem;
+      margin: 0.75rem 0;
+    }
+
+    .focus-stat {
+      padding: 0.65rem;
+      background: rgba(255, 255, 255, 0.065);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: var(--radius);
+    }
+
+    .focus-stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 850;
+    }
+
+    .focus-stat b {
+      display: block;
+      margin-top: 0.25rem;
+      overflow-wrap: anywhere;
+    }
+
+    .focus-empty {
+      display: grid;
+      place-items: center;
+      min-height: 11rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.45;
+      border: 1px dashed var(--line-strong);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+
+    .radar {
+      display: grid;
+      gap: 0.72rem;
+    }
+
+    .radar-row {
+      display: grid;
+      grid-template-columns: 6rem 1fr 2.4rem;
+      align-items: center;
+      gap: 0.6rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 760;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 0.65rem;
+      max-height: 22rem;
+      overflow: auto;
+      padding-right: 0.25rem;
+    }
+
+    .timeline-item {
+      display: grid;
+      gap: 0.2rem;
+      padding: 0.68rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius);
+    }
+
+    .timeline-item time {
+      color: var(--green);
+      font-size: 0.72rem;
+      font-weight: 850;
+    }
+
+    .timeline-item span {
+      color: var(--soft);
+      font-size: 0.84rem;
+      line-height: 1.4;
+    }
+
+    .flow-dock {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .dock-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .dock-head h3 {
+      margin: 0;
+    }
+
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(15rem, 1fr));
+      gap: 0.65rem;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+    }
+
+    .flow-card {
+      min-width: 15rem;
+      padding: 0.8rem;
+      background:
+        linear-gradient(145deg, rgba(43, 245, 154, 0.09), rgba(53, 210, 217, 0.035)),
+        rgba(255, 255, 255, 0.065);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+    }
+
+    .flow-card strong {
+      display: block;
+      margin-bottom: 0.55rem;
+      font-size: 0.86rem;
+      overflow-wrap: anywhere;
+    }
+
+    .flow-rail {
+      display: grid;
+      grid-template-columns: repeat(var(--steps), 1fr);
+      gap: 0.18rem;
+      margin: 0.65rem 0;
+    }
+
+    .flow-step {
+      height: 0.42rem;
+      background: rgba(255, 255, 255, 0.11);
+      border-radius: 999px;
+    }
+
+    .flow-step.done {
+      background: linear-gradient(90deg, var(--green), var(--aqua));
+    }
+
+    .flow-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 820;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: minmax(18rem, 0.85fr) minmax(0, 1.15fr);
+      gap: 1rem;
+    }
+
+    form {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    label {
+      display: grid;
+      gap: 0.35rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-width: 0;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 0.72rem 0.78rem;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 6.4rem;
+      resize: vertical;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .list {
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    .row-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: rgba(255, 255, 255, 0.065);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: var(--radius);
+    }
+
+    .row-card strong,
+    .row-card span {
+      display: block;
+      overflow-wrap: anywhere;
+    }
+
+    .row-card span {
+      margin-top: 0.2rem;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .row-actions {
+      display: flex;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    dialog {
+      width: min(46rem, calc(100vw - 2rem));
+      color: var(--text);
+      padding: 0;
+      background: rgba(12, 16, 14, 0.96);
+    }
+
+    dialog::backdrop {
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+    }
+
+    .modal {
+      padding: 1rem;
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .modal-head h3 {
+      margin: 0;
+      font-size: 1.3rem;
+    }
+
+    .toast {
+      position: fixed;
+      right: 1rem;
+      bottom: 1rem;
+      z-index: 30;
+      max-width: min(29rem, calc(100vw - 2rem));
+      padding: 0.85rem 1rem;
+      color: #06100c;
+      background: var(--green);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      font-weight: 850;
+      transform: translateY(150%);
+      transition: transform 180ms ease;
+    }
+
+    .toast.visible {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1180px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+        height: auto;
+        flex-direction: row;
+        align-items: center;
+        overflow-x: auto;
+      }
+
+      .brand {
+        min-width: 15rem;
+      }
+
+      .nav {
+        display: flex;
+        min-width: max-content;
+      }
+
+      .mini-panel {
+        display: none;
+      }
+
+      .lab-layout,
+      .settings-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .side-stack {
+        position: static;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .topline {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .actions,
+      .board-toolbar {
+        justify-content: stretch;
+      }
+
+      .actions > *,
+      .board-toolbar > * {
+        flex: 1 1 auto;
+      }
+
+      .grid-kpis,
+      .flow-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .split {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      main {
+        padding-inline: 0.85rem;
+      }
+
+      .grid-kpis,
+      .flow-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        padding: 0.7rem;
+      }
+
+      h2 {
+        font-size: clamp(2rem, 14vw, 3.1rem);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">MV</div>
+        <div>
+          <h1>MVOG Control Room</h1>
+          <p>Planificador interno</p>
+        </div>
+      </div>
+      <nav class="nav" aria-label="Secciones">
+        <button type="button" class="nav-tab" data-view="board" aria-selected="true">Tablero <span id="nav-count">0</span></button>
+        <button type="button" class="nav-tab" data-view="analytics" aria-selected="false">KPIs <span>live</span></button>
+        <button type="button" class="nav-tab" data-view="settings" aria-selected="false">Equipo <span id="nav-users">0</span></button>
+      </nav>
+      <div class="mini-panel">
+        <strong>Modo interno</strong>
+        <p>Ideas rápidas, decisión visible, movimiento por estados y progreso sin burocracia.</p>
+      </div>
+    </aside>
+
+    <main>
+      <section id="board" class="module active">
+        <header class="topline">
+          <div class="page-title">
+            <p class="eyebrow">Control room</p>
+            <h2>MVOG Control Room</h2>
+            <p>Planifica ideas internas, arrástralas por estados, abre cada tarea y decide qué merece foco esta semana.</p>
+          </div>
+          <div class="actions">
+            <button class="btn" type="button" id="open-idea">Nueva idea</button>
+            <button class="btn secondary" type="button" id="quick-seed">Idea rápida</button>
+          </div>
+        </header>
+
+        <section class="grid-kpis" id="kpis"></section>
+
+        <div class="lab-layout">
+          <section class="board-wrap">
+            <div class="board-toolbar">
+              <input class="search" id="search" placeholder="Buscar por idea, pyme, dueño o etiqueta">
+              <button class="btn secondary" type="button" id="open-status">Editar estados</button>
+            </div>
+            <div class="filter-strip" id="filter-strip"></div>
+            <div class="board" id="board-grid"></div>
+          </section>
+
+          <aside class="side-stack">
+            <section class="card focus-card">
+              <h3>Idea enfocada</h3>
+              <div id="focus-panel" class="focus-empty">Selecciona una idea para ver prompts, notas y señales.</div>
+            </section>
+            <section class="card">
+              <h3>Actividad</h3>
+              <div class="timeline" id="timeline"></div>
+            </section>
+          </aside>
+        </div>
+
+        <section class="flow-dock">
+          <div class="dock-head">
+            <h3>Flow scan</h3>
+            <button class="btn ghost small" type="button" id="sort-progress">Priorizar avance</button>
+          </div>
+          <div class="flow-grid" id="progress-grid"></div>
+        </section>
+      </section>
+
+      <section id="analytics" class="module">
+        <header class="topline">
+          <div class="page-title">
+            <p class="eyebrow">KPIs</p>
+            <h2>Señales del laboratorio</h2>
+            <p>Lectura rápida de volumen, avance, valor y fricción del repositorio.</p>
+          </div>
+        </header>
+        <section class="grid-kpis" id="kpis-large"></section>
+        <section class="settings-grid">
+          <div class="card">
+            <h3>Distribución por estado</h3>
+            <div class="radar" id="status-chart"></div>
+          </div>
+          <div class="card">
+            <h3>Mapa de ideas</h3>
+            <div class="radar" id="idea-radar"></div>
+          </div>
+        </section>
+      </section>
+
+      <section id="settings" class="module">
+        <header class="topline">
+          <div class="page-title">
+            <p class="eyebrow">Configuración</p>
+            <h2>Equipo y acceso</h2>
+            <p>Roles internos, usuarios y factor de verificación para acciones sensibles.</p>
+          </div>
+          <div class="actions">
+            <button class="btn secondary" type="button" id="reset-demo">Restaurar demo</button>
+          </div>
+        </header>
+
+        <div class="settings-grid">
+          <section class="card">
+            <h3>Crear usuario</h3>
+            <form id="user-form">
+              <label>Nombre
+                <input name="name" required maxlength="80" placeholder="Nombre del usuario">
+              </label>
+              <label>Correo
+                <input name="email" required type="email" maxlength="120" placeholder="usuario@equipo.com">
+              </label>
+              <label>Rol
+                <select name="role" id="role-select"></select>
+              </label>
+              <button class="btn" type="submit">Crear usuario</button>
+            </form>
+          </section>
+          <section class="card">
+            <h3>Usuarios</h3>
+            <div class="list" id="users-list"></div>
+          </section>
+          <section class="card">
+            <h3>Roles</h3>
+            <div class="list" id="roles-list"></div>
+            <form id="role-form" style="margin-top:0.75rem">
+              <label>Nuevo rol
+                <input name="role" required maxlength="32" placeholder="Ej. Producto">
+              </label>
+              <button class="btn secondary" type="submit">Agregar rol</button>
+            </form>
+          </section>
+          <section class="card">
+            <h3>Estados del pipeline</h3>
+            <div class="list" id="status-list"></div>
+            <form id="status-form" style="margin-top:0.75rem">
+              <label>Nuevo estado
+                <input name="status" required maxlength="32" placeholder="Ej. Pausado">
+              </label>
+              <button class="btn secondary" type="submit">Agregar estado</button>
+            </form>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="idea-dialog">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow" style="margin-bottom:0.25rem">Idea</p>
+          <h3 id="idea-modal-title">Nueva idea</h3>
+        </div>
+        <button class="btn ghost small" type="button" data-close="idea-dialog">Cerrar</button>
+      </div>
+      <form id="idea-form">
+        <input type="hidden" name="id">
+        <label>Nombre
+          <input name="name" required maxlength="90" placeholder="Ej. Asistente de inventario para colmados">
+        </label>
+        <div class="split">
+          <label>Pyme o nicho
+            <input name="market" required maxlength="80" placeholder="Ej. ferreterías, salones, talleres">
+          </label>
+          <label>Responsable
+            <select name="owner" id="owner-select"></select>
+          </label>
+        </div>
+        <div class="split">
+          <label>Valor
+            <select name="value">
+              <option>Alto</option>
+              <option>Medio</option>
+              <option>Bajo</option>
+            </select>
+          </label>
+          <label>Dificultad
+            <select name="effort">
+              <option>Baja</option>
+              <option>Media</option>
+              <option>Alta</option>
+            </select>
+          </label>
+        </div>
+        <label>Notas
+          <textarea name="notes" required placeholder="Qué resuelve, para quién, hipótesis, dudas o señales."></textarea>
+        </label>
+        <label>Prompt, script o brief
+          <textarea name="prompt" placeholder="Prompt para IA, guion técnico, script de venta interna o checklist de prototipo."></textarea>
+        </label>
+        <label>Etiquetas
+          <input name="tags" maxlength="100" placeholder="IA, WhatsApp, inventario, pagos">
+        </label>
+        <button class="btn" type="submit">Guardar idea</button>
+      </form>
+    </div>
+  </dialog>
+
+  <dialog id="status-dialog">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow" style="margin-bottom:0.25rem">Pipeline</p>
+          <h3>Editar estados</h3>
+        </div>
+        <button class="btn ghost small" type="button" data-close="status-dialog">Cerrar</button>
+      </div>
+      <div class="list" id="modal-status-list"></div>
+      <form id="modal-status-form" style="margin-top:0.75rem">
+        <label>Nuevo estado
+          <input name="status" required maxlength="32" placeholder="Nombre del estado">
+        </label>
+        <button class="btn" type="submit">Agregar estado</button>
+      </form>
+    </div>
+  </dialog>
+
+  <dialog id="verify-dialog">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow" style="margin-bottom:0.25rem">Verificación</p>
+          <h3>Confirmar usuario</h3>
+        </div>
+        <button class="btn ghost small" type="button" data-close="verify-dialog">Cerrar</button>
+      </div>
+      <form id="verify-form">
+        <input type="hidden" name="id">
+        <p id="verify-copy" style="margin:0;color:var(--muted);line-height:1.5"></p>
+        <label>Código activo
+          <input name="code" required inputmode="numeric" maxlength="6" placeholder="6 dígitos">
+        </label>
+        <button class="btn" type="submit">Verificar</button>
+      </form>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const storeKey = "ideas-control-room-v2";
+    const statusColors = ["#2bf59a", "#35d2d9", "#f3c969", "#b994ff", "#ff8c5f", "#ff6868", "#8df7c2", "#74a7ff"];
+
+    const defaults = {
+      statuses: ["Inbox", "Diseño", "Estructura", "En desarrollo", "Test", "En proceso", "En venta"],
+      roles: ["Creador digital", "Financiero", "Producto", "Usuario"],
+      users: [
+        { id: uid(), name: "Laura Pérez", email: "laura@equipo.local", role: "Creador digital", verified: true, code: "218934" },
+        { id: uid(), name: "Miguel Santos", email: "miguel@equipo.local", role: "Financiero", verified: false, code: "640129" },
+        { id: uid(), name: "Ana Torres", email: "ana@equipo.local", role: "Producto", verified: true, code: "805421" }
+      ],
+      ideas: [
+        {
+          id: uid(),
+          name: "Inventario predictivo para colmados",
+          market: "Colmados y minimarkets",
+          owner: "Laura Pérez",
+          value: "Alto",
+          effort: "Media",
+          status: "Diseño",
+          notes: "Detectar productos que se agotan, sugerir compras y alertar sobre inventario muerto.",
+          prompt: "Define un MVP de inventario predictivo para colmados con módulos, datos mínimos y pantallas clave.",
+          tags: ["IA", "Inventario", "Alertas"],
+          updatedAt: daysAgo(1)
+        },
+        {
+          id: uid(),
+          name: "Cobranza con WhatsApp para talleres",
+          market: "Talleres mecánicos",
+          owner: "Miguel Santos",
+          value: "Medio",
+          effort: "Baja",
+          status: "Estructura",
+          notes: "Controlar facturas pendientes y generar mensajes de seguimiento por antigüedad.",
+          prompt: "Crea un flujo de cobranza amable para talleres, con plantillas de WhatsApp y tablero de pendientes.",
+          tags: ["WhatsApp", "Pagos", "CRM"],
+          updatedAt: daysAgo(3)
+        },
+        {
+          id: uid(),
+          name: "Agenda anti-huecos para clínicas",
+          market: "Clínicas pequeñas",
+          owner: "Ana Torres",
+          value: "Alto",
+          effort: "Alta",
+          status: "En desarrollo",
+          notes: "Predecir cancelaciones y llenar espacios con lista de espera antes de perder ingresos.",
+          prompt: "Diseña la arquitectura de una agenda anti-huecos con predicción, lista de espera y mensajes automáticos.",
+          tags: ["SaaS", "Agenda", "IA"],
+          updatedAt: daysAgo(4)
+        },
+        {
+          id: uid(),
+          name: "Cotizador visual para servicios",
+          market: "Agencias, imprentas y servicios técnicos",
+          owner: "Laura Pérez",
+          value: "Medio",
+          effort: "Media",
+          status: "Test",
+          notes: "Armar cotizaciones rápidas con paquetes, márgenes y PDFs limpios para enviar al cliente.",
+          prompt: "Genera una lista de pantallas y reglas para un cotizador visual con márgenes y descuentos.",
+          tags: ["Ventas", "PDF", "Pricing"],
+          updatedAt: daysAgo(6)
+        },
+        {
+          id: uid(),
+          name: "Bot de trading",
+          market: "Traders independientes y equipos internos",
+          owner: "Miguel Santos",
+          value: "Alto",
+          effort: "Alta",
+          status: "Inbox",
+          notes: "Sistema para analizar señales, definir reglas de entrada/salida, simular estrategias y operar con controles de riesgo.",
+          prompt: "Diseña un bot de trading con backtesting, gestión de riesgo, bitácora de operaciones y alertas antes de cualquier ejecución real.",
+          tags: ["Trading", "IA", "Riesgo"],
+          updatedAt: daysAgo(7)
+        },
+        {
+          id: uid(),
+          name: "Ibarber",
+          market: "Barberías y salones pequeños",
+          owner: "Laura Pérez",
+          value: "Alto",
+          effort: "Media",
+          status: "Diseño",
+          notes: "App para reservas, turnos, recordatorios, catálogo de servicios, clientes frecuentes y control simple de ingresos.",
+          prompt: "Estructura el MVP de Ibarber con agenda, perfiles de barberos, pagos, recordatorios y panel de métricas del negocio.",
+          tags: ["Reservas", "Barbería", "SaaS"],
+          updatedAt: daysAgo(8)
+        },
+        {
+          id: uid(),
+          name: "Organizador partidos pádel",
+          market: "Clubes, grupos privados y jugadores de pádel",
+          owner: "Ana Torres",
+          value: "Medio",
+          effort: "Media",
+          status: "Estructura",
+          notes: "Organizar partidos por nivel, disponibilidad, pistas, pagos compartidos y confirmaciones automáticas.",
+          prompt: "Define pantallas y reglas para organizar partidos de pádel con ranking, disponibilidad, pagos y sustituciones.",
+          tags: ["Deporte", "Reservas", "Comunidad"],
+          updatedAt: daysAgo(9)
+        },
+        {
+          id: uid(),
+          name: "Modelo agéntico diario para ideas",
+          market: "Operación interna MVOG",
+          owner: "Laura Pérez",
+          value: "Alto",
+          effort: "Alta",
+          status: "En desarrollo",
+          notes: "Agente que revise diariamente el repositorio, proponga próximos pasos, mejore prompts y detecte ideas bloqueadas.",
+          prompt: "Diseña un agente diario que lea el tablero, priorice ideas, genere tareas, actualice prompts y produzca un resumen accionable.",
+          tags: ["Agentes", "Automatización", "Operaciones"],
+          updatedAt: daysAgo(10)
+        },
+        {
+          id: uid(),
+          name: "Página web que venda los servicios MVOG",
+          market: "Clientes potenciales de MVOG",
+          owner: "Ana Torres",
+          value: "Alto",
+          effort: "Media",
+          status: "En proceso",
+          notes: "Web comercial para explicar servicios, casos de uso, captación de leads y posicionamiento de MVOG.",
+          prompt: "Crea una arquitectura de página web para vender servicios MVOG con propuesta de valor, secciones, CTA y embudo de contacto.",
+          tags: ["Web", "Marketing", "Ventas"],
+          updatedAt: daysAgo(11)
+        },
+        {
+          id: uid(),
+          name: "Agente Instagram Casa 174",
+          market: "Casa 174 y gestión de redes sociales",
+          owner: "Laura Pérez",
+          value: "Medio",
+          effort: "Media",
+          status: "Diseño",
+          notes: "Agente para planificar contenido, responder mensajes, detectar leads y mantener una línea editorial en Instagram.",
+          prompt: "Diseña un agente de Instagram para Casa 174 con calendario de contenido, respuestas, clasificación de leads y métricas.",
+          tags: ["Instagram", "Agentes", "Leads"],
+          updatedAt: daysAgo(12)
+        }
+      ],
+      activity: [
+        { id: uid(), at: daysAgo(5), text: "Se agregaron nuevas ideas estratégicas al repositorio MVOG." },
+        { id: uid(), at: daysAgo(1), text: "Inventario predictivo para colmados entró en Diseño." },
+        { id: uid(), at: daysAgo(3), text: "Cobranza con WhatsApp para talleres pasó a Estructura." },
+        { id: uid(), at: daysAgo(4), text: "Agenda anti-huecos para clínicas está En desarrollo." }
+      ]
+    };
+
+    let state = load();
+    let selectedIdeaId = state.ideas[0]?.id || null;
+    let searchTerm = "";
+    let activeFilter = "all";
+    let sortProgressDesc = false;
+
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+
+    function uid() {
+      return crypto.randomUUID();
+    }
+
+    function daysAgo(days) {
+      return new Date(Date.now() - days * 86400000).toISOString();
+    }
+
+    function load() {
+      try {
+        const saved = localStorage.getItem(storeKey);
+        return saved ? JSON.parse(saved) : structuredClone(defaults);
+      } catch {
+        return structuredClone(defaults);
+      }
+    }
+
+    function save() {
+      localStorage.setItem(storeKey, JSON.stringify(state));
+      render();
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function toast(message) {
+      const el = $("#toast");
+      el.textContent = message;
+      el.classList.add("visible");
+      clearTimeout(toast.timer);
+      toast.timer = setTimeout(() => el.classList.remove("visible"), 2400);
+    }
+
+    function activity(text) {
+      state.activity.unshift({ id: uid(), at: new Date().toISOString(), text });
+      state.activity = state.activity.slice(0, 24);
+    }
+
+    function progressFor(idea) {
+      const index = Math.max(0, state.statuses.indexOf(idea.status));
+      if (state.statuses.length <= 1) return 100;
+      return Math.round((index / (state.statuses.length - 1)) * 100);
+    }
+
+    function scoreFor(idea) {
+      const value = { Alto: 3, Medio: 2, Bajo: 1 }[idea.value] || 1;
+      const effort = { Baja: 3, Media: 2, Alta: 1 }[idea.effort] || 1;
+      return Math.round(((value * 0.65 + effort * 0.35) / 3) * 100);
+    }
+
+    function matchesSearch(idea) {
+      const haystack = [idea.name, idea.market, idea.owner, idea.status, idea.value, idea.effort, ...(idea.tags || [])].join(" ").toLowerCase();
+      const textMatch = haystack.includes(searchTerm.toLowerCase());
+      const filterMatch =
+        activeFilter === "all" ||
+        (activeFilter === "high-value" && idea.value === "Alto") ||
+        (activeFilter === "sale-ready" && idea.status === "En venta") ||
+        (activeFilter === "in-progress" && !["Inbox", "En venta"].includes(idea.status));
+      return textMatch && filterMatch;
+    }
+
+    function filterLabel() {
+      return {
+        all: "Todas las ideas",
+        "high-value": "Valor alto",
+        "sale-ready": "En venta",
+        "in-progress": "En curso"
+      }[activeFilter] || "Todas las ideas";
+    }
+
+    function render() {
+      renderNav();
+      renderKpis();
+      renderFilters();
+      renderBoard();
+      renderFocus();
+      renderProgress();
+      renderAnalytics();
+      renderSettings();
+      renderTimeline();
+    }
+
+    function renderNav() {
+      $("#nav-count").textContent = state.ideas.length;
+      $("#nav-users").textContent = state.users.length;
+    }
+
+    function renderKpis() {
+      const total = state.ideas.length;
+      const avgProgress = total ? Math.round(state.ideas.reduce((sum, idea) => sum + progressFor(idea), 0) / total) : 0;
+      const highValue = state.ideas.filter((idea) => idea.value === "Alto").length;
+      const saleReady = state.ideas.filter((idea) => idea.status === "En venta").length;
+      const verified = state.users.filter((user) => user.verified).length;
+      const inProgress = state.ideas.filter((idea) => !["Inbox", "En venta"].includes(idea.status)).length;
+
+      const cards = [
+        { key: "all", label: "Ideas activas", value: total, hint: "Click para ver todo", bars: [35, 54, 44, 70, 61, 86, 78] },
+        { key: "in-progress", label: "En curso", value: inProgress, hint: "Diseño a proceso", bars: [20, 30, 38, 52, 66, avgProgress, Math.max(avgProgress - 8, 15)] },
+        { key: "high-value", label: "Valor alto", value: highValue, hint: "Marcadas manualmente", bars: [28, 45, 42, 72, 68, 74, 90] },
+        { key: "sale-ready", label: "En venta", value: saleReady, hint: "Ideas en último estado", bars: [12, 14, 18, 20, 22, 30, saleReady ? 70 : 18] }
+      ];
+
+      const html = cards.map((card) => `
+        <button class="kpi ${activeFilter === card.key ? "active" : ""}" type="button" data-filter="${card.key}">
+          <span>${card.label}</span>
+          <b>${card.value}</b>
+          <small>${card.hint}</small>
+          <div class="spark" aria-hidden="true">${card.bars.map((bar) => `<i style="height:${bar}%"></i>`).join("")}</div>
+        </button>
+      `).join("");
+
+      $("#kpis").innerHTML = html;
+      $("#kpis-large").innerHTML = html + `
+        <button class="kpi" type="button" data-filter="verified">
+          <span>Usuarios verificados</span>
+          <b>${verified}/${state.users.length}</b>
+          <small>Control de acceso interno</small>
+          <div class="spark" aria-hidden="true">${[20, 40, 38, 55, 68, verified ? 82 : 18, 70].map((bar) => `<i style="height:${bar}%"></i>`).join("")}</div>
+        </button>
+      `;
+    }
+
+    function renderFilters() {
+      $("#filter-strip").innerHTML = `
+        <span class="filter-pill active">${filterLabel()}</span>
+        ${searchTerm ? `<span class="filter-pill">Busca: ${escapeHtml(searchTerm)}</span>` : ""}
+        ${(activeFilter !== "all" || searchTerm) ? `<button class="filter-pill" type="button" data-clear-filters>Limpiar</button>` : ""}
+      `;
+    }
+
+    function renderBoard() {
+      const grid = $("#board-grid");
+      grid.style.setProperty("--columns", state.statuses.length);
+      const ideas = state.ideas.filter(matchesSearch);
+
+      grid.innerHTML = state.statuses.map((status, index) => {
+        const columnIdeas = ideas.filter((idea) => idea.status === status);
+        const wipLimit = wipLimitFor(status, index);
+        const overLimit = wipLimit && columnIdeas.length > wipLimit;
+        return `
+          <section class="column" data-status="${escapeHtml(status)}">
+            <div class="column-head">
+              <span class="dot" style="background:${statusColors[index % statusColors.length]}"></span>
+              <div class="column-title">
+                <h3>${escapeHtml(status)}</h3>
+                <span>${columnIdeas.length} idea${columnIdeas.length === 1 ? "" : "s"} · flujo ${Math.round(((index + 1) / state.statuses.length) * 100)}%</span>
+              </div>
+              <span class="wip ${overLimit ? "hot" : ""}">WIP ${columnIdeas.length}/${wipLimit}</span>
+              <button class="btn ghost small" type="button" data-add-in-status="${escapeHtml(status)}">+</button>
+            </div>
+            <div class="idea-list">
+              ${columnIdeas.map(renderIdeaCard).join("") || `<div class="focus-empty" style="min-height:9rem">Suelta ideas aquí.</div>`}
+            </div>
+          </section>
+        `;
+      }).join("");
+    }
+
+    function wipLimitFor(status, index) {
+      if (status === "Inbox") return 9;
+      if (status === "En venta") return 99;
+      if (["En desarrollo", "Test", "En proceso"].includes(status)) return 3;
+      return index < 3 ? 4 : 3;
+    }
+
+    function renderIdeaCard(idea) {
+      const progress = progressFor(idea);
+      const score = scoreFor(idea);
+      const tags = (idea.tags || []).slice(0, 3).map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("");
+      return `
+        <article class="idea-card ${selectedIdeaId === idea.id ? "selected" : ""}" draggable="true" data-idea-id="${idea.id}">
+          <div class="idea-top">
+            <h4>${escapeHtml(idea.name)}</h4>
+            <button class="btn ghost small" type="button" data-edit-idea="${idea.id}">Editar</button>
+          </div>
+          <p>${escapeHtml(idea.market)} · ${escapeHtml(idea.owner)}</p>
+          <div class="tag-row">
+            <span class="tag ${idea.value === "Alto" ? "hot" : ""}">${escapeHtml(idea.value)} valor</span>
+            <span class="tag ${idea.effort === "Alta" ? "risk" : "money"}">${escapeHtml(idea.effort)} dificultad</span>
+            <span class="tag">${score} score</span>
+            ${tags}
+          </div>
+          <div class="progress">
+            <div class="progress-line"><div class="progress-fill" style="--value:${progress}%"></div></div>
+            <div class="progress-meta"><span>${progress}% progreso</span><span>${escapeHtml(idea.status)}</span></div>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderFocus() {
+      const idea = state.ideas.find((item) => item.id === selectedIdeaId);
+      if (!idea) {
+        $("#focus-panel").className = "focus-empty";
+        $("#focus-panel").innerHTML = "Selecciona una idea para ver prompts, notas y señales.";
+        return;
+      }
+
+      $("#focus-panel").className = "";
+      $("#focus-panel").innerHTML = `
+        <div class="idea-card" style="box-shadow:none">
+          <div class="idea-top">
+            <h4>${escapeHtml(idea.name)}</h4>
+            <button class="btn ghost small" type="button" data-edit-idea="${idea.id}">Editar</button>
+          </div>
+          <p>${escapeHtml(idea.notes)}</p>
+          <div class="focus-grid">
+            <div class="focus-stat"><span>Estado</span><b>${escapeHtml(idea.status)}</b></div>
+            <div class="focus-stat"><span>Responsable</span><b>${escapeHtml(idea.owner)}</b></div>
+            <div class="focus-stat"><span>Valor</span><b>${escapeHtml(idea.value)}</b></div>
+            <div class="focus-stat"><span>Dificultad</span><b>${escapeHtml(idea.effort)}</b></div>
+          </div>
+          <div class="tag-row">${(idea.tags || []).map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>
+          <div class="progress">
+            <div class="progress-line"><div class="progress-fill" style="--value:${progressFor(idea)}%"></div></div>
+            <div class="progress-meta"><span>${progressFor(idea)}%</span><span>${scoreFor(idea)} score</span></div>
+          </div>
+          <label>Mover estado
+            <select data-status-edit="${idea.id}">
+              ${state.statuses.map((status) => `<option ${status === idea.status ? "selected" : ""}>${escapeHtml(status)}</option>`).join("")}
+            </select>
+          </label>
+          <label>Prompt / script
+            <textarea data-prompt-edit="${idea.id}">${escapeHtml(idea.prompt)}</textarea>
+          </label>
+          <div class="row-actions" style="justify-content:stretch">
+            <button class="btn secondary" type="button" data-save-prompt="${idea.id}">Guardar prompt</button>
+            <button class="btn ghost" type="button" data-move-next="${idea.id}">Siguiente estado</button>
+            <button class="btn danger" type="button" data-delete-idea="${idea.id}">Eliminar</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderProgress() {
+      const ideas = [...state.ideas].sort((a, b) => sortProgressDesc ? progressFor(b) - progressFor(a) : new Date(b.updatedAt) - new Date(a.updatedAt));
+      $("#progress-grid").innerHTML = ideas.map((idea) => `
+        <article class="flow-card" data-focus-idea="${idea.id}">
+          <strong>${escapeHtml(idea.name)}</strong>
+          <div class="flow-rail" style="--steps:${state.statuses.length}">
+            ${state.statuses.map((status) => `<span class="flow-step ${state.statuses.indexOf(status) <= state.statuses.indexOf(idea.status) ? "done" : ""}"></span>`).join("")}
+          </div>
+          <div class="flow-meta"><span>${escapeHtml(idea.status)}</span><span>${progressFor(idea)}% · ${scoreFor(idea)} score</span></div>
+        </article>
+      `).join("") || `<div class="focus-empty">No hay ideas todavía.</div>`;
+    }
+
+    function renderAnalytics() {
+      const total = Math.max(state.ideas.length, 1);
+      $("#status-chart").innerHTML = state.statuses.map((status) => {
+        const count = state.ideas.filter((idea) => idea.status === status).length;
+        const pct = Math.round((count / total) * 100);
+        return chartRow(status, `${count}`, pct);
+      }).join("");
+
+      $("#idea-radar").innerHTML = state.ideas.map((idea) => chartRow(idea.name, `${scoreFor(idea)}`, scoreFor(idea))).join("") || `<div class="focus-empty">No hay ideas para analizar.</div>`;
+    }
+
+    function chartRow(label, value, pct) {
+      return `
+        <div class="radar-row">
+          <span>${escapeHtml(label)}</span>
+          <div class="progress-line"><div class="progress-fill" style="--value:${pct}%"></div></div>
+          <strong>${escapeHtml(value)}</strong>
+        </div>
+      `;
+    }
+
+    function renderSettings() {
+      $("#owner-select").innerHTML = state.users.map((user) => `<option>${escapeHtml(user.name)}</option>`).join("") || `<option>Sin usuarios</option>`;
+      $("#role-select").innerHTML = state.roles.map((role) => `<option>${escapeHtml(role)}</option>`).join("");
+
+      $("#users-list").innerHTML = state.users.map((user) => `
+        <article class="row-card">
+          <div>
+            <strong>${escapeHtml(user.name)}</strong>
+            <span>${escapeHtml(user.email)} · ${escapeHtml(user.role)} · código ${user.code}</span>
+          </div>
+          <div class="row-actions">
+            <span class="tag ${user.verified ? "hot" : "money"}">${user.verified ? "Verificado" : "Pendiente"}</span>
+            <button class="btn secondary small" type="button" data-verify-user="${user.id}">Verificar</button>
+            <button class="btn danger small" type="button" data-delete-user="${user.id}">Eliminar</button>
+          </div>
+        </article>
+      `).join("") || `<div class="focus-empty">No hay usuarios.</div>`;
+
+      $("#roles-list").innerHTML = state.roles.map((role) => `
+        <article class="row-card">
+          <strong>${escapeHtml(role)}</strong>
+          <button class="btn ghost small" type="button" data-delete-role="${escapeHtml(role)}">Quitar</button>
+        </article>
+      `).join("");
+
+      const statusHtml = state.statuses.map((status) => `
+        <article class="row-card">
+          <strong>${escapeHtml(status)}</strong>
+          <div class="row-actions">
+            <button class="btn ghost small" type="button" data-rename-status="${escapeHtml(status)}">Renombrar</button>
+            <button class="btn ghost small" type="button" data-delete-status="${escapeHtml(status)}">Quitar</button>
+          </div>
+        </article>
+      `).join("");
+      $("#status-list").innerHTML = statusHtml;
+      $("#modal-status-list").innerHTML = statusHtml;
+    }
+
+    function renderTimeline() {
+      $("#timeline").innerHTML = state.activity.map((item) => `
+        <div class="timeline-item">
+          <time>${new Intl.DateTimeFormat("es-DO", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(item.at))}</time>
+          <span>${escapeHtml(item.text)}</span>
+        </div>
+      `).join("") || `<div class="focus-empty">Sin actividad todavía.</div>`;
+    }
+
+    function openIdeaDialog(idea = null, presetStatus = null) {
+      const form = $("#idea-form");
+      form.reset();
+      $("#idea-modal-title").textContent = idea ? "Editar idea" : "Nueva idea";
+      form.elements.id.value = idea?.id || "";
+      form.elements.name.value = idea?.name || "";
+      form.elements.market.value = idea?.market || "";
+      form.elements.owner.value = idea?.owner || state.users[0]?.name || "";
+      form.elements.value.value = idea?.value || "Medio";
+      form.elements.effort.value = idea?.effort || "Media";
+      form.elements.notes.value = idea?.notes || "";
+      form.elements.prompt.value = idea?.prompt || "";
+      form.elements.tags.value = (idea?.tags || []).join(", ");
+      form.dataset.presetStatus = presetStatus || idea?.status || state.statuses[0];
+      $("#idea-dialog").showModal();
+    }
+
+    function addStatus(name) {
+      const clean = name.trim();
+      if (!clean || state.statuses.includes(clean)) return toast("Ese estado ya existe o está vacío.");
+      state.statuses.push(clean);
+      activity(`Estado ${clean} agregado al pipeline.`);
+      save();
+      toast("Estado agregado.");
+    }
+
+    function renameStatus(oldName) {
+      const next = prompt("Nuevo nombre del estado:", oldName);
+      if (!next) return;
+      const clean = next.trim();
+      if (!clean || state.statuses.includes(clean)) return toast("Ese nombre no está disponible.");
+      state.statuses = state.statuses.map((status) => status === oldName ? clean : status);
+      state.ideas.forEach((idea) => {
+        if (idea.status === oldName) idea.status = clean;
+      });
+      activity(`${oldName} ahora se llama ${clean}.`);
+      save();
+      toast("Estado renombrado.");
+    }
+
+    function deleteStatus(status) {
+      if (state.statuses.length <= 1) return toast("Necesitas al menos un estado.");
+      const fallback = state.statuses.find((item) => item !== status);
+      state.statuses = state.statuses.filter((item) => item !== status);
+      state.ideas.forEach((idea) => {
+        if (idea.status === status) idea.status = fallback;
+      });
+      activity(`${status} fue eliminado. Sus ideas pasaron a ${fallback}.`);
+      save();
+      toast("Estado eliminado.");
+    }
+
+    $$(".nav-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        $$(".nav-tab").forEach((button) => button.setAttribute("aria-selected", "false"));
+        $$(".module").forEach((module) => module.classList.remove("active"));
+        tab.setAttribute("aria-selected", "true");
+        $(`#${tab.dataset.view}`).classList.add("active");
+      });
+    });
+
+    $("#open-idea").addEventListener("click", () => openIdeaDialog());
+    $("#open-status").addEventListener("click", () => $("#status-dialog").showModal());
+    $("#quick-seed").addEventListener("click", () => {
+      const idea = {
+        id: uid(),
+        name: `Idea sin pulir ${state.ideas.length + 1}`,
+        market: "Pyme por definir",
+        owner: state.users[0]?.name || "Sin responsable",
+        value: "Medio",
+        effort: "Media",
+        status: state.statuses[0],
+        notes: "Captura rápida. Falta validar problema, cliente y flujo.",
+        prompt: "Desarrolla esta idea desde cero: problema, usuario, MVP, pantallas, monetización y riesgos.",
+        tags: ["Rápida"],
+        updatedAt: new Date().toISOString()
+      };
+      state.ideas.unshift(idea);
+      selectedIdeaId = idea.id;
+      activity(`${idea.name} fue creada como captura rápida.`);
+      save();
+      toast("Idea rápida agregada.");
+    });
+
+    $("#search").addEventListener("input", (event) => {
+      searchTerm = event.target.value.trim();
+      renderFilters();
+      renderBoard();
+    });
+
+    $("#sort-progress").addEventListener("click", () => {
+      sortProgressDesc = !sortProgressDesc;
+      renderProgress();
+    });
+
+    $("#idea-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const data = new FormData(form);
+      const id = data.get("id");
+      const tags = data.get("tags").split(",").map((tag) => tag.trim()).filter(Boolean);
+      const existing = state.ideas.find((idea) => idea.id === id);
+
+      if (existing) {
+        Object.assign(existing, {
+          name: data.get("name").trim(),
+          market: data.get("market").trim(),
+          owner: data.get("owner"),
+          value: data.get("value"),
+          effort: data.get("effort"),
+          notes: data.get("notes").trim(),
+          prompt: data.get("prompt").trim(),
+          tags,
+          updatedAt: new Date().toISOString()
+        });
+        selectedIdeaId = existing.id;
+        activity(`${existing.name} fue actualizada.`);
+      } else {
+        const idea = {
+          id: uid(),
+          name: data.get("name").trim(),
+          market: data.get("market").trim(),
+          owner: data.get("owner"),
+          value: data.get("value"),
+          effort: data.get("effort"),
+          status: form.dataset.presetStatus || state.statuses[0],
+          notes: data.get("notes").trim(),
+          prompt: data.get("prompt").trim(),
+          tags,
+          updatedAt: new Date().toISOString()
+        };
+        state.ideas.unshift(idea);
+        selectedIdeaId = idea.id;
+        activity(`${idea.name} fue creada en ${idea.status}.`);
+      }
+
+      $("#idea-dialog").close();
+      save();
+      toast("Idea guardada.");
+    });
+
+    $("#user-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      const user = {
+        id: uid(),
+        name: data.get("name").trim(),
+        email: data.get("email").trim(),
+        role: data.get("role"),
+        verified: false,
+        code: randomCode()
+      };
+      state.users.push(user);
+      activity(`${user.name} fue agregado al equipo.`);
+      event.currentTarget.reset();
+      save();
+      toast(`Usuario creado. Código ${user.code}.`);
+    });
+
+    $("#role-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const role = new FormData(event.currentTarget).get("role").trim();
+      if (!role || state.roles.includes(role)) return toast("Ese rol ya existe o está vacío.");
+      state.roles.push(role);
+      event.currentTarget.reset();
+      save();
+      toast("Rol agregado.");
+    });
+
+    $("#status-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      addStatus(new FormData(event.currentTarget).get("status"));
+      event.currentTarget.reset();
+    });
+
+    $("#modal-status-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      addStatus(new FormData(event.currentTarget).get("status"));
+      event.currentTarget.reset();
+    });
+
+    $("#verify-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      const user = state.users.find((item) => item.id === data.get("id"));
+      if (!user) return;
+      if (user.code !== data.get("code")) return toast("Código incorrecto.");
+      user.verified = true;
+      user.code = randomCode();
+      activity(`${user.name} completó verificación.`);
+      $("#verify-dialog").close();
+      save();
+      toast("Usuario verificado.");
+    });
+
+    $("#reset-demo").addEventListener("click", () => {
+      localStorage.removeItem(storeKey);
+      state = structuredClone(defaults);
+      selectedIdeaId = state.ideas[0]?.id || null;
+      render();
+      toast("Demo restaurada.");
+    });
+
+    document.addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
+
+      if (button.dataset.close) $(`#${button.dataset.close}`).close();
+      if (button.dataset.filter) {
+        if (button.dataset.filter === "verified") {
+          $$(".nav-tab").forEach((nav) => nav.setAttribute("aria-selected", "false"));
+          $$(".module").forEach((module) => module.classList.remove("active"));
+          $(`.nav-tab[data-view="settings"]`).setAttribute("aria-selected", "true");
+          $("#settings").classList.add("active");
+          return;
+        }
+        activeFilter = button.dataset.filter;
+        if (activeFilter === "all") {
+          searchTerm = "";
+          $("#search").value = "";
+        }
+        render();
+        $("#board-grid").scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+      if (button.dataset.clearFilters !== undefined) {
+        activeFilter = "all";
+        searchTerm = "";
+        $("#search").value = "";
+        render();
+        return;
+      }
+      if (button.dataset.addInStatus) openIdeaDialog(null, button.dataset.addInStatus);
+      if (button.dataset.editIdea) {
+        const idea = state.ideas.find((item) => item.id === button.dataset.editIdea);
+        if (idea) openIdeaDialog(idea);
+      }
+      if (button.dataset.deleteIdea) {
+        const idea = state.ideas.find((item) => item.id === button.dataset.deleteIdea);
+        state.ideas = state.ideas.filter((item) => item.id !== button.dataset.deleteIdea);
+        selectedIdeaId = state.ideas[0]?.id || null;
+        if (idea) activity(`${idea.name} fue eliminada.`);
+        save();
+        toast("Idea eliminada.");
+      }
+      if (button.dataset.savePrompt) {
+        const idea = state.ideas.find((item) => item.id === button.dataset.savePrompt);
+        const text = $(`[data-prompt-edit="${button.dataset.savePrompt}"]`)?.value || "";
+        if (idea) {
+          idea.prompt = text.trim();
+          idea.updatedAt = new Date().toISOString();
+          activity(`Prompt actualizado para ${idea.name}.`);
+          save();
+          toast("Prompt guardado.");
+        }
+      }
+      if (button.dataset.moveNext) {
+        const idea = state.ideas.find((item) => item.id === button.dataset.moveNext);
+        if (idea) {
+          const current = state.statuses.indexOf(idea.status);
+          const next = state.statuses[Math.min(current + 1, state.statuses.length - 1)];
+          idea.status = next;
+          idea.updatedAt = new Date().toISOString();
+          activity(`${idea.name} avanzó a ${next}.`);
+          save();
+          toast("Idea avanzada.");
+        }
+      }
+      if (button.dataset.renameStatus) renameStatus(button.dataset.renameStatus);
+      if (button.dataset.deleteStatus) deleteStatus(button.dataset.deleteStatus);
+      if (button.dataset.deleteRole) {
+        const role = button.dataset.deleteRole;
+        if (state.users.some((user) => user.role === role)) return toast("No puedes quitar un rol en uso.");
+        state.roles = state.roles.filter((item) => item !== role);
+        save();
+        toast("Rol eliminado.");
+      }
+      if (button.dataset.verifyUser) {
+        const user = state.users.find((item) => item.id === button.dataset.verifyUser);
+        if (!user) return;
+        $("#verify-form").reset();
+        $("#verify-form").elements.id.value = user.id;
+        $("#verify-copy").textContent = `${user.name} debe ingresar su código activo: ${user.code}`;
+        $("#verify-dialog").showModal();
+      }
+      if (button.dataset.deleteUser) {
+        const user = state.users.find((item) => item.id === button.dataset.deleteUser);
+        state.users = state.users.filter((item) => item.id !== button.dataset.deleteUser);
+        state.ideas.forEach((idea) => {
+          if (user && idea.owner === user.name) idea.owner = state.users[0]?.name || "Sin responsable";
+        });
+        if (user) activity(`${user.name} fue eliminado del equipo.`);
+        save();
+        toast("Usuario eliminado.");
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      const card = event.target.closest(".idea-card[data-idea-id]");
+      if (!card || event.target.closest("button, textarea, input, select")) return;
+      selectedIdeaId = card.dataset.ideaId;
+      render();
+    });
+
+    document.addEventListener("click", (event) => {
+      const card = event.target.closest(".flow-card[data-focus-idea]");
+      if (!card) return;
+      selectedIdeaId = card.dataset.focusIdea;
+      render();
+      $("#focus-panel").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    document.addEventListener("change", (event) => {
+      const select = event.target.closest("[data-status-edit]");
+      if (!select) return;
+      const idea = state.ideas.find((item) => item.id === select.dataset.statusEdit);
+      if (!idea || idea.status === select.value) return;
+      idea.status = select.value;
+      idea.updatedAt = new Date().toISOString();
+      activity(`${idea.name} pasó a ${idea.status}.`);
+      save();
+      toast("Estado actualizado.");
+    });
+
+    document.addEventListener("dragstart", (event) => {
+      const card = event.target.closest(".idea-card[data-idea-id]");
+      if (!card) return;
+      card.classList.add("dragging");
+      event.dataTransfer.setData("text/plain", card.dataset.ideaId);
+      event.dataTransfer.effectAllowed = "move";
+    });
+
+    document.addEventListener("dragend", (event) => {
+      const card = event.target.closest(".idea-card[data-idea-id]");
+      if (card) card.classList.remove("dragging");
+      $$(".column").forEach((column) => column.classList.remove("drag-over"));
+    });
+
+    document.addEventListener("dragover", (event) => {
+      const column = event.target.closest(".column[data-status]");
+      if (!column) return;
+      event.preventDefault();
+      column.classList.add("drag-over");
+    });
+
+    document.addEventListener("dragleave", (event) => {
+      const column = event.target.closest(".column[data-status]");
+      if (column && !column.contains(event.relatedTarget)) column.classList.remove("drag-over");
+    });
+
+    document.addEventListener("drop", (event) => {
+      const column = event.target.closest(".column[data-status]");
+      if (!column) return;
+      event.preventDefault();
+      const id = event.dataTransfer.getData("text/plain");
+      const idea = state.ideas.find((item) => item.id === id);
+      const nextStatus = column.dataset.status;
+      if (!idea || idea.status === nextStatus) return renderBoard();
+      idea.status = nextStatus;
+      idea.updatedAt = new Date().toISOString();
+      selectedIdeaId = idea.id;
+      activity(`${idea.name} pasó a ${nextStatus}.`);
+      save();
+      toast("Idea movida.");
+    });
+
+    function randomCode() {
+      return String(Math.floor(100000 + Math.random() * 900000));
+    }
+
+    render();
+  </script>
+</body>
+</html>
