@@ -5,6 +5,7 @@ import type { ControlRoomState, Idea, IdeaInput, IdeaPhaseNote, Status } from "@
 
 type ViewKey = "brain" | "detail" | "board" | "analytics";
 type FilterKey = "all" | "in-progress" | "high-value" | "sale-ready";
+type BrainMode = "spin" | "static" | "flat";
 
 type Props = {
   accessToken: string;
@@ -79,8 +80,12 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
   }
 
   async function saveIdea(input: IdeaInput) {
+    const conceptStatus = input.notes.trim() ? findStatusByName(state.statuses, "Concepto") : null;
     const inputWithCreator = {
       ...input,
+      statusId: conceptStatus?.id || input.statusId,
+      status: conceptStatus?.name || input.status,
+      developmentProgress: conceptStatus ? progressForStatus(conceptStatus, state.statuses) : input.developmentProgress,
       tags: [...input.tags.filter((tag) => !tag.startsWith("creator:")), `creator:${creatorInitialsForEmail(userEmail)}`]
     };
     const localIdea = ideaFromInput(inputWithCreator, state, draftStatus);
@@ -343,7 +348,7 @@ function BrainView({
   onOpen: (idea: Idea) => void;
 }) {
   const [hoverId, setHoverId] = useState<string | null>(null);
-  const [autoRotate, setAutoRotate] = useState(true);
+  const [brainMode, setBrainMode] = useState<BrainMode>("spin");
 
   const phaseOrbits = useMemo(() => statuses.map((status, index) => ({
     status,
@@ -388,9 +393,9 @@ function BrainView({
     <div className="brainWrap">
       <div className="brainGlow" />
       <div className="brainControls">
-        <button className={`brainCtl ${autoRotate ? "on" : ""}`} type="button" onClick={() => setAutoRotate((value) => !value)}>
-          {autoRotate ? "Girando" : "Estático"}
-        </button>
+        <button className={`brainCtl ${brainMode === "spin" ? "on" : ""}`} type="button" onClick={() => setBrainMode("spin")}>3D girando</button>
+        <button className={`brainCtl ${brainMode === "static" ? "on" : ""}`} type="button" onClick={() => setBrainMode("static")}>3D estático</button>
+        <button className={`brainCtl ${brainMode === "flat" ? "on" : ""}`} type="button" onClick={() => setBrainMode("flat")}>2D flujo</button>
         <span>Toca una idea para abrir su detalle</span>
       </div>
 
@@ -403,75 +408,98 @@ function BrainView({
         ))}
       </div>
 
-      <div className={`brainCanvas ${autoRotate && !hoverId ? "spinning" : ""}`}>
-        <div className="brainSphere">
-          <span className="brainCore" />
-          {phaseOrbits.map(({ status, index, radius, tilt, turn }) => (
-            <span
-              aria-hidden="true"
-              className="brainRing phaseRing"
-              key={status.id}
-              style={{
-                ["--ring-color" as string]: statusColor(status, statuses, index),
-                ["--ring-size" as string]: `${radius * 2}px`,
-                ["--ring-tilt" as string]: `${tilt}deg`,
-                ["--ring-turn" as string]: `${turn}deg`
-              }}
-            />
-          ))}
-        </div>
-
-        <div className="brainNodes">
-          {projected.map(({ idea, angle, orbitRadius, orbitTilt, orbitTurn, phaseIndex, depth }, index) => {
-            const status = statuses.find((item) => item.id === idea.statusId || item.name === idea.status);
-            const color = statusColor(status, statuses);
-            const active = hoverId === idea.id;
-            const selected = selectedId === idea.id;
-            const scale = active ? 1.12 : 0.62 + depth * 0.52;
-            const duration = 26 + phaseIndex * 3 + (index % 3);
-            const delay = -(angle / (Math.PI * 2)) * duration;
-            const initials = creatorInitialsForIdea(idea);
-
+      {brainMode === "flat" ? (
+        <div className="brainFlow2d">
+          {statuses.map((status, index) => {
+            const ideasInStatus = ideas.filter((idea) => statusIndex(idea, statuses) === index);
             return (
-              <button
-                className={`brainNode ${active ? "active" : ""} ${selected ? "selected" : ""}`}
-                key={idea.id}
-                style={{
-                  left: "50%",
-                  top: "50%",
-                  opacity: 0.34 + depth * 0.66,
-                  zIndex: Math.round(depth * 1000),
-                  ["--orbit-radius" as string]: `${orbitRadius}px`,
-                  ["--orbit-tilt" as string]: `${orbitTilt}deg`,
-                  ["--orbit-tilt-back" as string]: `${-orbitTilt}deg`,
-                  ["--orbit-turn" as string]: `${orbitTurn}deg`,
-                  ["--orbit-turn-back" as string]: `${-orbitTurn}deg`,
-                  ["--orbit-duration" as string]: `${duration}s`,
-                  ["--orbit-delay" as string]: `${delay}s`,
-                  ["--node-scale" as string]: scale,
-                  ["--idea-color" as string]: color
-                }}
-                type="button"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onOpen(idea);
-                }}
-                onMouseEnter={() => setHoverId(idea.id)}
-                onMouseLeave={() => setHoverId(null)}
-              >
-                <span className="nodePulse" />
-                <span className="nodeDot" />
-                {initials && <span className="creatorBadge">{initials}</span>}
-                <span className="nodeCard">
-                  <small>{idea.status} · {developmentPercent(idea, statuses)}%</small>
-                  <strong>{idea.name}</strong>
-                  <em>{truncate(idea.notes || "Sin concepto base todavía.", 52)}</em>
-                </span>
-              </button>
+              <section key={status.id} style={{ ["--phase-color" as string]: statusColor(status, statuses, index) }}>
+                <div>
+                  <i />
+                  <strong>{status.name}</strong>
+                  <span>{ideasInStatus.length}</span>
+                </div>
+                {ideasInStatus.map((idea) => (
+                  <button key={idea.id} type="button" onClick={() => onOpen(idea)}>
+                    <b>{idea.name}</b>
+                    <small>{developmentPercent(idea, statuses)}% · {creatorInitialsForIdea(idea) || "MV"}</small>
+                  </button>
+                ))}
+              </section>
             );
           })}
         </div>
-      </div>
+      ) : (
+        <div className={`brainCanvas ${brainMode === "spin" && !hoverId ? "spinning" : ""}`}>
+          <div className="brainSphere">
+            <span className="brainCore" />
+            {phaseOrbits.map(({ status, index, radius, tilt, turn }) => (
+              <span
+                aria-hidden="true"
+                className="brainRing phaseRing"
+                key={status.id}
+                style={{
+                  ["--ring-color" as string]: statusColor(status, statuses, index),
+                  ["--ring-size" as string]: `${radius * 2}px`,
+                  ["--ring-tilt" as string]: `${tilt}deg`,
+                  ["--ring-turn" as string]: `${turn}deg`
+                }}
+              />
+            ))}
+          </div>
+
+          <div className="brainNodes">
+            {projected.map(({ idea, angle, orbitRadius, orbitTilt, orbitTurn, phaseIndex, depth }, index) => {
+              const status = statuses.find((item) => item.id === idea.statusId || item.name === idea.status);
+              const color = statusColor(status, statuses);
+              const active = hoverId === idea.id;
+              const selected = selectedId === idea.id;
+              const scale = active ? 1.12 : 0.62 + depth * 0.52;
+              const duration = 26 + phaseIndex * 3 + (index % 3);
+              const delay = -(angle / (Math.PI * 2)) * duration;
+              const initials = creatorInitialsForIdea(idea);
+
+              return (
+                <button
+                  className={`brainNode ${active ? "active" : ""} ${selected ? "selected" : ""}`}
+                  key={idea.id}
+                  style={{
+                    left: "50%",
+                    top: "50%",
+                    opacity: 0.34 + depth * 0.66,
+                    zIndex: Math.round(depth * 1000),
+                    ["--orbit-radius" as string]: `${orbitRadius}px`,
+                    ["--orbit-tilt" as string]: `${orbitTilt}deg`,
+                    ["--orbit-tilt-back" as string]: `${-orbitTilt}deg`,
+                    ["--orbit-turn" as string]: `${orbitTurn}deg`,
+                    ["--orbit-turn-back" as string]: `${-orbitTurn}deg`,
+                    ["--orbit-duration" as string]: `${duration}s`,
+                    ["--orbit-delay" as string]: `${delay}s`,
+                    ["--node-scale" as string]: scale,
+                    ["--idea-color" as string]: color
+                  }}
+                  type="button"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onOpen(idea);
+                  }}
+                  onMouseEnter={() => setHoverId(idea.id)}
+                  onMouseLeave={() => setHoverId(null)}
+                >
+                  <span className="nodePulse" />
+                  <span className="nodeDot" />
+                  {initials && <span className="creatorBadge">{initials}</span>}
+                  <span className="nodeCard">
+                    <small>{idea.status} · {developmentPercent(idea, statuses)}%</small>
+                    <strong>{idea.name}</strong>
+                    <em>{truncate(idea.notes || "Sin concepto base todavía.", 52)}</em>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="brainFooter">
         <strong>Cerebro de ideas</strong>
@@ -498,21 +526,40 @@ function IdeaDetail({
 }) {
   const phaseNotes = idea.phaseNotes || [];
   const [expanded, setExpanded] = useState(phaseNotes[0]?.id || "");
+  const [researchExpanded, setResearchExpanded] = useState(false);
   const currentStatus = statuses.find((status) => status.id === idea.statusId || status.name === idea.status) || statuses[0];
-  const phaseNotesByName = new Map(phaseNotes.map((note) => [note.statusName, note]));
+  const phaseNotesByName = latestPhaseNotesByName(phaseNotes);
+  const researchNote = findPhaseNote(phaseNotesByName, "Investigación");
+  const developmentNote = findPhaseNote(phaseNotesByName, "desarrollo");
+  const testNote = findPhaseNote(phaseNotesByName, "test");
+  const productionNote = findPhaseNote(phaseNotesByName, "producción") || findPhaseNote(phaseNotesByName, "produccion");
 
   useEffect(() => {
     setExpanded("");
+    setResearchExpanded(false);
   }, [idea.id]);
 
-  function savePhaseNote(form: FormData) {
-    const statusId = String(form.get("statusId") || currentStatus?.id || "");
-    const status = statuses.find((item) => item.id === statusId) || currentStatus;
+  function saveBaseConcept(form: FormData) {
+    const notes = String(form.get("notes") || "");
+    const conceptStatus = findStatusByName(statuses, "Concepto");
+    const patch: Partial<IdeaInput> = { notes };
+
+    if (notes.trim() && conceptStatus && statusIndex(idea, statuses) < statuses.indexOf(conceptStatus)) {
+      patch.statusId = conceptStatus.id;
+      patch.status = conceptStatus.name;
+      patch.developmentProgress = Math.max(developmentPercent(idea, statuses), progressForStatus(conceptStatus, statuses));
+    }
+
+    onUpdate(idea, patch);
+  }
+
+  function saveStageNote(form: FormData, statusNameHint: string, fallbackSummary: string) {
+    const status = findStatusByName(statuses, statusNameHint) || currentStatus;
     const note: IdeaPhaseNote = {
       id: crypto.randomUUID(),
       statusId: status?.id || null,
-      statusName: status?.name || idea.status,
-      summary: String(form.get("summary") || ""),
+      statusName: status?.name || statusNameHint,
+      summary: String(form.get("summary") || fallbackSummary),
       details: String(form.get("details") || ""),
       link: String(form.get("link") || ""),
       createdAt: new Date().toISOString(),
@@ -547,15 +594,27 @@ function IdeaDetail({
       </div>
       <div className="detailGrid">
         <span>Estado <b>{idea.status}</b></span>
-        <span>Valor <b>{idea.value}</b></span>
+        <span>Viabilidad <b>{idea.value}</b></span>
         <span>Dificultad <b>{idea.effort}</b></span>
         <span>Desarrollo <b>{developmentPercent(idea, statuses)}%</b></span>
       </div>
-      <Progress value={developmentPercent(idea, statuses)} label={idea.status} />
-      <div className="detailLong">
-        <h4>Concepto base</h4>
-        <p>{idea.notes || "Sin concepto base todavía."}</p>
-        {idea.prompt && <p><b>Prompt / script:</b> {idea.prompt}</p>}
+      <div className="horizontalProgress">
+        {statuses.map((status, index) => {
+          const note = phaseNotesByName.get(status.name);
+          const reached = statusIndex(idea, statuses) >= index;
+          const active = currentStatus?.id === status.id;
+          return (
+            <button
+              className={`${reached ? "reached" : ""} ${active ? "active" : ""} ${note ? "hasNote" : ""}`}
+              key={status.id}
+              type="button"
+              onClick={() => note && setExpanded(note.id)}
+            >
+              <i />
+              <span>{status.name}</span>
+            </button>
+          );
+        })}
       </div>
       <label>
         Saltar a cualquier fase
@@ -566,22 +625,71 @@ function IdeaDetail({
         </select>
       </label>
 
-      <div className="phaseTimeline">
-        {statuses.map((status) => {
-          const note = phaseNotesByName.get(status.name);
-          const reached = statusIndex(idea, statuses) >= statuses.indexOf(status);
-          return (
-            <button
-              className={`${reached ? "reached" : ""} ${note ? "hasNote" : ""}`}
-              key={status.id}
-              type="button"
-              onClick={() => note && setExpanded(note.id)}
-            >
-              <i />
-              <span>{status.name}</span>
-            </button>
-          );
-        })}
+      <form
+        className="detailBlock"
+        onSubmit={(event) => {
+          event.preventDefault();
+          saveBaseConcept(new FormData(event.currentTarget));
+        }}
+      >
+        <div className="blockHead">
+          <div>
+            <h4>Concepto base</h4>
+            <p>La primera explicación clara de la idea. Al guardarlo, la idea pasa a concepto explicado.</p>
+          </div>
+          <button className="btn secondary" type="submit">Guardar concepto</button>
+        </div>
+        <textarea key={idea.id} name="notes" defaultValue={idea.notes} placeholder="Explica qué es, para quién es y qué problema resuelve." />
+      </form>
+
+      <form
+        className="detailBlock"
+        onSubmit={(event) => {
+          event.preventDefault();
+          saveStageNote(new FormData(event.currentTarget), "Investigación", "Investigación actualizada");
+          event.currentTarget.reset();
+        }}
+      >
+        <div className="blockHead">
+          <div>
+            <h4>Investigación</h4>
+            <p>Mercado, competencia, señales, riesgos y aprendizajes.</p>
+          </div>
+          <button className="btn secondary" type="submit">Guardar investigación</button>
+        </div>
+        {researchNote && (
+          <div className={`notePreview ${researchExpanded ? "open" : ""}`}>
+            <p>{researchNote.details || researchNote.summary}</p>
+            {(researchNote.details || researchNote.summary).length > 280 && (
+              <button className="btn ghost" type="button" onClick={() => setResearchExpanded((value) => !value)}>
+                {researchExpanded ? "Mostrar menos" : "Mostrar más"}
+              </button>
+            )}
+          </div>
+        )}
+        <input name="summary" placeholder="Resumen corto de la investigación" />
+        <textarea name="details" placeholder="Escribe o pega aquí la investigación completa." />
+      </form>
+
+      <div className="stageGrid">
+        <StageLinkForm
+          note={developmentNote}
+          title="Desarrollo"
+          description="Enlace del modelo, prototipo o repositorio en desarrollo."
+          onSave={(form) => saveStageNote(form, "desarrollo", "Desarrollo actualizado")}
+        />
+        <StageLinkForm
+          note={testNote}
+          title="Test"
+          description="Enlace de pruebas y notas de validación."
+          onSave={(form) => saveStageNote(form, "test", "Test actualizado")}
+        />
+        <StageLinkForm
+          note={productionNote}
+          title="Producción"
+          description="Enlace de la versión publicada y notas operativas."
+          onSave={(form) => saveStageNote(form, "producción", "Producción actualizada")}
+        />
       </div>
 
       <div className="phaseMemory">
@@ -606,26 +714,6 @@ function IdeaDetail({
         className="phaseForm"
         onSubmit={(event) => {
           event.preventDefault();
-          savePhaseNote(new FormData(event.currentTarget));
-          event.currentTarget.reset();
-        }}
-      >
-        <h4>Añadir información a una fase</h4>
-        <label>Fase
-          <select name="statusId" defaultValue={currentStatus?.id}>
-            {statuses.map((status) => <option key={status.id} value={status.id}>{status.name}</option>)}
-          </select>
-        </label>
-        <label>Resumen<input name="summary" placeholder="Concepto, aprendizaje, hito o decisión" /></label>
-        <label>Detalle<textarea name="details" placeholder="Amplía la información de esta fase" /></label>
-        <label>Enlace<input name="link" placeholder="https://..." /></label>
-        <button className="btn secondary" type="submit">Guardar memoria</button>
-      </form>
-
-      <form
-        className="phaseForm"
-        onSubmit={(event) => {
-          event.preventDefault();
           saveEvaluation(new FormData(event.currentTarget));
         }}
       >
@@ -642,7 +730,7 @@ function IdeaDetail({
           <input defaultValue={idea.developmentProgress ?? progressFor(idea, statuses)} max="100" min="0" name="developmentProgress" type="number" />
         </label>
         <div className="split">
-          <label>Valor<select name="value" defaultValue={idea.value}><option>Alto</option><option>Medio</option><option>Bajo</option></select></label>
+          <label>Viabilidad<select name="value" defaultValue={idea.value}><option>Alto</option><option>Medio</option><option>Bajo</option></select></label>
           <label>Dificultad<select name="effort" defaultValue={idea.effort}><option>Alta</option><option>Media</option><option>Baja</option></select></label>
         </div>
         <button className="btn secondary" type="submit">Guardar evaluación</button>
@@ -652,6 +740,44 @@ function IdeaDetail({
         {visibleTags(idea).length ? visibleTags(idea).map((tag) => <span key={tag}>{tag}</span>) : <span>Sin etiquetas</span>}
       </div>
     </section>
+  );
+}
+
+function StageLinkForm({
+  description,
+  note,
+  onSave,
+  title
+}: {
+  description: string;
+  note?: IdeaPhaseNote;
+  onSave: (form: FormData) => void;
+  title: string;
+}) {
+  return (
+    <form
+      className="stageLinkCard"
+      onSubmit={(event) => {
+        event.preventDefault();
+        onSave(new FormData(event.currentTarget));
+        event.currentTarget.reset();
+      }}
+    >
+      <div>
+        <h4>{title}</h4>
+        <p>{description}</p>
+      </div>
+      {note && (
+        <div className="stageCurrent">
+          {note.link && <a href={note.link} target="_blank" rel="noreferrer">Abrir enlace guardado</a>}
+          <p>{note.details || note.summary}</p>
+        </div>
+      )}
+      <input name="link" placeholder="https://..." />
+      <textarea name="details" placeholder="Notas, estado, bloqueos o siguiente paso." />
+      <input name="summary" placeholder="Resumen corto opcional" />
+      <button className="btn secondary" type="submit">Guardar {title.toLowerCase()}</button>
+    </form>
   );
 }
 
@@ -728,6 +854,11 @@ function progressFor(idea: Idea, statuses: Status[]) {
   return statuses.length <= 1 ? 100 : Math.round((index / (statuses.length - 1)) * 100);
 }
 
+function progressForStatus(status: Status, statuses: Status[]) {
+  const index = Math.max(0, statuses.findIndex((item) => item.id === status.id || item.name === status.name));
+  return statuses.length <= 1 ? 100 : Math.round((index / (statuses.length - 1)) * 100);
+}
+
 function developmentPercent(idea: Idea, statuses: Status[]) {
   return idea.developmentProgress ?? progressFor(idea, statuses);
 }
@@ -749,6 +880,28 @@ function phaseRingTilt(index: number) {
 
 function phaseRingTurn(index: number) {
   return [0, 28, -34, 62, -62, 88, -88][index % 7];
+}
+
+function latestPhaseNotesByName(notes: IdeaPhaseNote[]) {
+  const byName = new Map<string, IdeaPhaseNote>();
+  notes.forEach((note) => {
+    byName.set(note.statusName, note);
+  });
+  return byName;
+}
+
+function findPhaseNote(notes: Map<string, IdeaPhaseNote>, namePart: string) {
+  const normalized = normalizeText(namePart);
+  return [...notes.entries()].find(([name]) => normalizeText(name).includes(normalized))?.[1];
+}
+
+function findStatusByName(statuses: Status[], namePart: string) {
+  const normalized = normalizeText(namePart);
+  return statuses.find((status) => normalizeText(status.name).includes(normalized));
+}
+
+function normalizeText(value: string) {
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
 function visibleTags(idea: Idea) {

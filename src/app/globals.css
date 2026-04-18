@@ -734,6 +734,72 @@ textarea {
   font-size: 1rem;
 }
 
+.brainFlow2d {
+  position: absolute;
+  inset: 4.8rem 1rem 3.4rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
+  gap: 0.7rem;
+  align-items: stretch;
+  overflow: auto;
+  padding: 0.2rem;
+}
+
+.brainFlow2d section {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  align-content: start;
+  gap: 0.55rem;
+  min-height: 20rem;
+  padding: 0.65rem;
+  background: rgba(8, 10, 9, 0.52);
+  border: 1px solid color-mix(in srgb, var(--phase-color) 32%, rgba(255, 255, 255, 0.1));
+  border-radius: var(--radius);
+}
+
+.brainFlow2d section > div {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.brainFlow2d i {
+  width: 0.62rem;
+  height: 0.62rem;
+  background: var(--phase-color);
+  border-radius: 50%;
+  box-shadow: 0 0 1rem var(--phase-color);
+}
+
+.brainFlow2d span {
+  color: var(--phase-color);
+}
+
+.brainFlow2d button {
+  display: grid;
+  gap: 0.25rem;
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.6rem;
+  color: var(--text);
+  text-align: left;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius);
+}
+
+.brainFlow2d button:hover {
+  border-color: var(--phase-color);
+}
+
+.brainFlow2d small {
+  color: var(--muted);
+}
+
 .focusPanel,
 .ideaDetail {
   min-height: 100%;
@@ -799,6 +865,143 @@ textarea {
 .detailLong h4,
 .detailLong p {
   margin: 0;
+}
+
+.horizontalProgress {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(6.8rem, 1fr));
+  gap: 0.2rem;
+  margin: 1rem 0;
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.horizontalProgress button {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 0.45rem;
+  min-height: 4.2rem;
+  padding: 0.25rem 0.35rem;
+  color: var(--muted);
+  text-align: center;
+  background: transparent;
+  border: 0;
+}
+
+.horizontalProgress button::before {
+  position: absolute;
+  top: 0.78rem;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  content: "";
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.horizontalProgress i {
+  position: relative;
+  z-index: 1;
+  width: 0.95rem;
+  height: 0.95rem;
+  background: #2c3331;
+  border: 2px solid rgba(255, 255, 255, 0.24);
+  border-radius: 50%;
+}
+
+.horizontalProgress span {
+  font-size: 0.68rem;
+  font-weight: 860;
+  line-height: 1.2;
+}
+
+.horizontalProgress button.reached::before,
+.horizontalProgress button.reached i {
+  background: var(--green);
+}
+
+.horizontalProgress button.reached i,
+.horizontalProgress button.active i {
+  box-shadow: 0 0 1.2rem rgba(43, 245, 154, 0.6);
+}
+
+.horizontalProgress button.active {
+  color: var(--text);
+}
+
+.horizontalProgress button.hasNote {
+  color: var(--aqua);
+}
+
+.detailBlock,
+.stageLinkCard {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 1rem;
+  padding: 0.85rem;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+}
+
+.blockHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.blockHead h4,
+.blockHead p,
+.stageLinkCard h4,
+.stageLinkCard p,
+.notePreview p,
+.stageCurrent p {
+  margin: 0;
+}
+
+.blockHead p,
+.stageLinkCard p,
+.stageCurrent p {
+  color: var(--muted);
+}
+
+.notePreview {
+  display: grid;
+  gap: 0.45rem;
+  max-height: 8.5rem;
+  overflow: hidden;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius);
+}
+
+.notePreview.open {
+  max-height: none;
+}
+
+.stageGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.stageCurrent {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.65rem;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius);
+}
+
+.stageCurrent a {
+  color: var(--aqua);
+  font-weight: 850;
 }
 
 .phaseTimeline {
@@ -1156,6 +1359,7 @@ dialog {
   .flowGrid,
   .analyticsGrid,
   .settingsGrid,
+  .stageGrid,
   .split,
   .modalHead {
     grid-template-columns: 1fr;
@@ -1175,6 +1379,14 @@ dialog {
 
   .brainControls span {
     display: none;
+  }
+
+  .blockHead {
+    display: grid;
+  }
+
+  .horizontalProgress {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .brainSphere {
