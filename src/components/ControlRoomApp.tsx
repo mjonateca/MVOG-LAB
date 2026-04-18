@@ -390,7 +390,7 @@ function BrainView({
   }, [ideas, statuses]);
 
   return (
-    <div className="brainWrap">
+    <div className={`brainWrap ${brainMode === "flat" ? "flatMode" : ""}`}>
       <div className="brainGlow" />
       <div className="brainControls">
         <button className={`brainCtl ${brainMode === "spin" ? "on" : ""}`} type="button" onClick={() => setBrainMode("spin")}>3D girando</button>
@@ -399,14 +399,16 @@ function BrainView({
         <span>Toca una idea para abrir su detalle</span>
       </div>
 
-      <div className="brainLegend">
-        {statuses.map((status, index) => (
-          <span key={status.id}>
-            <i style={{ background: statusColor(status, statuses, index), boxShadow: `0 0 14px ${statusColor(status, statuses, index)}` }} />
-            {status.name}
-          </span>
-        ))}
-      </div>
+      {brainMode !== "flat" && (
+        <div className="brainLegend">
+          {statuses.map((status, index) => (
+            <span key={status.id}>
+              <i style={{ background: statusColor(status, statuses, index), boxShadow: `0 0 14px ${statusColor(status, statuses, index)}` }} />
+              {status.name}
+            </span>
+          ))}
+        </div>
+      )}
 
       {brainMode === "flat" ? (
         <div className="brainFlow2d">
@@ -825,6 +827,8 @@ function IdeaForm({
 }
 
 function Analytics({ state }: { state: ControlRoomState }) {
+  const dailyActivity = todaysActivity(state.activity);
+
   return (
     <section>
       <p className="eyebrow">KPIs</p>
@@ -836,6 +840,25 @@ function Analytics({ state }: { state: ControlRoomState }) {
           return <Progress key={status.id} value={pct} label={`${status.name}: ${count}`} />;
         })}
       </div>
+      <section className="dailyReport">
+        <div>
+          <p className="eyebrow">Hoy</p>
+          <h3>Informe de avances</h3>
+          <span>Se reinicia cada día a las 12:00 a. m.</span>
+        </div>
+        {dailyActivity.length ? (
+          <ol>
+            {dailyActivity.map((item) => (
+              <li key={item.id}>
+                <time>{formatActivityTime(item.at)}</time>
+                <p>{item.text}</p>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p className="empty">Todavía no hay avances registrados hoy.</p>
+        )}
+      </section>
     </section>
   );
 }
@@ -902,6 +925,18 @@ function findStatusByName(statuses: Status[], namePart: string) {
 
 function normalizeText(value: string) {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+function todaysActivity(activity: ControlRoomState["activity"]) {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  return activity
+    .filter((item) => new Date(item.at).getTime() >= start.getTime())
+    .sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime());
+}
+
+function formatActivityTime(value: string) {
+  return new Intl.DateTimeFormat("es", { hour: "2-digit", minute: "2-digit" }).format(new Date(value));
 }
 
 function visibleTags(idea: Idea) {

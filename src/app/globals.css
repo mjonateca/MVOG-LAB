@@ -423,6 +423,12 @@ textarea {
   backdrop-filter: blur(18px);
 }
 
+.brainWrap.flatMode {
+  min-height: auto;
+  overflow: visible;
+  padding: 4.8rem 1rem 3.6rem;
+}
+
 .brainGlow {
   position: absolute;
   inset: 0;
@@ -735,22 +741,21 @@ textarea {
 }
 
 .brainFlow2d {
-  position: absolute;
-  inset: 4.8rem 1rem 3.4rem;
+  position: relative;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
   gap: 0.7rem;
   align-items: stretch;
-  overflow: auto;
+  overflow: visible;
   padding: 0.2rem;
 }
 
 .brainFlow2d section {
   display: grid;
-  grid-template-rows: auto 1fr;
   align-content: start;
   gap: 0.55rem;
-  min-height: 20rem;
+  min-height: 12rem;
+  height: auto;
   padding: 0.65rem;
   background: rgba(8, 10, 9, 0.52);
   border: 1px solid color-mix(in srgb, var(--phase-color) 32%, rgba(255, 255, 255, 0.1));
@@ -798,6 +803,13 @@ textarea {
 
 .brainFlow2d small {
   color: var(--muted);
+}
+
+.flatMode .brainFooter {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  margin-top: 1rem;
 }
 
 .focusPanel,
@@ -1258,6 +1270,54 @@ label {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.75rem;
+}
+
+.dailyReport {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.dailyReport h3,
+.dailyReport p {
+  margin: 0;
+}
+
+.dailyReport > div > span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.dailyReport ol {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dailyReport li {
+  display: grid;
+  grid-template-columns: 4rem 1fr;
+  gap: 0.7rem;
+  align-items: start;
+  padding: 0.7rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: var(--radius);
+}
+
+.dailyReport time {
+  color: var(--green);
+  font-size: 0.78rem;
+  font-weight: 900;
 }
 
 .flowCard {
