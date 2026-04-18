@@ -25,7 +25,7 @@ const STATUS_COLORS = ["#48f2a5", "#39d5ff", "#f4d35e", "#ff7aa8", "#9b8cff", "#
 export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail }: Props) {
   const [state, setState] = useState(initialState);
   const [activeView, setActiveView] = useState<ViewKey>("brain");
-  const [selectedId, setSelectedId] = useState(initialState.ideas[0]?.id || "");
+  const [selectedId, setSelectedId] = useState("");
   const [filter, setFilter] = useState<FilterKey>("all");
   const [query, setQuery] = useState("");
   const [draftOpen, setDraftOpen] = useState(false);
@@ -306,7 +306,7 @@ function BrainView({
     let frame = 0;
     let last = performance.now();
     const loop = (time: number) => {
-      const delta = (time - last) / 1000;
+      const delta = Math.min((time - last) / 1000, 0.032);
       last = time;
       if (autoRotate && !dragging && !hoverId) {
         setRotY((value) => value + delta * 0.16);
@@ -419,12 +419,13 @@ function BrainView({
             const status = statuses.find((item) => item.id === idea.statusId || item.name === idea.status);
             const color = statusColor(status, statuses);
             const depth = (z + radius) / (radius * 2);
-            const active = hoverId === idea.id || selectedId === idea.id;
+            const active = hoverId === idea.id;
+            const selected = selectedId === idea.id;
             const scale = active ? 1.12 : 0.62 + depth * 0.52;
 
             return (
               <button
-                className={`brainNode ${active ? "active" : ""}`}
+                className={`brainNode ${active ? "active" : ""} ${selected ? "selected" : ""}`}
                 key={idea.id}
                 style={{
                   left: "50%",

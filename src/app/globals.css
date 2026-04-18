@@ -492,6 +492,7 @@ textarea {
   width: 31.875rem;
   height: 31.875rem;
   transform-style: preserve-3d;
+  transform-origin: center center;
   pointer-events: none;
   transition: transform 120ms linear;
 }
@@ -542,6 +543,17 @@ textarea {
   pointer-events: auto;
   transform-style: preserve-3d;
   transition: opacity 180ms ease, transform 180ms cubic-bezier(0.2, 0.9, 0.3, 1.15);
+}
+
+.brainNode.selected .nodeDot {
+  box-shadow:
+    0 0 0 4px rgba(255, 255, 255, 0.18),
+    0 0 1.4rem var(--idea-color),
+    0 0 3rem var(--idea-color);
+}
+
+.brainNode.selected .nodePulse {
+  opacity: 0.58;
 }
 
 .nodeDot {
