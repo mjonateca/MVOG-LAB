@@ -6,10 +6,13 @@ import type { AppUser, ControlRoomState, Idea, IdeaInput, Status } from "@/lib/t
 type FilterKey = "all" | "in-progress" | "high-value" | "sale-ready";
 
 type Props = {
+  accessToken: string;
   initialState: ControlRoomState;
+  onSignOut: () => void;
+  userEmail: string;
 };
 
-export function ControlRoomApp({ initialState }: Props) {
+export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail }: Props) {
   const [state, setState] = useState(initialState);
   const [activeView, setActiveView] = useState<"board" | "analytics" | "settings">("board");
   const [selectedId, setSelectedId] = useState(initialState.ideas[0]?.id || "");
@@ -63,7 +66,10 @@ export function ControlRoomApp({ initialState }: Props) {
   ];
 
   async function refresh() {
-    const response = await fetch("/api/bootstrap", { cache: "no-store" });
+    const response = await fetch("/api/bootstrap", {
+      cache: "no-store",
+      headers: authHeaders(accessToken)
+    });
     if (response.ok) {
       setState(await response.json());
     }
@@ -81,7 +87,7 @@ export function ControlRoomApp({ initialState }: Props) {
 
     const response = await fetch("/api/ideas", {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: authHeaders(accessToken),
       body: JSON.stringify(input)
     });
 
@@ -104,7 +110,7 @@ export function ControlRoomApp({ initialState }: Props) {
 
     await fetch(`/api/ideas/${idea.id}`, {
       method: "PATCH",
-      headers: { "content-type": "application/json" },
+      headers: authHeaders(accessToken),
       body: JSON.stringify({ statusId, status: status.name, name: idea.name })
     });
   }
@@ -127,6 +133,10 @@ export function ControlRoomApp({ initialState }: Props) {
             </button>
           ))}
         </nav>
+        <div className="sessionBox">
+          <span>{userEmail}</span>
+          <button className="btn ghost" type="button" onClick={onSignOut}>Salir</button>
+        </div>
       </aside>
 
       <main>
@@ -433,5 +443,12 @@ function ideaFromInput(input: IdeaInput, state: ControlRoomState, fallbackStatus
     prompt: input.prompt,
     tags: input.tags,
     updatedAt: new Date().toISOString()
+  };
+}
+
+function authHeaders(accessToken: string) {
+  return {
+    authorization: `Bearer ${accessToken}`,
+    "content-type": "application/json"
   };
 }

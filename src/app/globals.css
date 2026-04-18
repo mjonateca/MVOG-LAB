@@ -62,6 +62,46 @@ button {
   backdrop-filter: blur(20px);
 }
 
+.sessionBox {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  padding: 0.8rem;
+  color: var(--muted);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow-wrap: anywhere;
+}
+
+.authShell {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 1rem;
+}
+
+.authPanel {
+  width: min(30rem, 100%);
+  padding: 1rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.authBrand {
+  padding: 0;
+  margin-bottom: 1rem;
+}
+
+.authForm {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
 .brand {
   display: flex;
   align-items: center;

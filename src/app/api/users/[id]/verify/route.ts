@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { requireAuthenticatedRequest } from "@/lib/auth";
 import { unavailableResponse, verifyUser } from "@/lib/server-repository";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 
@@ -7,6 +8,8 @@ type RouteContext = {
 };
 
 export async function POST(request: Request, context: RouteContext) {
+  const auth = await requireAuthenticatedRequest(request);
+  if (auth.response) return auth.response;
   if (!createSupabaseAdmin()) return unavailableResponse();
 
   try {
