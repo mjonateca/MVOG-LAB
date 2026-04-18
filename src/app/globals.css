@@ -1407,6 +1407,46 @@ dialog {
 }
 
 @media (max-width: 760px) {
+  .brainApp .labSidebar {
+    display: none;
+  }
+
+  .brainMain {
+    display: flex;
+    flex-direction: column;
+    padding-top: 0.65rem;
+  }
+
+  .brainMain .brainWrap {
+    order: 1;
+  }
+
+  .brainMain .labHero {
+    order: 2;
+    margin: 0.7rem 0 0.8rem;
+  }
+
+  .brainMain .labHero > div:first-child {
+    display: none;
+  }
+
+  .brainMain .heroActions,
+  .brainMain .heroActions .btn {
+    width: 100%;
+  }
+
+  .brainMain .heroActions {
+    justify-content: stretch;
+  }
+
+  .brainMain .signalBar {
+    order: 3;
+  }
+
+  .brainMain .labToolbar {
+    order: 4;
+  }
+
   .topline,
   .toolbar,
   .labHero,

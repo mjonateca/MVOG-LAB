@@ -176,7 +176,7 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
   }
 
   return (
-    <div className="labApp">
+    <div className={`labApp ${activeView === "brain" ? "brainApp" : ""}`}>
       <aside className="labSidebar">
         <div className="brand">
           <div className="brandMark">MV</div>
@@ -201,7 +201,7 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
         </div>
       </aside>
 
-      <main className="labMain">
+      <main className={`labMain ${activeView === "brain" ? "brainMain" : ""}`}>
         <header className="labHero compact">
           <div>
             <p className="eyebrow">MVOG Lab</p>
