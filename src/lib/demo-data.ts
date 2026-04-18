@@ -85,16 +85,28 @@ export const demoState: ControlRoomState = {
       market: "Traders independientes y equipos internos",
       ownerId: null,
       owner: "",
-      statusId: "idea",
-      status: "IDEA",
+      statusId: "concept",
+      status: "Concepto explicado",
       value: "Alto",
       effort: "Alta",
-      notes: "Sistema para analizar señales, definir reglas de entrada/salida, simular estrategias y operar con controles de riesgo.",
-      prompt: "Diseña un bot de trading con backtesting, gestión de riesgo, bitácora de operaciones y alertas antes de cualquier ejecución real.",
+      notes: "Workspace de investigación para diseñar, comparar y auditar estrategias de trading antes de ejecutar capital real.",
+      prompt: "Investiga un MVP de bot de trading sin custodia ni ejecución real: segmentos, competidores, regulación, datos, broker APIs, backtesting, paper trading, alertas, bitácora, límites de riesgo, pricing y criterios go/no-go.",
       tags: ["Trading", "IA", "Riesgo"],
-      developmentProgress: 0,
-      returnScore: 7,
-      difficultyScore: 9,
+      phaseNotes: [
+        {
+          id: "phase-trading-concept-20260418",
+          statusId: "concept",
+          statusName: "Concepto explicado",
+          summary: "Concepto explicado: research workspace de trading con backtesting, paper trading, alertas y controles de riesgo.",
+          details: "Prompt/script de investigación: Evalúa un MVP de bot de trading para traders independientes y equipos internos. Cubre segmentos, competidores, restricciones regulatorias, datos necesarios, broker APIs, costos, arquitectura sin custodia, riesgos de fraude/percepción, pricing viable y criterios go/no-go.",
+          link: "https://www.finra.org/rules-guidance/key-topics/algorithmic-trading",
+          createdAt: daysAgo(0),
+          updatedAt: daysAgo(0)
+        }
+      ],
+      developmentProgress: 20,
+      returnScore: null,
+      difficultyScore: null,
       updatedAt: daysAgo(5)
     },
     {
@@ -103,14 +115,26 @@ export const demoState: ControlRoomState = {
       market: "Barberías y salones pequeños",
       ownerId: null,
       owner: "",
-      statusId: "concept",
-      status: "Concepto explicado",
+      statusId: "research",
+      status: "Investigación realizada",
       value: "Alto",
       effort: "Media",
-      notes: "App para reservas, turnos, recordatorios, catálogo de servicios, clientes frecuentes y control simple de ingresos.",
-      prompt: "Estructura el MVP de Ibarber con agenda, perfiles de barberos, pagos, recordatorios y panel de métricas del negocio.",
+      notes: "App mobile-first para barberías pequeñas: reservas por link, WhatsApp, recordatorios, depósitos, clientes recurrentes y métricas simples.",
+      prompt: "Construye un MVP para barberías de 1-5 sillas: link público de reservas, servicios/duración/precio, agenda por barbero, recordatorios WhatsApp/SMS, depósitos opcionales, clientes frecuentes y tablero de no-shows/ingresos.",
       tags: ["Reservas", "Barbería", "SaaS"],
-      developmentProgress: 18,
+      phaseNotes: [
+        {
+          id: "phase-ibarber-research-20260418",
+          statusId: "research",
+          statusName: "Investigación realizada",
+          summary: "Investigación realizada: oportunidad viable si se enfoca en barberías pequeñas, WhatsApp y reducción de no-shows.",
+          details: "Hay competencia abundante en agenda para salones, pero el nicho de barberías pequeñas sigue respondiendo a soluciones simples, mobile-first y sin fricción de descarga. Competidores como Barbería Club, Barberos, CitaFlow, SalonWop y Appointy validan demanda por reservas 24/7, WhatsApp, recordatorios, pagos/depósitos y CRM básico. En República Dominicana ya existe Barber Shop RD, aunque con poca señal pública de tracción. Diferenciación recomendada: no vender como suite pesada, sino como agenda WhatsApp-first para 1-5 sillas con onboarding de 10 minutos, link único, depósitos opcionales y métricas de no-show. Viabilidad 8/10, retorno 8/10, dificultad 4/10.",
+          link: "https://barberiaclub.com/en/",
+          createdAt: daysAgo(0),
+          updatedAt: daysAgo(0)
+        }
+      ],
+      developmentProgress: 35,
       returnScore: 8,
       difficultyScore: 4,
       updatedAt: daysAgo(6)

@@ -66,21 +66,21 @@ with user_lookup as (
       'Bot de trading',
       'Traders independientes y equipos internos',
       null,
-      (select id from status_lookup where name = 'IDEA'),
+      (select id from status_lookup where name = 'Concepto explicado'),
       'Alto',
       'Alta',
-      'Sistema para analizar señales, definir reglas de entrada/salida, simular estrategias y operar con controles de riesgo.',
-      'Diseña un bot de trading con backtesting, gestión de riesgo, bitácora de operaciones y alertas antes de cualquier ejecución real.'
+      'Workspace de investigación para diseñar, comparar y auditar estrategias de trading antes de ejecutar capital real.',
+      'Investiga un MVP de bot de trading sin custodia ni ejecución real: segmentos, competidores, regulación, datos, broker APIs, backtesting, paper trading, alertas, bitácora, límites de riesgo, pricing y criterios go/no-go.'
     ),
     (
       'Ibarber',
       'Barberías y salones pequeños',
       null,
-      (select id from status_lookup where name = 'Concepto explicado'),
+      (select id from status_lookup where name = 'Investigación realizada'),
       'Alto',
       'Media',
-      'App para reservas, turnos, recordatorios, catálogo de servicios, clientes frecuentes y control simple de ingresos.',
-      'Estructura el MVP de Ibarber con agenda, perfiles de barberos, pagos, recordatorios y panel de métricas del negocio.'
+      'App mobile-first para barberías pequeñas: reservas por link, WhatsApp, recordatorios, depósitos, clientes recurrentes y métricas simples.',
+      'Construye un MVP para barberías de 1-5 sillas: link público de reservas, servicios/duración/precio, agenda por barbero, recordatorios WhatsApp/SMS, depósitos opcionales, clientes frecuentes y tablero de no-shows/ingresos.'
     ),
     (
       'Organizador partidos pádel',
