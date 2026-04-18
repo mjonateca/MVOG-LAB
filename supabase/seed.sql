@@ -4,12 +4,12 @@ on conflict (name) do nothing;
 
 insert into public.statuses (name, position, wip_limit)
 values
-  ('Inbox', 10, 9),
-  ('Diseño', 20, 4),
-  ('Estructura', 30, 4),
+  ('IDEA', 10, 99),
+  ('Concepto explicado', 20, 99),
+  ('Investigación realizada', 30, 99),
   ('En desarrollo', 40, 3),
-  ('Test', 50, 3),
-  ('En proceso', 60, 3),
+  ('En test', 50, 3),
+  ('En producción', 60, 3),
   ('En venta', 70, 99)
 on conflict (name) do update
 set position = excluded.position,
@@ -35,8 +35,8 @@ with user_lookup as (
     (
       'Inventario predictivo para colmados',
       'Colmados y minimarkets',
-      (select id from user_lookup where name = 'Laura Pérez'),
-      (select id from status_lookup where name = 'Diseño'),
+      null,
+      (select id from status_lookup where name = 'Concepto explicado'),
       'Alto',
       'Media',
       'Detectar productos que se agotan, sugerir compras y alertar sobre inventario muerto.',
@@ -45,8 +45,8 @@ with user_lookup as (
     (
       'Cobranza con WhatsApp para talleres',
       'Talleres mecánicos',
-      (select id from user_lookup where name = 'Miguel Santos'),
-      (select id from status_lookup where name = 'Estructura'),
+      null,
+      (select id from status_lookup where name = 'Investigación realizada'),
       'Medio',
       'Baja',
       'Controlar facturas pendientes y generar mensajes de seguimiento por antigüedad.',
@@ -55,7 +55,7 @@ with user_lookup as (
     (
       'Agenda anti-huecos para clínicas',
       'Clínicas pequeñas',
-      (select id from user_lookup where name = 'Ana Torres'),
+      null,
       (select id from status_lookup where name = 'En desarrollo'),
       'Alto',
       'Alta',
@@ -65,8 +65,8 @@ with user_lookup as (
     (
       'Bot de trading',
       'Traders independientes y equipos internos',
-      (select id from user_lookup where name = 'Miguel Santos'),
-      (select id from status_lookup where name = 'Inbox'),
+      null,
+      (select id from status_lookup where name = 'IDEA'),
       'Alto',
       'Alta',
       'Sistema para analizar señales, definir reglas de entrada/salida, simular estrategias y operar con controles de riesgo.',
@@ -75,8 +75,8 @@ with user_lookup as (
     (
       'Ibarber',
       'Barberías y salones pequeños',
-      (select id from user_lookup where name = 'Laura Pérez'),
-      (select id from status_lookup where name = 'Diseño'),
+      null,
+      (select id from status_lookup where name = 'Concepto explicado'),
       'Alto',
       'Media',
       'App para reservas, turnos, recordatorios, catálogo de servicios, clientes frecuentes y control simple de ingresos.',
@@ -85,8 +85,8 @@ with user_lookup as (
     (
       'Organizador partidos pádel',
       'Clubes, grupos privados y jugadores de pádel',
-      (select id from user_lookup where name = 'Ana Torres'),
-      (select id from status_lookup where name = 'Estructura'),
+      null,
+      (select id from status_lookup where name = 'Investigación realizada'),
       'Medio',
       'Media',
       'Organizar partidos por nivel, disponibilidad, pistas, pagos compartidos y confirmaciones automáticas.',
@@ -95,7 +95,7 @@ with user_lookup as (
     (
       'Modelo agéntico diario para ideas',
       'Operación interna MVOG',
-      (select id from user_lookup where name = 'Laura Pérez'),
+      null,
       (select id from status_lookup where name = 'En desarrollo'),
       'Alto',
       'Alta',
@@ -105,8 +105,8 @@ with user_lookup as (
     (
       'Página web que venda los servicios MVOG',
       'Clientes potenciales de MVOG',
-      (select id from user_lookup where name = 'Ana Torres'),
-      (select id from status_lookup where name = 'En proceso'),
+      null,
+      (select id from status_lookup where name = 'En producción'),
       'Alto',
       'Media',
       'Web comercial para explicar servicios, casos de uso, captación de leads y posicionamiento de MVOG.',
@@ -115,8 +115,8 @@ with user_lookup as (
     (
       'Agente Instagram Casa 174',
       'Casa 174 y gestión de redes sociales',
-      (select id from user_lookup where name = 'Laura Pérez'),
-      (select id from status_lookup where name = 'Diseño'),
+      null,
+      (select id from status_lookup where name = 'Concepto explicado'),
       'Medio',
       'Media',
       'Agente para planificar contenido, responder mensajes, detectar leads y mantener una línea editorial en Instagram.',

@@ -660,6 +660,94 @@ textarea {
   align-content: start;
 }
 
+.phaseTimeline {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.9rem 0;
+}
+
+.phaseTimeline button {
+  display: grid;
+  grid-template-columns: 0.9rem 1fr;
+  gap: 0.55rem;
+  align-items: center;
+  min-height: 2.35rem;
+  padding: 0.45rem 0.55rem;
+  color: var(--muted);
+  text-align: left;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+}
+
+.phaseTimeline i {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.phaseTimeline button.reached {
+  color: var(--text);
+}
+
+.phaseTimeline button.reached i {
+  background: var(--green);
+  box-shadow: 0 0 1rem rgba(43, 245, 154, 0.56);
+}
+
+.phaseTimeline button.hasNote {
+  border-color: rgba(53, 210, 217, 0.42);
+}
+
+.phaseMemory,
+.phaseForm {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.phaseMemory h4,
+.phaseForm h4 {
+  margin: 0;
+}
+
+.phaseMemory article {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.phaseMemory article > button {
+  display: grid;
+  gap: 0.2rem;
+  width: 100%;
+  padding: 0.65rem;
+  color: var(--text);
+  text-align: left;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.phaseMemory article > button span,
+.phaseMemory p {
+  color: var(--muted);
+}
+
+.phaseMemory article > div {
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+}
+
+.phaseMemory a {
+  color: var(--aqua);
+  font-weight: 800;
+}
+
 .board {
   display: grid;
   grid-template-columns: repeat(var(--columns), minmax(17rem, 1fr));

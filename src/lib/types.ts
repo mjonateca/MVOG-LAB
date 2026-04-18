@@ -1,6 +1,17 @@
 export type IdeaValue = "Alto" | "Medio" | "Bajo";
 export type IdeaEffort = "Alta" | "Media" | "Baja";
 
+export type IdeaPhaseNote = {
+  id: string;
+  statusId?: string | null;
+  statusName: string;
+  summary: string;
+  details: string;
+  link: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type Status = {
   id: string;
   name: string;
@@ -35,6 +46,10 @@ export type Idea = {
   notes: string;
   prompt: string;
   tags: string[];
+  phaseNotes?: IdeaPhaseNote[];
+  developmentProgress?: number;
+  returnScore?: number | null;
+  difficultyScore?: number | null;
   updatedAt: string;
 };
 
@@ -65,4 +80,8 @@ export type IdeaInput = {
   notes: string;
   prompt: string;
   tags: string[];
+  phaseNotes?: IdeaPhaseNote[];
+  developmentProgress?: number;
+  returnScore?: number | null;
+  difficultyScore?: number | null;
 };

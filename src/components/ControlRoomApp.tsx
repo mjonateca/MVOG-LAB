@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { MouseEvent, TouchEvent } from "react";
-import type { AppUser, ControlRoomState, Idea, IdeaInput, Status } from "@/lib/types";
+import type { AppUser, ControlRoomState, Idea, IdeaInput, IdeaPhaseNote, Status } from "@/lib/types";
 
 type ViewKey = "brain" | "board" | "analytics" | "settings";
 type FilterKey = "all" | "in-progress" | "high-value" | "sale-ready";
@@ -35,7 +35,7 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
 
   const filteredIdeas = useMemo(() => {
     return state.ideas.filter((idea) => {
-      const haystack = [idea.name, idea.market, idea.owner, idea.status, idea.value, idea.effort, idea.notes, ...idea.tags]
+      const haystack = [idea.name, idea.market, idea.status, idea.value, idea.effort, idea.notes, ...idea.tags]
         .join(" ")
         .toLowerCase();
       const textMatch = haystack.includes(query.toLowerCase());
@@ -43,14 +43,14 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
         filter === "all" ||
         (filter === "high-value" && idea.value === "Alto") ||
         (filter === "sale-ready" && idea.status === "En venta") ||
-        (filter === "in-progress" && !["Inbox", "En venta"].includes(idea.status));
+        (filter === "in-progress" && !["IDEA", "Inbox", "En venta"].includes(idea.status));
 
       return textMatch && filterMatch;
     });
   }, [filter, query, state.ideas]);
 
   const averageProgress = state.ideas.length
-    ? Math.round(state.ideas.reduce((sum, idea) => sum + progressFor(idea, state.statuses), 0) / state.ideas.length)
+    ? Math.round(state.ideas.reduce((sum, idea) => sum + developmentPercent(idea, state.statuses), 0) / state.ideas.length)
     : 0;
 
   const kpis = [
@@ -58,7 +58,7 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
     {
       key: "in-progress" as const,
       label: "En curso",
-      value: state.ideas.filter((idea) => !["Inbox", "En venta"].includes(idea.status)).length,
+      value: state.ideas.filter((idea) => !["IDEA", "Inbox", "En venta"].includes(idea.status)).length,
       hint: `${averageProgress}% avance medio`
     },
     {
@@ -123,6 +123,28 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
       method: "PATCH",
       headers: authHeaders(accessToken),
       body: JSON.stringify({ statusId, status: status.name, name: idea.name })
+    });
+  }
+
+  async function updateIdeaMemory(idea: Idea, patch: Partial<IdeaInput>) {
+    setState((current) => ({
+      ...current,
+      ideas: current.ideas.map((item) =>
+        item.id === idea.id
+          ? {
+              ...item,
+              ...patch,
+              phaseNotes: [...(item.phaseNotes || []), ...(patch.phaseNotes || [])],
+              updatedAt: new Date().toISOString()
+            }
+          : item
+      )
+    }));
+
+    await fetch(`/api/ideas/${idea.id}`, {
+      method: "PATCH",
+      headers: authHeaders(accessToken),
+      body: JSON.stringify({ name: idea.name, ...patch })
     });
   }
 
@@ -203,7 +225,7 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
             />
             <aside className="focusPanel">
               {selectedIdea ? (
-                <IdeaDetail idea={selectedIdea} statuses={state.statuses} onMove={moveIdea} />
+                <IdeaDetail idea={selectedIdea} statuses={state.statuses} onMove={moveIdea} onUpdate={updateIdeaMemory} />
               ) : (
                 <div className="empty">Selecciona una tarjeta para abrir el detalle.</div>
               )}
@@ -246,13 +268,13 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
                           onClick={() => setSelectedId(idea.id)}
                         >
                           <strong>{idea.name}</strong>
-                          <span>{idea.market} · {idea.owner}</span>
+                          <span>{idea.market}</span>
                           <div className="tags">
                             <span>{idea.value} valor</span>
                             <span>{idea.effort} dificultad</span>
                             {idea.tags.slice(0, 2).map((tag) => <span key={tag}>{tag}</span>)}
                           </div>
-                          <Progress value={progressFor(idea, state.statuses)} label={idea.status} />
+                          <Progress value={developmentPercent(idea, state.statuses)} label={idea.status} />
                         </button>
                       ))}
                     </div>
@@ -446,7 +468,7 @@ function BrainView({
                 <span className="nodePulse" />
                 <span className="nodeDot" />
                 <span className="nodeCard">
-                  <small>{idea.status} · {progressFor(idea, statuses)}%</small>
+                  <small>{idea.status} · {developmentPercent(idea, statuses)}%</small>
                   <strong>{idea.name}</strong>
                   <em>{truncate(idea.market, 52)}</em>
                 </span>
@@ -464,7 +486,53 @@ function BrainView({
   );
 }
 
-function IdeaDetail({ idea, statuses, onMove }: { idea: Idea; statuses: Status[]; onMove: (idea: Idea, statusId: string) => void }) {
+function IdeaDetail({
+  idea,
+  statuses,
+  onMove,
+  onUpdate
+}: {
+  idea: Idea;
+  statuses: Status[];
+  onMove: (idea: Idea, statusId: string) => void;
+  onUpdate: (idea: Idea, patch: Partial<IdeaInput>) => void;
+}) {
+  const phaseNotes = idea.phaseNotes || [];
+  const [expanded, setExpanded] = useState(phaseNotes[0]?.id || "");
+  const currentStatus = statuses.find((status) => status.id === idea.statusId || status.name === idea.status) || statuses[0];
+  const phaseNotesByName = new Map(phaseNotes.map((note) => [note.statusName, note]));
+
+  useEffect(() => {
+    setExpanded("");
+  }, [idea.id]);
+
+  function savePhaseNote(form: FormData) {
+    const statusId = String(form.get("statusId") || currentStatus?.id || "");
+    const status = statuses.find((item) => item.id === statusId) || currentStatus;
+    const note: IdeaPhaseNote = {
+      id: crypto.randomUUID(),
+      statusId: status?.id || null,
+      statusName: status?.name || idea.status,
+      summary: String(form.get("summary") || ""),
+      details: String(form.get("details") || ""),
+      link: String(form.get("link") || ""),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    setExpanded(note.id);
+    onUpdate(idea, { phaseNotes: [note] });
+  }
+
+  function saveEvaluation(form: FormData) {
+    onUpdate(idea, {
+      developmentProgress: Number(form.get("developmentProgress") || idea.developmentProgress || 0),
+      returnScore: numberOrNull(form.get("returnScore")),
+      difficultyScore: numberOrNull(form.get("difficultyScore")),
+      value: String(form.get("value") || idea.value) as IdeaInput["value"],
+      effort: String(form.get("effort") || idea.effort) as IdeaInput["effort"]
+    });
+  }
+
   return (
     <section className="ideaDetail">
       <p className="eyebrow">Idea enfocada</p>
@@ -472,23 +540,102 @@ function IdeaDetail({ idea, statuses, onMove }: { idea: Idea; statuses: Status[]
       <p>{idea.notes || idea.market}</p>
       <div className="detailGrid">
         <span>Estado <b>{idea.status}</b></span>
-        <span>Responsable <b>{idea.owner}</b></span>
         <span>Valor <b>{idea.value}</b></span>
         <span>Dificultad <b>{idea.effort}</b></span>
+        <span>Desarrollo <b>{developmentPercent(idea, statuses)}%</b></span>
       </div>
-      <Progress value={progressFor(idea, statuses)} label={idea.status} />
+      <Progress value={developmentPercent(idea, statuses)} label={idea.status} />
       <label>
-        Mover estado
-        <select value={idea.statusId || ""} onChange={(event) => onMove(idea, event.target.value)}>
+        Saltar a cualquier fase
+        <select value={currentStatus?.id || ""} onChange={(event) => onMove(idea, event.target.value)}>
           {statuses.map((status) => (
             <option key={status.id} value={status.id}>{status.name}</option>
           ))}
         </select>
       </label>
-      <label>
-        Prompt / script
-        <textarea readOnly value={idea.prompt} />
-      </label>
+
+      <div className="phaseTimeline">
+        {statuses.map((status) => {
+          const note = phaseNotesByName.get(status.name);
+          const reached = statusIndex(idea, statuses) >= statuses.indexOf(status);
+          return (
+            <button
+              className={`${reached ? "reached" : ""} ${note ? "hasNote" : ""}`}
+              key={status.id}
+              type="button"
+              onClick={() => note && setExpanded(note.id)}
+            >
+              <i />
+              <span>{status.name}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="phaseMemory">
+        <h4>Memoria por fase</h4>
+        {phaseNotes.length ? phaseNotes.map((note) => (
+          <article key={note.id}>
+            <button type="button" onClick={() => setExpanded(expanded === note.id ? "" : note.id)}>
+              <strong>{note.statusName}</strong>
+              <span>{note.summary || "Detalle guardado"}</span>
+            </button>
+            {expanded === note.id && (
+              <div>
+                <p>{note.details || note.summary}</p>
+                {note.link && <a href={note.link} target="_blank" rel="noreferrer">Abrir enlace</a>}
+              </div>
+            )}
+          </article>
+        )) : <p>Aún no hay memoria guardada por fase.</p>}
+      </div>
+
+      <form
+        className="phaseForm"
+        onSubmit={(event) => {
+          event.preventDefault();
+          savePhaseNote(new FormData(event.currentTarget));
+          event.currentTarget.reset();
+        }}
+      >
+        <h4>Añadir información a una fase</h4>
+        <label>Fase
+          <select name="statusId" defaultValue={currentStatus?.id}>
+            {statuses.map((status) => <option key={status.id} value={status.id}>{status.name}</option>)}
+          </select>
+        </label>
+        <label>Resumen<input name="summary" placeholder="Concepto, aprendizaje, hito o decisión" /></label>
+        <label>Detalle<textarea name="details" placeholder="Amplía la información de esta fase" /></label>
+        <label>Enlace<input name="link" placeholder="https://..." /></label>
+        <button className="btn secondary" type="submit">Guardar memoria</button>
+      </form>
+
+      <form
+        className="phaseForm"
+        onSubmit={(event) => {
+          event.preventDefault();
+          saveEvaluation(new FormData(event.currentTarget));
+        }}
+      >
+        <h4>Evaluación</h4>
+        <div className="split">
+          <label>Retorno potencial
+            <input defaultValue={idea.returnScore ?? ""} max="10" min="0" name="returnScore" placeholder="0-10" type="number" />
+          </label>
+          <label>Dificultad real
+            <input defaultValue={idea.difficultyScore ?? ""} max="10" min="0" name="difficultyScore" placeholder="0-10" type="number" />
+          </label>
+        </div>
+        <label>% desarrollo
+          <input defaultValue={idea.developmentProgress ?? progressFor(idea, statuses)} max="100" min="0" name="developmentProgress" type="number" />
+        </label>
+        <div className="split">
+          <label>Valor<select name="value" defaultValue={idea.value}><option>Alto</option><option>Medio</option><option>Bajo</option></select></label>
+          <label>Dificultad<select name="effort" defaultValue={idea.effort}><option>Alta</option><option>Media</option><option>Baja</option></select></label>
+        </div>
+        <button className="btn secondary" type="submit">Guardar evaluación</button>
+      </form>
+
       <div className="tags">
         {idea.tags.length ? idea.tags.map((tag) => <span key={tag}>{tag}</span>) : <span>Sin etiquetas</span>}
       </div>
@@ -516,13 +663,16 @@ function IdeaForm({
         onSave({
           name: String(data.get("name") || ""),
           market: String(data.get("market") || ""),
-          ownerId: String(data.get("ownerId") || ""),
+          ownerId: null,
           statusId: String(data.get("statusId") || defaultStatusId),
           value: data.get("value") as IdeaInput["value"],
           effort: data.get("effort") as IdeaInput["effort"],
           notes: String(data.get("notes") || ""),
           prompt: String(data.get("prompt") || ""),
-          tags: String(data.get("tags") || "").split(",").map((tag) => tag.trim()).filter(Boolean)
+          tags: String(data.get("tags") || "").split(",").map((tag) => tag.trim()).filter(Boolean),
+          developmentProgress: Number(data.get("developmentProgress") || 0),
+          returnScore: numberOrNull(data.get("returnScore")),
+          difficultyScore: numberOrNull(data.get("difficultyScore"))
         });
       }}
     >
@@ -532,22 +682,20 @@ function IdeaForm({
       </div>
       <label>Nombre<input name="name" required /></label>
       <label>Pyme o nicho<input name="market" required /></label>
-      <div className="split">
-        <label>Responsable
-          <select name="ownerId" defaultValue={state.users[0]?.id}>
-            {state.users.map((user) => <option key={user.id} value={user.id}>{user.name}</option>)}
-          </select>
-        </label>
-        <label>Estado
-          <select name="statusId" defaultValue={defaultStatusId}>
-            {state.statuses.map((status) => <option key={status.id} value={status.id}>{status.name}</option>)}
-          </select>
-        </label>
-      </div>
+      <label>Estado
+        <select name="statusId" defaultValue={defaultStatusId}>
+          {state.statuses.map((status) => <option key={status.id} value={status.id}>{status.name}</option>)}
+        </select>
+      </label>
       <div className="split">
         <label>Valor<select name="value" defaultValue="Medio"><option>Alto</option><option>Medio</option><option>Bajo</option></select></label>
         <label>Dificultad<select name="effort" defaultValue="Media"><option>Alta</option><option>Media</option><option>Baja</option></select></label>
       </div>
+      <div className="split">
+        <label>Retorno potencial<input max="10" min="0" name="returnScore" placeholder="0-10" type="number" /></label>
+        <label>Dificultad real<input max="10" min="0" name="difficultyScore" placeholder="0-10" type="number" /></label>
+      </div>
+      <label>% desarrollo<input defaultValue="0" max="100" min="0" name="developmentProgress" type="number" /></label>
       <label>Notas<textarea name="notes" required /></label>
       <label>Prompt / script<textarea name="prompt" /></label>
       <label>Etiquetas<input name="tags" placeholder="IA, WhatsApp, inventario" /></label>
@@ -620,6 +768,10 @@ function progressFor(idea: Idea, statuses: Status[]) {
   return statuses.length <= 1 ? 100 : Math.round((index / (statuses.length - 1)) * 100);
 }
 
+function developmentPercent(idea: Idea, statuses: Status[]) {
+  return idea.developmentProgress ?? progressFor(idea, statuses);
+}
+
 function statusIndex(idea: Idea, statuses: Status[]) {
   return Math.max(0, statuses.findIndex((status) => status.name === idea.status || status.id === idea.statusId));
 }
@@ -641,23 +793,31 @@ function truncate(value: string, length: number) {
 }
 
 function ideaFromInput(input: IdeaInput, state: ControlRoomState, fallbackStatusId: string): Idea {
-  const owner = state.users.find((user) => user.id === input.ownerId);
   const status = state.statuses.find((item) => item.id === (input.statusId || fallbackStatusId));
   return {
     id: crypto.randomUUID(),
     name: input.name,
     market: input.market,
-    ownerId: owner?.id,
-    owner: owner?.name || "Sin responsable",
+    ownerId: null,
+    owner: "",
     statusId: status?.id,
-    status: status?.name || "Inbox",
+    status: status?.name || "IDEA",
     value: input.value,
     effort: input.effort,
     notes: input.notes,
     prompt: input.prompt,
     tags: input.tags,
+    phaseNotes: input.phaseNotes || [],
+    developmentProgress: input.developmentProgress || 0,
+    returnScore: input.returnScore ?? null,
+    difficultyScore: input.difficultyScore ?? null,
     updatedAt: new Date().toISOString()
   };
+}
+
+function numberOrNull(value: FormDataEntryValue | null) {
+  if (value === null || value === "") return null;
+  return Number(value);
 }
 
 function authHeaders(accessToken: string) {
