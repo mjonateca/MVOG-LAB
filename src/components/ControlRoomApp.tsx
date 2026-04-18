@@ -341,22 +341,38 @@ function BrainView({
   const [hoverId, setHoverId] = useState<string | null>(null);
   const [autoRotate, setAutoRotate] = useState(true);
 
-  const radius = 255;
-  const projected = useMemo(() => ideas.map((idea, index) => {
-    const count = Math.max(ideas.length, 1);
-    const angle = (index / count) * Math.PI * 2;
-    const layer = index % 5;
-    const orbitRadius = radius * (0.38 + (layer % 3) * 0.18);
-    const vertical = (layer - 2) * 54;
-    const depth = 0.52 + ((index * 37) % 42) / 100;
-    return {
-      idea,
-      angle,
-      orbitRadius,
-      vertical,
-      depth
-    };
-  }), [ideas]);
+  const phaseOrbits = useMemo(() => statuses.map((status, index) => ({
+    status,
+    index,
+    radius: phaseRingRadius(index, statuses.length)
+  })), [statuses]);
+
+  const projected = useMemo(() => {
+    const totals = new Map<number, number>();
+    ideas.forEach((idea) => {
+      const index = statusIndex(idea, statuses);
+      totals.set(index, (totals.get(index) || 0) + 1);
+    });
+
+    const seen = new Map<number, number>();
+    return ideas.map((idea) => {
+      const phaseIndex = statusIndex(idea, statuses);
+      const totalInPhase = Math.max(totals.get(phaseIndex) || 1, 1);
+      const orderInPhase = seen.get(phaseIndex) || 0;
+      seen.set(phaseIndex, orderInPhase + 1);
+      const angle = (orderInPhase / totalInPhase) * Math.PI * 2 + phaseIndex * 0.16;
+      const orbitRadius = phaseRingRadius(phaseIndex, statuses.length);
+      const depth = 0.58 + (phaseIndex / Math.max(statuses.length - 1, 1)) * 0.34;
+
+      return {
+        idea,
+        angle,
+        orbitRadius,
+        phaseIndex,
+        depth
+      };
+    });
+  }, [ideas, statuses]);
 
   return (
     <div className="brainWrap">
@@ -380,20 +396,27 @@ function BrainView({
       <div className={`brainCanvas ${autoRotate && !hoverId ? "spinning" : ""}`}>
         <div className="brainSphere">
           <span className="brainCore" />
-          {[0, 1, 2, 3, 4].map((ring) => <span key={`ring-${ring}`} className={`brainRing ring${ring}`} />)}
-          {[-0.55, -0.28, 0, 0.28, 0.55].map((y) => (
-            <span key={`eq-${y}`} className="brainRing eq" style={{ transform: `translate(-50%, -50%) translateY(${y * radius}px) scale(${Math.cos(Math.asin(y))})` }} />
+          {phaseOrbits.map(({ status, index, radius }) => (
+            <span
+              aria-hidden="true"
+              className="brainRing phaseRing"
+              key={status.id}
+              style={{
+                ["--ring-color" as string]: statusColor(status, statuses, index),
+                ["--ring-size" as string]: `${radius * 2}px`
+              }}
+            />
           ))}
         </div>
 
         <div className="brainNodes">
-          {projected.map(({ idea, angle, orbitRadius, vertical, depth }, index) => {
+          {projected.map(({ idea, angle, orbitRadius, phaseIndex, depth }, index) => {
             const status = statuses.find((item) => item.id === idea.statusId || item.name === idea.status);
             const color = statusColor(status, statuses);
             const active = hoverId === idea.id;
             const selected = selectedId === idea.id;
             const scale = active ? 1.12 : 0.62 + depth * 0.52;
-            const duration = 24 + (index % 5) * 4;
+            const duration = 26 + phaseIndex * 3 + (index % 3);
             const delay = -(angle / (Math.PI * 2)) * duration;
 
             return (
@@ -406,7 +429,6 @@ function BrainView({
                   opacity: 0.34 + depth * 0.66,
                   zIndex: Math.round(depth * 1000),
                   ["--orbit-radius" as string]: `${orbitRadius}px`,
-                  ["--orbit-y" as string]: `${vertical}px`,
                   ["--orbit-duration" as string]: `${duration}s`,
                   ["--orbit-delay" as string]: `${delay}s`,
                   ["--node-scale" as string]: scale,
@@ -694,6 +716,13 @@ function developmentPercent(idea: Idea, statuses: Status[]) {
 
 function statusIndex(idea: Idea, statuses: Status[]) {
   return Math.max(0, statuses.findIndex((status) => status.name === idea.status || status.id === idea.statusId));
+}
+
+function phaseRingRadius(index: number, total: number) {
+  const min = 66;
+  const max = 250;
+  if (total <= 1) return max;
+  return min + (Math.max(index, 0) / (total - 1)) * (max - min);
 }
 
 function statusColor(status: Status | undefined, statuses: Status[], fallbackIndex = 0) {
