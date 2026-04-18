@@ -120,7 +120,7 @@ button {
 
 .labMain {
   min-width: 0;
-  padding: 1.25rem clamp(1rem, 3vw, 2rem) 2rem;
+  padding: 0.9rem clamp(1rem, 3vw, 2rem) 2rem;
 }
 
 .brand {
@@ -196,6 +196,24 @@ main {
   margin-bottom: 1rem;
 }
 
+.labHero.compact {
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+.labHero.compact h2 {
+  max-width: none;
+  font-size: clamp(1.7rem, 3vw, 3rem);
+  line-height: 0.95;
+}
+
+.heroActions {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .labHero h2 {
   max-width: 12ch;
 }
@@ -247,6 +265,16 @@ p {
   background: transparent;
 }
 
+.btn.danger {
+  color: #fff;
+  background: rgba(255, 104, 104, 0.2);
+  border: 1px solid rgba(255, 104, 104, 0.48);
+}
+
+.btn.danger:hover {
+  background: rgba(255, 104, 104, 0.3);
+}
+
 .kpis {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -259,6 +287,10 @@ p {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.8rem;
   margin-bottom: 1rem;
+}
+
+.signalBar.underBrain {
+  margin-top: 1rem;
 }
 
 .signal {
@@ -377,7 +409,7 @@ textarea {
 
 .brainWrap {
   position: relative;
-  min-height: 39rem;
+  min-height: calc(100vh - 6.5rem);
   overflow: hidden;
   user-select: none;
   background:
@@ -494,7 +526,6 @@ textarea {
   transform-style: preserve-3d;
   transform-origin: center center;
   pointer-events: none;
-  transition: transform 120ms linear;
 }
 
 .brainRing {
@@ -657,7 +688,55 @@ textarea {
 
 .ideaDetail {
   display: grid;
+  width: min(74rem, 100%);
   align-content: start;
+  margin: 0 auto;
+  padding: 1rem;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.detailHero {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.detailHero h3 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 4rem);
+  line-height: 0.95;
+}
+
+.detailHero p {
+  max-width: 48rem;
+  color: var(--muted);
+}
+
+.detailActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.detailLong {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 1rem;
+  padding: 0.85rem;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+}
+
+.detailLong h4,
+.detailLong p {
+  margin: 0;
 }
 
 .phaseTimeline {

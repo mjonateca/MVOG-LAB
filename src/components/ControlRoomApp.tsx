@@ -2,9 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { MouseEvent, TouchEvent } from "react";
-import type { AppUser, ControlRoomState, Idea, IdeaInput, IdeaPhaseNote, Status } from "@/lib/types";
+import type { ControlRoomState, Idea, IdeaInput, IdeaPhaseNote, Status } from "@/lib/types";
 
-type ViewKey = "brain" | "board" | "analytics" | "settings";
+type ViewKey = "brain" | "detail" | "board" | "analytics";
 type FilterKey = "all" | "in-progress" | "high-value" | "sale-ready";
 
 type Props = {
@@ -31,7 +31,7 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
   const [draftOpen, setDraftOpen] = useState(false);
   const [draftStatus, setDraftStatus] = useState(initialState.statuses[0]?.id || "");
 
-  const selectedIdea = state.ideas.find((idea) => idea.id === selectedId) || state.ideas[0];
+  const selectedIdea = state.ideas.find((idea) => idea.id === selectedId) || null;
 
   const filteredIdeas = useMemo(() => {
     return state.ideas.filter((idea) => {
@@ -94,7 +94,7 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
     }));
     setSelectedId(localIdea.id);
     setDraftOpen(false);
-    setActiveView("brain");
+    setActiveView("detail");
 
     const response = await fetch("/api/ideas", {
       method: "POST",
@@ -103,6 +103,8 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
     });
 
     if (response.ok) {
+      const saved = await response.json();
+      if (saved.id) setSelectedId(saved.id);
       await refresh();
     }
   }
@@ -124,6 +126,11 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
       headers: authHeaders(accessToken),
       body: JSON.stringify({ statusId, status: status.name, name: idea.name })
     });
+  }
+
+  function openIdea(idea: Idea) {
+    setSelectedId(idea.id);
+    setActiveView("detail");
   }
 
   async function updateIdeaMemory(idea: Idea, patch: Partial<IdeaInput>) {
@@ -148,6 +155,24 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
     });
   }
 
+  async function removeIdea(idea: Idea) {
+    const confirmed = window.confirm(`Eliminar "${idea.name}"?`);
+    if (!confirmed) return;
+
+    setState((current) => ({
+      ...current,
+      ideas: current.ideas.filter((item) => item.id !== idea.id),
+      activity: [{ id: crypto.randomUUID(), at: new Date().toISOString(), text: `${idea.name} fue eliminada.` }, ...current.activity]
+    }));
+    setSelectedId("");
+    setActiveView("brain");
+
+    await fetch(`/api/ideas/${idea.id}`, {
+      method: "DELETE",
+      headers: authHeaders(accessToken)
+    });
+  }
+
   return (
     <div className="labApp">
       <aside className="labSidebar">
@@ -160,10 +185,10 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
         </div>
 
         <nav className="nav" aria-label="Secciones">
-          {(["brain", "board", "analytics", "settings"] as const).map((view) => (
+          {(["brain", "board", "analytics"] as const).map((view) => (
             <button key={view} type="button" aria-selected={activeView === view} onClick={() => setActiveView(view)}>
               {viewLabel(view)}
-              <span>{view === "brain" ? state.ideas.length : view === "settings" ? state.users.length : "live"}</span>
+              <span>{view === "brain" ? state.ideas.length : "live"}</span>
             </button>
           ))}
         </nav>
@@ -175,62 +200,70 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
       </aside>
 
       <main className="labMain">
-        <header className="labHero">
+        <header className="labHero compact">
           <div>
-            <p className="eyebrow">Control room</p>
-            <h2>Explora el cerebro MVOG</h2>
-            <p>Ideas vivas, estados y señales en una vista espacial para decidir rápido qué merece foco.</p>
+            <p className="eyebrow">MVOG Lab</p>
+            <h2>{activeView === "detail" ? "Detalle de idea" : "Cerebro MVOG"}</h2>
           </div>
-          <button
-            className="btn"
-            type="button"
-            onClick={() => {
-              setDraftStatus(state.statuses[0]?.id || "");
-              setDraftOpen(true);
-            }}
-          >
-            Nueva idea
-          </button>
+          <div className="heroActions">
+            {activeView === "detail" && (
+              <button className="btn secondary" type="button" onClick={() => setActiveView("brain")}>
+                Volver al cerebro
+              </button>
+            )}
+            <button
+              className="btn"
+              type="button"
+              onClick={() => {
+                setDraftStatus(state.statuses[0]?.id || "");
+                setDraftOpen(true);
+              }}
+            >
+              Nueva idea
+            </button>
+          </div>
         </header>
 
-        <section className="signalBar">
-          {kpis.map((kpi) => (
-            <button
-              className={`signal ${filter === kpi.key ? "active" : ""}`}
-              key={kpi.key}
-              type="button"
-              onClick={() => setFilter(kpi.key)}
-            >
-              <span>{kpi.label}</span>
-              <b>{kpi.value}</b>
-              <small>{kpi.hint}</small>
-            </button>
-          ))}
-        </section>
-
-        <div className="labToolbar">
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar idea, pyme, dueño o etiqueta" />
-          <button className="btn secondary" type="button" onClick={() => { setFilter("all"); setQuery(""); }}>
-            Limpiar
-          </button>
-        </div>
-
         {activeView === "brain" && (
-          <section className="brainStage">
+          <>
             <BrainView
               ideas={filteredIdeas}
-              selectedId={selectedIdea?.id}
+              selectedId={selectedId || undefined}
               statuses={state.statuses}
-              onOpen={(idea) => setSelectedId(idea.id)}
+              onOpen={openIdea}
             />
-            <aside className="focusPanel">
-              {selectedIdea ? (
-                <IdeaDetail idea={selectedIdea} statuses={state.statuses} onMove={moveIdea} onUpdate={updateIdeaMemory} />
-              ) : (
-                <div className="empty">Selecciona una tarjeta para abrir el detalle.</div>
-              )}
-            </aside>
-          </section>
+            <section className="signalBar underBrain">
+              {kpis.map((kpi) => (
+                <button
+                  className={`signal ${filter === kpi.key ? "active" : ""}`}
+                  key={kpi.key}
+                  type="button"
+                  onClick={() => setFilter(kpi.key)}
+                >
+                  <span>{kpi.label}</span>
+                  <b>{kpi.value}</b>
+                  <small>{kpi.hint}</small>
+                </button>
+              ))}
+            </section>
+            <div className="labToolbar">
+              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar idea, fase o etiqueta" />
+              <button className="btn secondary" type="button" onClick={() => { setFilter("all"); setQuery(""); }}>
+                Limpiar
+              </button>
+            </div>
+          </>
+        )}
+
+        {activeView === "detail" && selectedIdea && (
+          <IdeaDetail
+            idea={selectedIdea}
+            statuses={state.statuses}
+            onBack={() => setActiveView("brain")}
+            onDelete={removeIdea}
+            onMove={moveIdea}
+            onUpdate={updateIdeaMemory}
+          />
         )}
 
         {activeView === "board" && (
@@ -265,7 +298,7 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
                           key={idea.id}
                           type="button"
                           onDragStart={(event) => event.dataTransfer.setData("text/plain", idea.id)}
-                          onClick={() => setSelectedId(idea.id)}
+                          onClick={() => openIdea(idea)}
                         >
                           <strong>{idea.name}</strong>
                           <span>{idea.market}</span>
@@ -286,13 +319,11 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
         )}
 
         {activeView === "analytics" && <Analytics state={state} />}
-        {activeView === "settings" && <Settings state={state} />}
       </main>
 
       {draftOpen && (
         <dialog open>
           <IdeaForm
-            state={state}
             defaultStatusId={draftStatus}
             onClose={() => setDraftOpen(false)}
             onSave={(input) => saveIdea(input)}
@@ -489,11 +520,15 @@ function BrainView({
 function IdeaDetail({
   idea,
   statuses,
+  onBack,
+  onDelete,
   onMove,
   onUpdate
 }: {
   idea: Idea;
   statuses: Status[];
+  onBack: () => void;
+  onDelete: (idea: Idea) => void;
   onMove: (idea: Idea, statusId: string) => void;
   onUpdate: (idea: Idea, patch: Partial<IdeaInput>) => void;
 }) {
@@ -535,9 +570,17 @@ function IdeaDetail({
 
   return (
     <section className="ideaDetail">
-      <p className="eyebrow">Idea enfocada</p>
-      <h3>{idea.name}</h3>
-      <p>{idea.notes || idea.market}</p>
+      <div className="detailHero">
+        <div>
+          <p className="eyebrow">Idea</p>
+          <h3>{idea.name}</h3>
+          <p>{idea.notes || "Añade un concepto para empezar a desarrollar esta idea."}</p>
+        </div>
+        <div className="detailActions">
+          <button className="btn secondary" type="button" onClick={onBack}>Volver</button>
+          <button className="btn danger" type="button" onClick={() => onDelete(idea)}>Eliminar idea</button>
+        </div>
+      </div>
       <div className="detailGrid">
         <span>Estado <b>{idea.status}</b></span>
         <span>Valor <b>{idea.value}</b></span>
@@ -545,6 +588,12 @@ function IdeaDetail({
         <span>Desarrollo <b>{developmentPercent(idea, statuses)}%</b></span>
       </div>
       <Progress value={developmentPercent(idea, statuses)} label={idea.status} />
+      <div className="detailLong">
+        <h4>Concepto base</h4>
+        <p>{idea.notes || "Sin concepto base todavía."}</p>
+        {idea.market !== "Sin nicho definido" && <p><b>Nicho:</b> {idea.market}</p>}
+        {idea.prompt && <p><b>Prompt / script:</b> {idea.prompt}</p>}
+      </div>
       <label>
         Saltar a cualquier fase
         <select value={currentStatus?.id || ""} onChange={(event) => onMove(idea, event.target.value)}>
@@ -644,12 +693,10 @@ function IdeaDetail({
 }
 
 function IdeaForm({
-  state,
   defaultStatusId,
   onClose,
   onSave
 }: {
-  state: ControlRoomState;
   defaultStatusId: string;
   onClose: () => void;
   onSave: (input: IdeaInput) => void;
@@ -660,19 +707,20 @@ function IdeaForm({
       onSubmit={(event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
+        const concept = String(data.get("concept") || "");
         onSave({
           name: String(data.get("name") || ""),
-          market: String(data.get("market") || ""),
+          market: "Sin nicho definido",
           ownerId: null,
-          statusId: String(data.get("statusId") || defaultStatusId),
-          value: data.get("value") as IdeaInput["value"],
-          effort: data.get("effort") as IdeaInput["effort"],
-          notes: String(data.get("notes") || ""),
-          prompt: String(data.get("prompt") || ""),
-          tags: String(data.get("tags") || "").split(",").map((tag) => tag.trim()).filter(Boolean),
-          developmentProgress: Number(data.get("developmentProgress") || 0),
-          returnScore: numberOrNull(data.get("returnScore")),
-          difficultyScore: numberOrNull(data.get("difficultyScore"))
+          statusId: defaultStatusId,
+          value: "Medio",
+          effort: "Media",
+          notes: concept,
+          prompt: "",
+          tags: [],
+          developmentProgress: 0,
+          returnScore: null,
+          difficultyScore: null
         });
       }}
     >
@@ -681,24 +729,7 @@ function IdeaForm({
         <button className="btn ghost" type="button" onClick={onClose}>Cerrar</button>
       </div>
       <label>Nombre<input name="name" required /></label>
-      <label>Pyme o nicho<input name="market" required /></label>
-      <label>Estado
-        <select name="statusId" defaultValue={defaultStatusId}>
-          {state.statuses.map((status) => <option key={status.id} value={status.id}>{status.name}</option>)}
-        </select>
-      </label>
-      <div className="split">
-        <label>Valor<select name="value" defaultValue="Medio"><option>Alto</option><option>Medio</option><option>Bajo</option></select></label>
-        <label>Dificultad<select name="effort" defaultValue="Media"><option>Alta</option><option>Media</option><option>Baja</option></select></label>
-      </div>
-      <div className="split">
-        <label>Retorno potencial<input max="10" min="0" name="returnScore" placeholder="0-10" type="number" /></label>
-        <label>Dificultad real<input max="10" min="0" name="difficultyScore" placeholder="0-10" type="number" /></label>
-      </div>
-      <label>% desarrollo<input defaultValue="0" max="100" min="0" name="developmentProgress" type="number" /></label>
-      <label>Notas<textarea name="notes" required /></label>
-      <label>Prompt / script<textarea name="prompt" /></label>
-      <label>Etiquetas<input name="tags" placeholder="IA, WhatsApp, inventario" /></label>
+      <label>Breve concepto<textarea name="concept" placeholder="Opcional: una frase o dos para recordar de qué va." /></label>
       <button className="btn" type="submit">Guardar idea</button>
     </form>
   );
@@ -715,26 +746,6 @@ function Analytics({ state }: { state: ControlRoomState }) {
           const pct = state.ideas.length ? Math.round((count / state.ideas.length) * 100) : 0;
           return <Progress key={status.id} value={pct} label={`${status.name}: ${count}`} />;
         })}
-      </div>
-    </section>
-  );
-}
-
-function Settings({ state }: { state: ControlRoomState }) {
-  return (
-    <section>
-      <p className="eyebrow">Configuración</p>
-      <h2>Equipo y acceso</h2>
-      <div className="settingsGrid">
-        {state.users.map((user: AppUser) => (
-          <article className="rowCard" key={user.id}>
-            <div>
-              <strong>{user.name}</strong>
-              <span>{user.email} · {user.role}</span>
-            </div>
-            <span className={user.verified ? "verified" : "pending"}>{user.verified ? "Verificado" : "Pendiente"}</span>
-          </article>
-        ))}
       </div>
     </section>
   );
@@ -783,9 +794,9 @@ function statusColor(status: Status | undefined, statuses: Status[], fallbackInd
 
 function viewLabel(view: ViewKey) {
   if (view === "brain") return "Cerebro";
+  if (view === "detail") return "Detalle";
   if (view === "board") return "Tablero";
-  if (view === "analytics") return "Señales";
-  return "Equipo";
+  return "Señales";
 }
 
 function truncate(value: string, length: number) {
