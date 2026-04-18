@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { MouseEvent, TouchEvent } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ControlRoomState, Idea, IdeaInput, IdeaPhaseNote, Status } from "@/lib/types";
 
 type ViewKey = "brain" | "detail" | "board" | "analytics";
@@ -12,12 +11,6 @@ type Props = {
   initialState: ControlRoomState;
   onSignOut: () => void;
   userEmail: string;
-};
-
-type Point3D = {
-  x: number;
-  y: number;
-  z: number;
 };
 
 const STATUS_COLORS = ["#48f2a5", "#39d5ff", "#f4d35e", "#ff7aa8", "#9b8cff", "#ff9f5f", "#9ef05d"];
@@ -35,7 +28,7 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
 
   const filteredIdeas = useMemo(() => {
     return state.ideas.filter((idea) => {
-      const haystack = [idea.name, idea.market, idea.status, idea.value, idea.effort, idea.notes, ...idea.tags]
+      const haystack = [idea.name, idea.status, idea.value, idea.effort, idea.notes, ...idea.tags]
         .join(" ")
         .toLowerCase();
       const textMatch = haystack.includes(query.toLowerCase());
@@ -301,7 +294,7 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
                           onClick={() => openIdea(idea)}
                         >
                           <strong>{idea.name}</strong>
-                          <span>{idea.market}</span>
+                          <span>{idea.notes || idea.status}</span>
                           <div className="tags">
                             <span>{idea.value} valor</span>
                             <span>{idea.effort} dificultad</span>
@@ -345,85 +338,25 @@ function BrainView({
   statuses: Status[];
   onOpen: (idea: Idea) => void;
 }) {
-  const [rotY, setRotY] = useState(0);
-  const [rotX, setRotX] = useState(-0.16);
   const [hoverId, setHoverId] = useState<string | null>(null);
-  const [dragging, setDragging] = useState(false);
   const [autoRotate, setAutoRotate] = useState(true);
-  const [mouse, setMouse] = useState({ x: 0, y: 0 });
-  const dragRef = useRef<{ x: number; y: number; rotX: number; rotY: number } | null>(null);
-
-  const points = useMemo(() => fibonacciSphere(Math.max(ideas.length, 1)), [ideas.length]);
-
-  useEffect(() => {
-    let frame = 0;
-    let last = performance.now();
-    const loop = (time: number) => {
-      const delta = Math.min((time - last) / 1000, 0.032);
-      last = time;
-      if (autoRotate && !dragging && !hoverId) {
-        setRotY((value) => value + delta * 0.16);
-      }
-      frame = requestAnimationFrame(loop);
-    };
-    frame = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(frame);
-  }, [autoRotate, dragging, hoverId]);
 
   const radius = 255;
-  const cosX = Math.cos(rotX);
-  const sinX = Math.sin(rotX);
-  const cosY = Math.cos(rotY);
-  const sinY = Math.sin(rotY);
-  const projected = ideas.map((idea, index) => {
-    const point = points[index] || { x: 0, y: 0, z: 0 };
-    const rotatedX = point.x * cosY - point.z * sinY;
-    const rotatedZ = point.x * sinY + point.z * cosY;
-    const rotatedY = point.y * cosX - rotatedZ * sinX;
-    const depthZ = point.y * sinX + rotatedZ * cosX;
+  const projected = useMemo(() => ideas.map((idea, index) => {
+    const count = Math.max(ideas.length, 1);
+    const angle = (index / count) * Math.PI * 2;
+    const layer = index % 5;
+    const orbitRadius = radius * (0.38 + (layer % 3) * 0.18);
+    const vertical = (layer - 2) * 54;
+    const depth = 0.52 + ((index * 37) % 42) / 100;
     return {
       idea,
-      x: rotatedX * radius,
-      y: rotatedY * radius,
-      z: depthZ * radius
+      angle,
+      orbitRadius,
+      vertical,
+      depth
     };
-  }).sort((a, b) => a.z - b.z);
-
-  function pointerPosition(event: MouseEvent | TouchEvent) {
-    if ("touches" in event) return event.touches[0];
-    return event;
-  }
-
-  function startDrag(event: MouseEvent | TouchEvent) {
-    const point = pointerPosition(event);
-    setDragging(true);
-    dragRef.current = { x: point.clientX, y: point.clientY, rotX, rotY };
-  }
-
-  function move(event: MouseEvent<HTMLDivElement> | TouchEvent<HTMLDivElement>) {
-    const point = pointerPosition(event);
-    if (dragging && dragRef.current) {
-      const dx = point.clientX - dragRef.current.x;
-      const dy = point.clientY - dragRef.current.y;
-      setRotY(dragRef.current.rotY + dx * 0.008);
-      setRotX(Math.max(-1.1, Math.min(1.1, dragRef.current.rotX + dy * 0.008)));
-      return;
-    }
-
-    const rect = event.currentTarget.getBoundingClientRect();
-    setMouse({
-      x: (point.clientX - rect.left) / rect.width - 0.5,
-      y: (point.clientY - rect.top) / rect.height - 0.5
-    });
-  }
-
-  function stopDrag() {
-    setDragging(false);
-    dragRef.current = null;
-  }
-
-  const parallaxX = mouse.x * 18;
-  const parallaxY = mouse.y * 18;
+  }), [ideas]);
 
   return (
     <div className="brainWrap">
@@ -432,10 +365,7 @@ function BrainView({
         <button className={`brainCtl ${autoRotate ? "on" : ""}`} type="button" onClick={() => setAutoRotate((value) => !value)}>
           {autoRotate ? "Girando" : "Estático"}
         </button>
-        <button className="brainCtl" type="button" onClick={() => { setRotX(-0.16); setRotY(0); }}>
-          Centrar
-        </button>
-        <span>Arrastra para rotar · toca una idea</span>
+        <span>Toca una idea para abrir su detalle</span>
       </div>
 
       <div className="brainLegend">
@@ -447,34 +377,24 @@ function BrainView({
         ))}
       </div>
 
-      <div
-        className={`brainCanvas ${dragging ? "dragging" : ""}`}
-        onMouseDown={startDrag}
-        onMouseMove={move}
-        onMouseUp={stopDrag}
-        onMouseLeave={stopDrag}
-        onTouchStart={startDrag}
-        onTouchMove={move}
-        onTouchEnd={stopDrag}
-      >
-        <div className="brainSphere" style={{ transform: `translate(-50%, -50%) translate(${parallaxX}px, ${parallaxY}px) rotateX(${rotX}rad) rotateY(${rotY}rad)` }}>
-          {[0, 1, 2, 3].map((ring) => (
-            <span key={`ring-${ring}`} className="brainRing" style={{ transform: `rotateY(${ring * 45}deg)` }} />
-          ))}
-          {[-0.62, -0.32, 0, 0.32, 0.62].map((y) => (
-            <span key={`eq-${y}`} className="brainRing eq" style={{ transform: `translateY(${y * radius}px) rotateX(90deg) scale(${Math.cos(Math.asin(y))})` }} />
-          ))}
+      <div className={`brainCanvas ${autoRotate && !hoverId ? "spinning" : ""}`}>
+        <div className="brainSphere">
           <span className="brainCore" />
+          {[0, 1, 2, 3, 4].map((ring) => <span key={`ring-${ring}`} className={`brainRing ring${ring}`} />)}
+          {[-0.55, -0.28, 0, 0.28, 0.55].map((y) => (
+            <span key={`eq-${y}`} className="brainRing eq" style={{ transform: `translate(-50%, -50%) translateY(${y * radius}px) scale(${Math.cos(Math.asin(y))})` }} />
+          ))}
         </div>
 
-        <div className="brainNodes" style={{ transform: `translate(${parallaxX}px, ${parallaxY}px)` }}>
-          {projected.map(({ idea, x, y, z }) => {
+        <div className="brainNodes">
+          {projected.map(({ idea, angle, orbitRadius, vertical, depth }, index) => {
             const status = statuses.find((item) => item.id === idea.statusId || item.name === idea.status);
             const color = statusColor(status, statuses);
-            const depth = (z + radius) / (radius * 2);
             const active = hoverId === idea.id;
             const selected = selectedId === idea.id;
             const scale = active ? 1.12 : 0.62 + depth * 0.52;
+            const duration = 24 + (index % 5) * 4;
+            const delay = -(angle / (Math.PI * 2)) * duration;
 
             return (
               <button
@@ -484,8 +404,12 @@ function BrainView({
                   left: "50%",
                   top: "50%",
                   opacity: 0.34 + depth * 0.66,
-                  transform: `translate(-50%, -50%) translate3d(${x}px, ${y}px, ${z}px) scale(${scale})`,
-                  zIndex: Math.round(z + 1000),
+                  zIndex: Math.round(depth * 1000),
+                  ["--orbit-radius" as string]: `${orbitRadius}px`,
+                  ["--orbit-y" as string]: `${vertical}px`,
+                  ["--orbit-duration" as string]: `${duration}s`,
+                  ["--orbit-delay" as string]: `${delay}s`,
+                  ["--node-scale" as string]: scale,
                   ["--idea-color" as string]: color
                 }}
                 type="button"
@@ -501,7 +425,7 @@ function BrainView({
                 <span className="nodeCard">
                   <small>{idea.status} · {developmentPercent(idea, statuses)}%</small>
                   <strong>{idea.name}</strong>
-                  <em>{truncate(idea.market, 52)}</em>
+                  <em>{truncate(idea.notes || "Sin concepto base todavía.", 52)}</em>
                 </span>
               </button>
             );
@@ -591,7 +515,6 @@ function IdeaDetail({
       <div className="detailLong">
         <h4>Concepto base</h4>
         <p>{idea.notes || "Sin concepto base todavía."}</p>
-        {idea.market !== "Sin nicho definido" && <p><b>Nicho:</b> {idea.market}</p>}
         {idea.prompt && <p><b>Prompt / script:</b> {idea.prompt}</p>}
       </div>
       <label>
@@ -710,7 +633,7 @@ function IdeaForm({
         const concept = String(data.get("concept") || "");
         onSave({
           name: String(data.get("name") || ""),
-          market: "Sin nicho definido",
+          market: "General",
           ownerId: null,
           statusId: defaultStatusId,
           value: "Medio",
@@ -758,20 +681,6 @@ function Progress({ value, label }: { value: number; label: string }) {
       <small>{label} · {value}%</small>
     </div>
   );
-}
-
-function fibonacciSphere(count: number): Point3D[] {
-  const points: Point3D[] = [];
-  const phi = Math.PI * (Math.sqrt(5) - 1);
-
-  for (let index = 0; index < count; index += 1) {
-    const y = 1 - (index / (count - 1 || 1)) * 2;
-    const radius = Math.sqrt(1 - y * y);
-    const theta = phi * index;
-    points.push({ x: Math.cos(theta) * radius, y, z: Math.sin(theta) * radius });
-  }
-
-  return points;
 }
 
 function progressFor(idea: Idea, statuses: Status[]) {
