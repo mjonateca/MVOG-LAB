@@ -79,7 +79,11 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
   }
 
   async function saveIdea(input: IdeaInput) {
-    const localIdea = ideaFromInput(input, state, draftStatus);
+    const inputWithCreator = {
+      ...input,
+      tags: [...input.tags.filter((tag) => !tag.startsWith("creator:")), `creator:${creatorInitialsForEmail(userEmail)}`]
+    };
+    const localIdea = ideaFromInput(inputWithCreator, state, draftStatus);
     setState((current) => ({
       ...current,
       ideas: [localIdea, ...current.ideas],
@@ -92,7 +96,7 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
     const response = await fetch("/api/ideas", {
       method: "POST",
       headers: authHeaders(accessToken),
-      body: JSON.stringify(input)
+      body: JSON.stringify(inputWithCreator)
     });
 
     if (response.ok) {
@@ -298,7 +302,7 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
                           <div className="tags">
                             <span>{idea.value} valor</span>
                             <span>{idea.effort} dificultad</span>
-                            {idea.tags.slice(0, 2).map((tag) => <span key={tag}>{tag}</span>)}
+                            {visibleTags(idea).slice(0, 2).map((tag) => <span key={tag}>{tag}</span>)}
                           </div>
                           <Progress value={developmentPercent(idea, state.statuses)} label={idea.status} />
                         </button>
@@ -344,7 +348,9 @@ function BrainView({
   const phaseOrbits = useMemo(() => statuses.map((status, index) => ({
     status,
     index,
-    radius: phaseRingRadius(index, statuses.length)
+    radius: phaseRingRadius(index, statuses.length),
+    tilt: phaseRingTilt(index),
+    turn: phaseRingTurn(index)
   })), [statuses]);
 
   const projected = useMemo(() => {
@@ -362,12 +368,16 @@ function BrainView({
       seen.set(phaseIndex, orderInPhase + 1);
       const angle = (orderInPhase / totalInPhase) * Math.PI * 2 + phaseIndex * 0.16;
       const orbitRadius = phaseRingRadius(phaseIndex, statuses.length);
+      const orbitTilt = phaseRingTilt(phaseIndex);
+      const orbitTurn = phaseRingTurn(phaseIndex);
       const depth = 0.58 + (phaseIndex / Math.max(statuses.length - 1, 1)) * 0.34;
 
       return {
         idea,
         angle,
         orbitRadius,
+        orbitTilt,
+        orbitTurn,
         phaseIndex,
         depth
       };
@@ -396,21 +406,23 @@ function BrainView({
       <div className={`brainCanvas ${autoRotate && !hoverId ? "spinning" : ""}`}>
         <div className="brainSphere">
           <span className="brainCore" />
-          {phaseOrbits.map(({ status, index, radius }) => (
+          {phaseOrbits.map(({ status, index, radius, tilt, turn }) => (
             <span
               aria-hidden="true"
               className="brainRing phaseRing"
               key={status.id}
               style={{
                 ["--ring-color" as string]: statusColor(status, statuses, index),
-                ["--ring-size" as string]: `${radius * 2}px`
+                ["--ring-size" as string]: `${radius * 2}px`,
+                ["--ring-tilt" as string]: `${tilt}deg`,
+                ["--ring-turn" as string]: `${turn}deg`
               }}
             />
           ))}
         </div>
 
         <div className="brainNodes">
-          {projected.map(({ idea, angle, orbitRadius, phaseIndex, depth }, index) => {
+          {projected.map(({ idea, angle, orbitRadius, orbitTilt, orbitTurn, phaseIndex, depth }, index) => {
             const status = statuses.find((item) => item.id === idea.statusId || item.name === idea.status);
             const color = statusColor(status, statuses);
             const active = hoverId === idea.id;
@@ -418,6 +430,7 @@ function BrainView({
             const scale = active ? 1.12 : 0.62 + depth * 0.52;
             const duration = 26 + phaseIndex * 3 + (index % 3);
             const delay = -(angle / (Math.PI * 2)) * duration;
+            const initials = creatorInitialsForIdea(idea);
 
             return (
               <button
@@ -429,6 +442,10 @@ function BrainView({
                   opacity: 0.34 + depth * 0.66,
                   zIndex: Math.round(depth * 1000),
                   ["--orbit-radius" as string]: `${orbitRadius}px`,
+                  ["--orbit-tilt" as string]: `${orbitTilt}deg`,
+                  ["--orbit-tilt-back" as string]: `${-orbitTilt}deg`,
+                  ["--orbit-turn" as string]: `${orbitTurn}deg`,
+                  ["--orbit-turn-back" as string]: `${-orbitTurn}deg`,
                   ["--orbit-duration" as string]: `${duration}s`,
                   ["--orbit-delay" as string]: `${delay}s`,
                   ["--node-scale" as string]: scale,
@@ -444,6 +461,7 @@ function BrainView({
               >
                 <span className="nodePulse" />
                 <span className="nodeDot" />
+                {initials && <span className="creatorBadge">{initials}</span>}
                 <span className="nodeCard">
                   <small>{idea.status} · {developmentPercent(idea, statuses)}%</small>
                   <strong>{idea.name}</strong>
@@ -631,7 +649,7 @@ function IdeaDetail({
       </form>
 
       <div className="tags">
-        {idea.tags.length ? idea.tags.map((tag) => <span key={tag}>{tag}</span>) : <span>Sin etiquetas</span>}
+        {visibleTags(idea).length ? visibleTags(idea).map((tag) => <span key={tag}>{tag}</span>) : <span>Sin etiquetas</span>}
       </div>
     </section>
   );
@@ -723,6 +741,30 @@ function phaseRingRadius(index: number, total: number) {
   const max = 250;
   if (total <= 1) return max;
   return min + (Math.max(index, 0) / (total - 1)) * (max - min);
+}
+
+function phaseRingTilt(index: number) {
+  return [-58, -36, -18, 0, 18, 36, 58][index % 7];
+}
+
+function phaseRingTurn(index: number) {
+  return [0, 28, -34, 62, -62, 88, -88][index % 7];
+}
+
+function visibleTags(idea: Idea) {
+  return idea.tags.filter((tag) => !tag.startsWith("creator:"));
+}
+
+function creatorInitialsForIdea(idea: Idea) {
+  const creatorTag = idea.tags.find((tag) => tag.startsWith("creator:"));
+  return creatorTag?.replace("creator:", "").slice(0, 3).toUpperCase() || "";
+}
+
+function creatorInitialsForEmail(email: string) {
+  const normalized = email.trim().toLowerCase();
+  if (normalized === "mjcalvo92@gmail.com") return "MO";
+  if (normalized === "vinelis13@gmail.com") return "VG";
+  return normalized.slice(0, 2).toUpperCase();
 }
 
 function statusColor(status: Status | undefined, statuses: Status[], fallbackIndex = 0) {

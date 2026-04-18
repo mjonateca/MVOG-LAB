@@ -509,6 +509,7 @@ textarea {
   position: absolute;
   inset: 0;
   overflow: hidden;
+  perspective: 1200px;
 }
 
 .brainSphere {
@@ -518,7 +519,8 @@ textarea {
   width: 31.875rem;
   height: 31.875rem;
   transform-origin: center center;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) rotateX(58deg) rotateZ(-14deg);
+  transform-style: preserve-3d;
   pointer-events: none;
 }
 
@@ -527,8 +529,8 @@ textarea {
 }
 
 @keyframes brainSpin {
-  from { transform: translate(-50%, -50%) rotate(0deg); }
-  to { transform: translate(-50%, -50%) rotate(360deg); }
+  from { transform: translate(-50%, -50%) rotateX(58deg) rotateZ(-14deg) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotateX(58deg) rotateZ(-14deg) rotate(360deg); }
 }
 
 .brainRing {
@@ -542,7 +544,8 @@ textarea {
   box-shadow:
     0 0 1.2rem color-mix(in srgb, var(--ring-color) 16%, transparent),
     inset 0 0 1rem rgba(255, 255, 255, 0.035);
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) rotate(var(--ring-turn)) rotateX(var(--ring-tilt));
+  transform-style: preserve-3d;
 }
 
 .phaseRing::after {
@@ -580,6 +583,7 @@ textarea {
   position: absolute;
   inset: 0;
   pointer-events: none;
+  perspective: 1200px;
 }
 
 .brainNode {
@@ -590,7 +594,7 @@ textarea {
   background: transparent;
   border: 0;
   pointer-events: auto;
-  transform: translate(-50%, -50%) translateX(var(--orbit-radius)) scale(var(--node-scale));
+  transform: translate(-50%, -50%) rotate(var(--orbit-turn)) rotateX(var(--orbit-tilt)) translateX(var(--orbit-radius)) rotateX(var(--orbit-tilt-back)) rotate(var(--orbit-turn-back)) scale(var(--node-scale));
   animation: stableOrbit var(--orbit-duration) linear infinite;
   animation-delay: var(--orbit-delay);
   animation-play-state: paused;
@@ -608,10 +612,10 @@ textarea {
 
 @keyframes stableOrbit {
   from {
-    transform: translate(-50%, -50%) rotate(0deg) translateX(var(--orbit-radius)) rotate(0deg) scale(var(--node-scale));
+    transform: translate(-50%, -50%) rotate(var(--orbit-turn)) rotateX(var(--orbit-tilt)) rotate(0deg) translateX(var(--orbit-radius)) rotate(0deg) rotateX(var(--orbit-tilt-back)) rotate(var(--orbit-turn-back)) scale(var(--node-scale));
   }
   to {
-    transform: translate(-50%, -50%) rotate(360deg) translateX(var(--orbit-radius)) rotate(-360deg) scale(var(--node-scale));
+    transform: translate(-50%, -50%) rotate(var(--orbit-turn)) rotateX(var(--orbit-tilt)) rotate(360deg) translateX(var(--orbit-radius)) rotate(-360deg) rotateX(var(--orbit-tilt-back)) rotate(var(--orbit-turn-back)) scale(var(--node-scale));
   }
 }
 
@@ -638,6 +642,25 @@ textarea {
     0 0 0 2px rgba(255, 255, 255, 0.12),
     0 0 1.1rem var(--idea-color),
     0 0 2.4rem var(--idea-color);
+}
+
+.creatorBadge {
+  position: absolute;
+  left: -1.15rem;
+  top: 0.65rem;
+  display: grid;
+  place-items: center;
+  min-width: 1.55rem;
+  height: 1.55rem;
+  padding: 0 0.28rem;
+  color: #06100c;
+  background: var(--idea-color);
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  border-radius: 999px;
+  box-shadow: 0 0 1.2rem var(--idea-color);
+  font-size: 0.62rem;
+  font-weight: 950;
+  letter-spacing: 0;
 }
 
 .nodePulse {
