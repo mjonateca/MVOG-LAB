@@ -5,13 +5,14 @@ import type { AppUser, ControlRoomState, Idea, IdeaInput, Role, Status } from ".
 
 type RoleRow = { id: string; name: string };
 type StatusRow = { id: string; name: string; position: number; wip_limit: number };
+type RelationOne<T> = T | T[] | null;
 type UserRow = {
   id: string;
   name: string;
   email: string;
   verified: boolean;
   verification_code: string;
-  roles?: RoleRow | null;
+  roles?: RelationOne<RoleRow>;
 };
 type IdeaRow = {
   id: string;
@@ -24,8 +25,8 @@ type IdeaRow = {
   notes: string;
   prompt: string;
   updated_at: string;
-  app_users?: Pick<UserRow, "id" | "name"> | null;
-  statuses?: Pick<StatusRow, "id" | "name"> | null;
+  app_users?: RelationOne<Pick<UserRow, "id" | "name">>;
+  statuses?: RelationOne<Pick<StatusRow, "id" | "name">>;
   idea_tags?: Array<{ tag: string }>;
 };
 type ActivityRow = { id: string; created_at: string; message: string };
@@ -64,8 +65,8 @@ export async function getControlRoomState(): Promise<ControlRoomState> {
   return {
     roles: ((roles.data || []) as RoleRow[]).map(mapRole),
     statuses: ((statuses.data || []) as StatusRow[]).map(mapStatus),
-    users: ((users.data || []) as UserRow[]).map(mapUser),
-    ideas: ((ideas.data || []) as IdeaRow[]).map(mapIdea),
+    users: ((users.data || []) as unknown as UserRow[]).map(mapUser),
+    ideas: ((ideas.data || []) as unknown as IdeaRow[]).map(mapIdea),
     activity: ((activity.data || []) as ActivityRow[]).map((item) => ({
       id: item.id,
       at: item.created_at,
@@ -232,25 +233,28 @@ function mapStatus(row: StatusRow): Status {
 }
 
 function mapUser(row: UserRow): AppUser {
+  const role = firstRelation(row.roles);
   return {
     id: row.id,
     name: row.name,
     email: row.email,
-    role: row.roles?.name || "Sin rol",
+    role: role?.name || "Sin rol",
     verified: row.verified,
     verificationCode: row.verification_code
   };
 }
 
 function mapIdea(row: IdeaRow): Idea {
+  const owner = firstRelation(row.app_users);
+  const status = firstRelation(row.statuses);
   return {
     id: row.id,
     name: row.name,
     market: row.market,
     ownerId: row.owner_id,
-    owner: row.app_users?.name || "Sin responsable",
+    owner: owner?.name || "Sin responsable",
     statusId: row.status_id,
-    status: row.statuses?.name || "Inbox",
+    status: status?.name || "Inbox",
     value: row.value,
     effort: row.effort,
     notes: row.notes,
@@ -258,6 +262,10 @@ function mapIdea(row: IdeaRow): Idea {
     tags: row.idea_tags?.map((item) => item.tag) || [],
     updatedAt: row.updated_at
   };
+}
+
+function firstRelation<T>(relation: RelationOne<T> | undefined) {
+  return Array.isArray(relation) ? relation[0] : relation;
 }
 
 function randomCode() {
