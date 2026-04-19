@@ -1,38 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="MVOG Lab brain icon">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="MVOG Lab orbital brain icon">
   <defs>
-    <linearGradient id="bg" x1="78" y1="58" x2="430" y2="456" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#06100c"/>
-      <stop offset="0.58" stop-color="#09251b"/>
-      <stop offset="1" stop-color="#0b3a2b"/>
-    </linearGradient>
-    <linearGradient id="brain" x1="124" y1="118" x2="374" y2="392" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#f6ff73"/>
-      <stop offset="0.47" stop-color="#48f2a5"/>
-      <stop offset="1" stop-color="#39d5ff"/>
-    </linearGradient>
-    <filter id="glow" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
-      <feGaussianBlur stdDeviation="12" result="blur"/>
-      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.282 0 0 0 0 0.949 0 0 0 0 0.647 0 0 0 0.6 0"/>
+    <radialGradient id="bg" cx="50%" cy="45%" r="70%">
+      <stop offset="0" stop-color="#11261f"/>
+      <stop offset="0.45" stop-color="#07120f"/>
+      <stop offset="1" stop-color="#020504"/>
+    </radialGradient>
+    <radialGradient id="core" cx="42%" cy="35%" r="72%">
+      <stop offset="0" stop-color="#f7ff82"/>
+      <stop offset="0.35" stop-color="#48f2a5"/>
+      <stop offset="0.78" stop-color="#35d2d9"/>
+      <stop offset="1" stop-color="#167b7e"/>
+    </radialGradient>
+    <filter id="softGlow" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.18 0 0 0 0 0.96 0 0 0 0 0.62 0 0 0 0.68 0"/>
       <feBlend in="SourceGraphic"/>
     </filter>
   </defs>
-  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
-  <circle cx="110" cy="118" r="52" fill="#48f2a5" opacity="0.12"/>
-  <circle cx="408" cy="406" r="76" fill="#39d5ff" opacity="0.1"/>
-  <g fill="none" stroke="#48f2a5" stroke-width="2" opacity="0.3">
-    <path d="M82 358c86-56 156-72 348-58"/>
-    <path d="M102 170c102 68 214 78 326 34"/>
+  <rect width="512" height="512" rx="108" fill="url(#bg)"/>
+  <circle cx="256" cy="256" r="176" fill="#48f2a5" opacity="0.045"/>
+  <circle cx="122" cy="120" r="62" fill="#48f2a5" opacity="0.12"/>
+  <circle cx="394" cy="398" r="82" fill="#35d2d9" opacity="0.10"/>
+
+  <g fill="none" stroke-linecap="round">
+    <ellipse cx="256" cy="256" rx="180" ry="82" stroke="#48f2a5" stroke-width="5" opacity="0.52" transform="rotate(-18 256 256)"/>
+    <ellipse cx="256" cy="256" rx="158" ry="68" stroke="#35d2d9" stroke-width="4" opacity="0.45" transform="rotate(24 256 256)"/>
+    <ellipse cx="256" cy="256" rx="116" ry="178" stroke="#9b8cff" stroke-width="3" opacity="0.28" transform="rotate(-36 256 256)"/>
   </g>
-  <g filter="url(#glow)">
-    <path fill="url(#brain)" d="M226 117c-35 0-64 22-72 54-31 7-54 35-54 68 0 20 8 39 22 52-3 10-4 20-2 31 5 36 36 63 73 63 13 0 26-4 37-10 13 15 32 24 54 24 39 0 71-31 73-69 25-12 42-37 42-66 0-27-15-51-38-64 1-5 2-10 2-15 0-38-31-68-69-68-17 0-33 6-45 17-8-10-20-17-33-17h8Z"/>
-    <path fill="#06100c" fill-opacity="0.55" d="M222 160c-19 0-35 14-38 33-1 7-12 5-11-2 4-25 25-43 50-43 19 0 36 10 45 25 3 6-6 12-10 6-7-12-20-19-36-19Zm83 12c24 0 44 20 44 44 0 7-11 7-11 0 0-18-15-33-33-33-9 0-18 4-24 11-5 5-13-2-9-8 9-9 20-14 33-14ZM157 222c20-8 44-1 56 18 4 6-6 12-10 6-9-14-27-19-42-13-7 3-11-8-4-11Zm148 47c23 2 42 20 45 44 1 7-10 8-11 1-2-18-16-32-34-34-8-1-7-12 0-11Zm-102 27c9 13 24 21 40 21 7 0 7 11 0 11-20 0-38-10-50-26-4-6 6-12 10-6Z"/>
-    <g fill="#06100c" fill-opacity="0.42">
-      <circle cx="196" cy="205" r="9"/>
-      <circle cx="279" cy="212" r="8"/>
-      <circle cx="326" cy="266" r="8"/>
-      <circle cx="224" cy="286" r="9"/>
-      <circle cx="282" cy="335" r="8"/>
+
+  <g filter="url(#softGlow)">
+    <circle cx="256" cy="256" r="76" fill="url(#core)"/>
+    <path d="M213 244c6-25 28-43 53-43 27 0 50 20 54 47M196 278c22-14 51-12 70 6 17 16 42 18 62 4M231 215c-7 19-2 38 13 51M281 206c-14 23-13 49 2 75M224 310c28 12 59 5 78-18" fill="none" stroke="#05100b" stroke-width="10" stroke-linecap="round" opacity="0.58"/>
+    <circle cx="256" cy="256" r="20" fill="#f7ff82" opacity="0.9"/>
+  </g>
+
+  <g>
+    <circle cx="111" cy="290" r="10" fill="#48f2a5"/>
+    <circle cx="397" cy="216" r="9" fill="#35d2d9"/>
+    <circle cx="337" cy="108" r="7" fill="#f7ff82"/>
+    <circle cx="176" cy="386" r="8" fill="#9b8cff"/>
+    <g fill="#ffffff" opacity="0.84">
+      <circle cx="256" cy="74" r="3"/>
+      <circle cx="430" cy="314" r="3"/>
+      <circle cx="90" cy="184" r="3"/>
     </g>
   </g>
-  <text x="256" y="454" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="900" letter-spacing="0" fill="#f7ffe5">MVOG</text>
 </svg>
