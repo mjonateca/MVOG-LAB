@@ -1541,16 +1541,22 @@ dialog {
   .brainMain {
     display: flex;
     flex-direction: column;
-    padding-top: 0.65rem;
+    padding: 0.65rem 0 2rem;
   }
 
   .brainMain .brainWrap {
     order: 1;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
   }
 
   .brainMain .labHero {
     order: 2;
-    margin: 0.7rem 0 0.8rem;
+    width: calc(100% - 2rem);
+    margin: 0.7rem 1rem 0.8rem;
   }
 
   .brainMain .labHero > div:first-child {
@@ -1574,10 +1580,16 @@ dialog {
 
   .brainMain .signalBar {
     order: 3;
+    width: calc(100% - 2rem);
+    margin-right: 1rem;
+    margin-left: 1rem;
   }
 
   .brainMain .labToolbar {
     order: 4;
+    width: calc(100% - 2rem);
+    margin-right: 1rem;
+    margin-left: 1rem;
   }
 
   .topline,
@@ -1638,8 +1650,8 @@ dialog {
   }
 
   .brainSphere {
-    width: 23rem;
-    height: 23rem;
+    width: min(31rem, 128vw);
+    height: min(31rem, 128vw);
   }
 
   .nodeCard {
