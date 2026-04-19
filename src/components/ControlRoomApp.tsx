@@ -263,9 +263,14 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
               Nueva idea
             </button>
             {activeView === "brain" && (
-              <button className="btn secondary mobileEventAction" type="button" onClick={() => setEventOpen(true)}>
-                Nuevo evento
-              </button>
+              <>
+                <button className="btn secondary mobileCalendarAction" type="button" onClick={() => setActiveView("calendar")}>
+                  Ver calendario
+                </button>
+                <button className="btn secondary mobileEventAction" type="button" onClick={() => setEventOpen(true)}>
+                  Nuevo evento
+                </button>
+              </>
             )}
           </div>
         </header>

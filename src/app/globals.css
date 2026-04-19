@@ -214,7 +214,8 @@ main {
   justify-content: flex-end;
 }
 
-.mobileEventAction {
+.mobileEventAction,
+.mobileCalendarAction {
   display: none;
 }
 
@@ -1572,7 +1573,8 @@ dialog {
     width: 100%;
   }
 
-  .brainMain .mobileEventAction {
+  .brainMain .mobileEventAction,
+  .brainMain .mobileCalendarAction {
     display: inline-flex;
     align-items: center;
     justify-content: center;
