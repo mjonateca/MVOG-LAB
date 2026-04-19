@@ -1,0 +1,25 @@
+{
+  "name": "MVOG Lab",
+  "short_name": "MVOG Lab",
+  "description": "Cerebro de ideas y calendario operativo de MVOG.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#06100c",
+  "theme_color": "#48f2a5",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/brain-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/brain-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

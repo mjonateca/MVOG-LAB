@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="MVOG Lab brain icon">
+  <defs>
+    <linearGradient id="bg" x1="78" y1="58" x2="430" y2="456" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#06100c"/>
+      <stop offset="0.58" stop-color="#09251b"/>
+      <stop offset="1" stop-color="#0b3a2b"/>
+    </linearGradient>
+    <linearGradient id="brain" x1="124" y1="118" x2="374" y2="392" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f6ff73"/>
+      <stop offset="0.47" stop-color="#48f2a5"/>
+      <stop offset="1" stop-color="#39d5ff"/>
+    </linearGradient>
+    <filter id="glow" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.282 0 0 0 0 0.949 0 0 0 0 0.647 0 0 0 0.6 0"/>
+      <feBlend in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <circle cx="110" cy="118" r="52" fill="#48f2a5" opacity="0.12"/>
+  <circle cx="408" cy="406" r="76" fill="#39d5ff" opacity="0.1"/>
+  <g fill="none" stroke="#48f2a5" stroke-width="2" opacity="0.3">
+    <path d="M82 358c86-56 156-72 348-58"/>
+    <path d="M102 170c102 68 214 78 326 34"/>
+  </g>
+  <g filter="url(#glow)">
+    <path fill="url(#brain)" d="M226 117c-35 0-64 22-72 54-31 7-54 35-54 68 0 20 8 39 22 52-3 10-4 20-2 31 5 36 36 63 73 63 13 0 26-4 37-10 13 15 32 24 54 24 39 0 71-31 73-69 25-12 42-37 42-66 0-27-15-51-38-64 1-5 2-10 2-15 0-38-31-68-69-68-17 0-33 6-45 17-8-10-20-17-33-17h8Z"/>
+    <path fill="#06100c" fill-opacity="0.55" d="M222 160c-19 0-35 14-38 33-1 7-12 5-11-2 4-25 25-43 50-43 19 0 36 10 45 25 3 6-6 12-10 6-7-12-20-19-36-19Zm83 12c24 0 44 20 44 44 0 7-11 7-11 0 0-18-15-33-33-33-9 0-18 4-24 11-5 5-13-2-9-8 9-9 20-14 33-14ZM157 222c20-8 44-1 56 18 4 6-6 12-10 6-9-14-27-19-42-13-7 3-11-8-4-11Zm148 47c23 2 42 20 45 44 1 7-10 8-11 1-2-18-16-32-34-34-8-1-7-12 0-11Zm-102 27c9 13 24 21 40 21 7 0 7 11 0 11-20 0-38-10-50-26-4-6 6-12 10-6Z"/>
+    <g fill="#06100c" fill-opacity="0.42">
+      <circle cx="196" cy="205" r="9"/>
+      <circle cx="279" cy="212" r="8"/>
+      <circle cx="326" cy="266" r="8"/>
+      <circle cx="224" cy="286" r="9"/>
+      <circle cx="282" cy="335" r="8"/>
+    </g>
+  </g>
+  <text x="256" y="454" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="900" letter-spacing="0" fill="#f7ffe5">MVOG</text>
+</svg>
