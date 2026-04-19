@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { ControlRoomState, Idea, IdeaInput, IdeaPhaseNote, Status } from "@/lib/types";
+import type { CalendarEvent, CalendarEventInput, ControlRoomState, Idea, IdeaInput, IdeaPhaseNote, Status } from "@/lib/types";
 
-type ViewKey = "brain" | "detail" | "board" | "analytics";
+type ViewKey = "brain" | "detail" | "board" | "calendar" | "analytics";
 type FilterKey = "all" | "in-progress" | "high-value" | "sale-ready";
 type BrainMode = "spin" | "static" | "flat";
+type CalendarPerson = { name: string; email?: string | null; initials: string };
 
 type Props = {
   accessToken: string;
@@ -23,6 +24,7 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
   const [filter, setFilter] = useState<FilterKey>("all");
   const [query, setQuery] = useState("");
   const [draftOpen, setDraftOpen] = useState(false);
+  const [eventOpen, setEventOpen] = useState(false);
   const [draftStatus, setDraftStatus] = useState(initialState.statuses[0]?.id || "");
 
   const selectedIdea = state.ideas.find((idea) => idea.id === selectedId) || null;
@@ -111,6 +113,43 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
     }
   }
 
+  async function saveCalendarEvent(input: CalendarEventInput) {
+    const localEvent = calendarEventFromInput(input);
+    setState((current) => ({
+      ...current,
+      calendarEvents: [...current.calendarEvents, localEvent].sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()),
+      activity: [{ id: crypto.randomUUID(), at: new Date().toISOString(), text: `${localEvent.ownerName} tiene ${localEvent.title} en calendario.` }, ...current.activity]
+    }));
+    setEventOpen(false);
+    setActiveView("calendar");
+
+    const response = await fetch("/api/calendar", {
+      method: "POST",
+      headers: authHeaders(accessToken),
+      body: JSON.stringify(input)
+    });
+
+    if (response.ok) {
+      await refresh();
+    }
+  }
+
+  async function removeCalendarEvent(event: CalendarEvent) {
+    const confirmed = window.confirm(`Eliminar "${event.title}" del calendario?`);
+    if (!confirmed) return;
+
+    setState((current) => ({
+      ...current,
+      calendarEvents: current.calendarEvents.filter((item) => item.id !== event.id),
+      activity: [{ id: crypto.randomUUID(), at: new Date().toISOString(), text: `${event.title} fue eliminado del calendario.` }, ...current.activity]
+    }));
+
+    await fetch(`/api/calendar/${event.id}`, {
+      method: "DELETE",
+      headers: authHeaders(accessToken)
+    });
+  }
+
   async function moveIdea(idea: Idea, statusId: string) {
     const status = state.statuses.find((item) => item.id === statusId);
     if (!status) return;
@@ -187,10 +226,10 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
         </div>
 
         <nav className="nav" aria-label="Secciones">
-          {(["brain", "board", "analytics"] as const).map((view) => (
+          {(["brain", "calendar", "board", "analytics"] as const).map((view) => (
             <button key={view} type="button" aria-selected={activeView === view} onClick={() => setActiveView(view)}>
               {viewLabel(view)}
-              <span>{view === "brain" ? state.ideas.length : "live"}</span>
+              <span>{view === "brain" ? state.ideas.length : view === "calendar" ? state.calendarEvents.length : "live"}</span>
             </button>
           ))}
         </nav>
@@ -223,6 +262,11 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
             >
               Nueva idea
             </button>
+            {activeView === "brain" && (
+              <button className="btn secondary mobileEventAction" type="button" onClick={() => setEventOpen(true)}>
+                Nuevo evento
+              </button>
+            )}
           </div>
         </header>
 
@@ -320,6 +364,15 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
           </section>
         )}
 
+        {activeView === "calendar" && (
+          <CalendarView
+            events={state.calendarEvents}
+            onCreate={() => setEventOpen(true)}
+            onDelete={removeCalendarEvent}
+            people={calendarPeople(state, userEmail)}
+          />
+        )}
+
         {activeView === "analytics" && <Analytics state={state} />}
       </main>
 
@@ -332,7 +385,86 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
           />
         </dialog>
       )}
+
+      {eventOpen && (
+        <dialog open>
+          <CalendarEventForm
+            defaultOwner={defaultCalendarOwner(userEmail)}
+            onClose={() => setEventOpen(false)}
+            onSave={(input) => saveCalendarEvent(input)}
+            people={calendarPeople(state, userEmail)}
+          />
+        </dialog>
+      )}
     </div>
+  );
+}
+
+function CalendarView({
+  events,
+  onCreate,
+  onDelete,
+  people
+}: {
+  events: CalendarEvent[];
+  onCreate: () => void;
+  onDelete: (event: CalendarEvent) => void;
+  people: CalendarPerson[];
+}) {
+  const weekDays = currentWeekDays();
+  const weekStart = startOfDay(weekDays[0]);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 7);
+  const weekEvents = events
+    .filter((event) => {
+      const startsAt = new Date(event.startsAt);
+      return startsAt >= weekStart && startsAt < weekEnd;
+    })
+    .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
+
+  return (
+    <section className="calendarPanel">
+      <div className="calendarHead">
+        <div>
+          <p className="eyebrow">Semana</p>
+          <h2>Calendario de actividades</h2>
+          <p>Ideas, partidos, cumpleaños, reuniones y cualquier cosa que no se debe perder.</p>
+        </div>
+        <button className="btn" type="button" onClick={onCreate}>Nuevo evento</button>
+      </div>
+      <div className="weekCalendar">
+        {weekDays.map((day) => {
+          const dayEvents = weekEvents.filter((event) => sameDay(new Date(event.startsAt), day));
+          return (
+            <section key={day.toISOString()}>
+              <div className="dayHead">
+                <span>{weekdayLabel(day)}</span>
+                <b>{day.getDate()}</b>
+              </div>
+              {people.map((person) => {
+                const personEvents = dayEvents.filter((event) => normalizeText(event.ownerName) === normalizeText(person.name));
+                return (
+                  <div className="personLane" key={`${day.toISOString()}-${person.name}`}>
+                    <strong>{person.initials}</strong>
+                    <div>
+                      {personEvents.length ? personEvents.map((event) => (
+                        <article key={event.id}>
+                          <time>{formatActivityTime(event.startsAt)}</time>
+                          <b>{event.title}</b>
+                          {event.location && <span>{event.location}</span>}
+                          {event.notes && <p>{event.notes}</p>}
+                          <button className="btn ghost" type="button" onClick={() => onDelete(event)}>Eliminar</button>
+                        </article>
+                      )) : <small>Libre</small>}
+                    </div>
+                  </div>
+                );
+              })}
+            </section>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
@@ -783,6 +915,77 @@ function StageLinkForm({
   );
 }
 
+function CalendarEventForm({
+  defaultOwner,
+  onClose,
+  onSave,
+  people
+}: {
+  defaultOwner: CalendarPerson;
+  onClose: () => void;
+  onSave: (input: CalendarEventInput) => void;
+  people: CalendarPerson[];
+}) {
+  const [quickText, setQuickText] = useState("");
+  const [draft, setDraft] = useState(() => calendarDraftFromQuickText("", defaultOwner, people));
+
+  function applyQuickText(value: string) {
+    setQuickText(value);
+    setDraft(calendarDraftFromQuickText(value, defaultOwner, people));
+  }
+
+  return (
+    <form
+      className="modal calendarModal"
+      onSubmit={(event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        const ownerName = String(data.get("ownerName") || defaultOwner.name);
+        const owner = people.find((person) => person.name === ownerName) || defaultOwner;
+        const date = String(data.get("date") || draft.date);
+        const time = String(data.get("time") || draft.time);
+        const startsAt = new Date(`${date}T${time || "09:00"}:00`);
+        onSave({
+          title: String(data.get("title") || "Evento"),
+          ownerName: owner.name,
+          ownerEmail: owner.email,
+          startsAt: startsAt.toISOString(),
+          endsAt: null,
+          location: String(data.get("location") || ""),
+          notes: String(data.get("notes") || "")
+        });
+      }}
+    >
+      <div className="modalHead">
+        <h3>Nuevo evento</h3>
+        <button className="btn ghost" type="button" onClick={onClose}>Cerrar</button>
+      </div>
+      <label>Frase rápida
+        <textarea
+          onChange={(event) => applyQuickText(event.target.value)}
+          placeholder="Ej: Tengo partido de padel pasado mañana a las 20:00 en Establos"
+          value={quickText}
+        />
+      </label>
+      <div className="split">
+        <label>Título<input name="title" onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))} required value={draft.title} /></label>
+        <label>Persona
+          <select name="ownerName" onChange={(event) => setDraft((current) => ({ ...current, ownerName: event.target.value }))} value={draft.ownerName}>
+            {people.map((person) => <option key={person.name}>{person.name}</option>)}
+          </select>
+        </label>
+      </div>
+      <div className="split">
+        <label>Fecha<input name="date" onChange={(event) => setDraft((current) => ({ ...current, date: event.target.value }))} required type="date" value={draft.date} /></label>
+        <label>Hora<input name="time" onChange={(event) => setDraft((current) => ({ ...current, time: event.target.value }))} type="time" value={draft.time} /></label>
+      </div>
+      <label>Lugar<input name="location" onChange={(event) => setDraft((current) => ({ ...current, location: event.target.value }))} value={draft.location} /></label>
+      <label>Notas<textarea name="notes" onChange={(event) => setDraft((current) => ({ ...current, notes: event.target.value }))} value={draft.notes} /></label>
+      <button className="btn" type="submit">Guardar evento</button>
+    </form>
+  );
+}
+
 function IdeaForm({
   defaultStatusId,
   onClose,
@@ -870,6 +1073,130 @@ function Progress({ value, label }: { value: number; label: string }) {
       <small>{label} · {value}%</small>
     </div>
   );
+}
+
+function currentWeekDays() {
+  const today = new Date();
+  const monday = startOfDay(today);
+  const day = monday.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  monday.setDate(monday.getDate() + diff);
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + index);
+    return date;
+  });
+}
+
+function startOfDay(value: Date) {
+  const date = new Date(value);
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
+function sameDay(left: Date, right: Date) {
+  return startOfDay(left).getTime() === startOfDay(right).getTime();
+}
+
+function weekdayLabel(value: Date) {
+  return new Intl.DateTimeFormat("es", { weekday: "short" }).format(value).replace(".", "");
+}
+
+function calendarPeople(state: ControlRoomState, userEmail: string): CalendarPerson[] {
+  const defaults = [
+    defaultCalendarOwner("mjcalvo92@gmail.com"),
+    defaultCalendarOwner("vinelis13@gmail.com"),
+    defaultCalendarOwner(userEmail)
+  ];
+  const fromUsers = state.users.map((user) => ({
+    name: user.name,
+    email: user.email,
+    initials: initialsFromName(user.name)
+  }));
+  const byName = new Map<string, CalendarPerson>();
+  [...defaults, ...fromUsers].forEach((person) => {
+    if (person.name) byName.set(normalizeText(person.name), person);
+  });
+  return [...byName.values()];
+}
+
+function defaultCalendarOwner(email: string): CalendarPerson {
+  const normalized = email.trim().toLowerCase();
+  if (normalized === "vinelis13@gmail.com") return { name: "Vinelis Garcia", email: normalized, initials: "VG" };
+  if (normalized === "mjcalvo92@gmail.com") return { name: "Manuel Onate", email: normalized, initials: "MO" };
+  return { name: normalized ? normalized.split("@")[0] : "MVOG", email: normalized || null, initials: creatorInitialsForEmail(normalized || "mv") };
+}
+
+function initialsFromName(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "MV";
+  return parts.slice(0, 2).map((part) => part[0]?.toUpperCase()).join("");
+}
+
+function calendarDraftFromQuickText(text: string, defaultOwner: CalendarPerson, people: CalendarPerson[]) {
+  const lower = normalizeText(text);
+  const owner = people.find((person) => lower.includes(normalizeText(person.name).split(" ")[0])) || defaultOwner;
+  const date = parseQuickDate(lower);
+  const time = lower.match(/(?:a las|las|hora)\s+(\d{1,2})(?::|\.|h)?(\d{2})?/) || lower.match(/\b(\d{1,2}):(\d{2})\b/);
+  const location = text.match(/\ben\s+([^,.;]+)/i)?.[1]?.trim() || "";
+  const title = cleanQuickTitle(text) || "Evento";
+
+  return {
+    title,
+    ownerName: owner.name,
+    date: toDateInputValue(date),
+    time: time ? `${time[1].padStart(2, "0")}:${(time[2] || "00").padStart(2, "0")}` : "09:00",
+    location,
+    notes: text
+  };
+}
+
+function parseQuickDate(lowerText: string) {
+  const date = new Date();
+  if (lowerText.includes("pasado manana") || lowerText.includes("pasado mañana")) {
+    date.setDate(date.getDate() + 2);
+    return date;
+  }
+  if (lowerText.includes("manana") || lowerText.includes("mañana")) {
+    date.setDate(date.getDate() + 1);
+    return date;
+  }
+  if (lowerText.includes("hoy")) return date;
+
+  const dayMatch = lowerText.match(/(?:dia|el)\s+(\d{1,2})/);
+  if (dayMatch) {
+    const targetDay = Number(dayMatch[1]);
+    date.setDate(targetDay);
+    if (startOfDay(date).getTime() < startOfDay(new Date()).getTime()) {
+      date.setMonth(date.getMonth() + 1);
+    }
+  }
+  return date;
+}
+
+function cleanQuickTitle(text: string) {
+  return text
+    .replace(/\b(tengo|tiene|manuel|vinelis)\b/gi, "")
+    .replace(/\b(pasado mañana|pasado manana|mañana|manana|hoy|el día \d{1,2}|el dia \d{1,2}|día \d{1,2}|dia \d{1,2})\b/gi, "")
+    .replace(/\b(a las|las|hora)\s+\d{1,2}(?::|\.|h)?\d{0,2}\b/gi, "")
+    .replace(/\ben\s+[^,.;]+/gi, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function toDateInputValue(value: Date) {
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function calendarEventFromInput(input: CalendarEventInput): CalendarEvent {
+  return {
+    id: crypto.randomUUID(),
+    ...input,
+    createdAt: new Date().toISOString()
+  };
 }
 
 function progressFor(idea: Idea, statuses: Status[]) {
@@ -964,6 +1291,7 @@ function viewLabel(view: ViewKey) {
   if (view === "brain") return "Cerebro";
   if (view === "detail") return "Detalle";
   if (view === "board") return "Tablero";
+  if (view === "calendar") return "Calendario";
   return "Señales";
 }
 

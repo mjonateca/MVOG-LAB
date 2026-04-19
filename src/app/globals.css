@@ -214,6 +214,10 @@ main {
   justify-content: flex-end;
 }
 
+.mobileEventAction {
+  display: none;
+}
+
 .labHero h2 {
   max-width: 12ch;
 }
@@ -1272,6 +1276,129 @@ label {
   gap: 0.75rem;
 }
 
+.calendarPanel {
+  display: grid;
+  gap: 1rem;
+}
+
+.calendarHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.calendarHead h2,
+.calendarHead p {
+  margin: 0;
+}
+
+.calendarHead p:not(.eyebrow) {
+  max-width: 44rem;
+}
+
+.weekCalendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(12rem, 1fr));
+  gap: 0.7rem;
+  overflow-x: auto;
+  padding-bottom: 0.6rem;
+}
+
+.weekCalendar > section {
+  display: grid;
+  align-content: start;
+  gap: 0.65rem;
+  min-width: 12rem;
+  min-height: 24rem;
+  padding: 0.7rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.dayHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.dayHead span {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.dayHead b {
+  color: var(--green);
+  font-size: 1.6rem;
+}
+
+.personLane {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 0.45rem;
+  align-items: start;
+}
+
+.personLane > strong {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  color: #06100c;
+  background: var(--green);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 950;
+}
+
+.personLane > div {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.personLane small {
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.personLane article {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.55rem;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius);
+}
+
+.personLane time {
+  color: var(--aqua);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.personLane span,
+.personLane p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.calendarModal textarea:first-of-type {
+  min-height: 4.5rem;
+}
+
 .dailyReport {
   display: grid;
   gap: 0.9rem;
@@ -1435,6 +1562,12 @@ dialog {
     width: 100%;
   }
 
+  .brainMain .mobileEventAction {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .brainMain .heroActions {
     justify-content: stretch;
   }
@@ -1457,12 +1590,27 @@ dialog {
   .kpis,
   .signalBar,
   .flowGrid,
+  .calendarHead,
   .analyticsGrid,
   .settingsGrid,
   .stageGrid,
   .split,
   .modalHead {
     grid-template-columns: 1fr;
+  }
+
+  .calendarHead {
+    display: grid;
+  }
+
+  .weekCalendar {
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+
+  .weekCalendar > section {
+    min-width: 0;
+    min-height: auto;
   }
 
   .brainWrap {

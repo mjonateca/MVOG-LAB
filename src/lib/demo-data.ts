@@ -212,6 +212,19 @@ export const demoState: ControlRoomState = {
       updatedAt: daysAgo(10)
     }
   ],
+  calendarEvents: [
+    {
+      id: "event-padel-demo",
+      title: "Partido de padel",
+      ownerName: "Manuel Onate",
+      ownerEmail: "mjcalvo92@gmail.com",
+      startsAt: new Date(now + 2 * 86_400_000).toISOString(),
+      endsAt: null,
+      location: "Establos",
+      notes: "Ejemplo de evento rápido del calendario semanal.",
+      createdAt: daysAgo(0)
+    }
+  ],
   activity: [
     { id: "act-4", at: daysAgo(5), text: "Se agregaron nuevas ideas estratégicas al repositorio MVOG." },
     { id: "act-1", at: daysAgo(1), text: "Inventario predictivo para colmados entró en Concepto explicado." },

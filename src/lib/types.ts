@@ -59,11 +59,24 @@ export type ActivityItem = {
   text: string;
 };
 
+export type CalendarEvent = {
+  id: string;
+  title: string;
+  ownerName: string;
+  ownerEmail?: string | null;
+  startsAt: string;
+  endsAt?: string | null;
+  location: string;
+  notes: string;
+  createdAt: string;
+};
+
 export type ControlRoomState = {
   statuses: Status[];
   roles: Role[];
   users: AppUser[];
   ideas: Idea[];
+  calendarEvents: CalendarEvent[];
   activity: ActivityItem[];
 };
 
@@ -84,4 +97,14 @@ export type IdeaInput = {
   developmentProgress?: number;
   returnScore?: number | null;
   difficultyScore?: number | null;
+};
+
+export type CalendarEventInput = {
+  title: string;
+  ownerName: string;
+  ownerEmail?: string | null;
+  startsAt: string;
+  endsAt?: string | null;
+  location: string;
+  notes: string;
 };

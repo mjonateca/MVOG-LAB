@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { demoState } from "./demo-data";
 import { createSupabaseAdmin } from "./supabase/admin";
-import type { AppUser, ControlRoomState, Idea, IdeaInput, IdeaPhaseNote, Role, Status } from "./types";
+import type { AppUser, CalendarEvent, CalendarEventInput, ControlRoomState, Idea, IdeaInput, IdeaPhaseNote, Role, Status } from "./types";
 
 type RoleRow = { id: string; name: string };
 type StatusRow = { id: string; name: string; position: number; wip_limit: number };
@@ -33,6 +33,17 @@ type IdeaRow = {
   idea_tags?: Array<{ tag: string }>;
 };
 type ActivityRow = { id: string; created_at: string; message: string };
+type CalendarEventRow = {
+  id: string;
+  title: string;
+  owner_name: string;
+  owner_email: string | null;
+  starts_at: string;
+  ends_at: string | null;
+  location: string;
+  notes: string;
+  created_at: string;
+};
 type IdeaPhaseNoteRow = {
   id: string;
   idea_id: string;
@@ -68,6 +79,7 @@ export async function getControlRoomState(): Promise<ControlRoomState> {
   ]);
   const ideas = await fetchIdeaRows();
   const phaseNotes = await fetchIdeaPhaseNotes();
+  const calendarEvents = await fetchCalendarEvents();
 
   const error = roles.error || statuses.error || users.error || activity.error;
   if (error) {
@@ -79,12 +91,56 @@ export async function getControlRoomState(): Promise<ControlRoomState> {
     statuses: ((statuses.data || []) as StatusRow[]).map(mapStatus),
     users: ((users.data || []) as unknown as UserRow[]).map(mapUser),
     ideas: ideas.map((idea) => mapIdea(idea, phaseNotes.get(idea.id) || [])),
+    calendarEvents,
     activity: ((activity.data || []) as ActivityRow[]).map((item) => ({
       id: item.id,
       at: item.created_at,
       text: item.message
     }))
   };
+}
+
+export async function createCalendarEvent(input: CalendarEventInput) {
+  const supabase = createSupabaseAdmin();
+  if (!supabase) {
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from("calendar_events")
+    .insert({
+      title: input.title,
+      owner_name: input.ownerName,
+      owner_email: input.ownerEmail || null,
+      starts_at: input.startsAt,
+      ends_at: input.endsAt || null,
+      location: input.location,
+      notes: input.notes
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  await addActivity(`${input.ownerName} tiene ${input.title} en calendario.`);
+  return data.id as string;
+}
+
+export async function deleteCalendarEvent(id: string) {
+  const supabase = createSupabaseAdmin();
+  if (!supabase) {
+    return null;
+  }
+
+  const { error } = await supabase.from("calendar_events").delete().eq("id", id);
+  if (error) {
+    throw error;
+  }
+
+  await addActivity("Un evento fue eliminado del calendario.");
+  return id;
 }
 
 export async function createIdea(input: IdeaInput) {
@@ -317,6 +373,30 @@ async function fetchIdeaPhaseNotes() {
   return byIdea;
 }
 
+async function fetchCalendarEvents() {
+  const supabase = createSupabaseAdmin();
+  if (!supabase) return [] as CalendarEvent[];
+
+  const now = new Date();
+  const start = new Date(now);
+  start.setDate(start.getDate() - 14);
+  const end = new Date(now);
+  end.setDate(end.getDate() + 60);
+
+  const { data, error } = await supabase
+    .from("calendar_events")
+    .select("id,title,owner_name,owner_email,starts_at,ends_at,location,notes,created_at")
+    .gte("starts_at", start.toISOString())
+    .lte("starts_at", end.toISOString())
+    .order("starts_at");
+
+  if (error) {
+    return [];
+  }
+
+  return ((data || []) as CalendarEventRow[]).map(mapCalendarEvent);
+}
+
 async function syncPhaseNotes(ideaId: string, notes: IdeaPhaseNote[]) {
   const supabase = createSupabaseAdmin();
   if (!supabase || !notes.length) return;
@@ -393,6 +473,20 @@ function mapIdeaPhaseNote(row: IdeaPhaseNoteRow): IdeaPhaseNote {
     link: row.link,
     createdAt: row.created_at,
     updatedAt: row.updated_at
+  };
+}
+
+function mapCalendarEvent(row: CalendarEventRow): CalendarEvent {
+  return {
+    id: row.id,
+    title: row.title,
+    ownerName: row.owner_name,
+    ownerEmail: row.owner_email,
+    startsAt: row.starts_at,
+    endsAt: row.ends_at,
+    location: row.location,
+    notes: row.notes,
+    createdAt: row.created_at
   };
 }
 
