@@ -411,7 +411,7 @@ function CalendarView({
   onDelete: (event: CalendarEvent) => void;
   people: CalendarPerson[];
 }) {
-  const weekDays = currentWeekDays();
+  const weekDays = nextSevenDays();
   const weekStart = startOfDay(weekDays[0]);
   const weekEnd = new Date(weekStart);
   weekEnd.setDate(weekEnd.getDate() + 7);
@@ -441,25 +441,23 @@ function CalendarView({
                 <span>{weekdayLabel(day)}</span>
                 <b>{day.getDate()}</b>
               </div>
-              {people.map((person) => {
-                const personEvents = dayEvents.filter((event) => normalizeText(event.ownerName) === normalizeText(person.name));
-                return (
-                  <div className="personLane" key={`${day.toISOString()}-${person.name}`}>
-                    <strong>{person.initials}</strong>
-                    <div>
-                      {personEvents.length ? personEvents.map((event) => (
-                        <article key={event.id}>
-                          <time>{formatActivityTime(event.startsAt)}</time>
-                          <b>{event.title}</b>
-                          {event.location && <span>{event.location}</span>}
-                          {event.notes && <p>{event.notes}</p>}
-                          <button className="btn ghost" type="button" onClick={() => onDelete(event)}>Eliminar</button>
-                        </article>
-                      )) : <small>Libre</small>}
-                    </div>
-                  </div>
-                );
-              })}
+              <div className="dayAgenda">
+                {dayEvents.length ? dayEvents.map((event) => {
+                  const person = people.find((item) => normalizeText(item.name) === normalizeText(event.ownerName));
+                  return (
+                    <article className="calendarEventCard" key={event.id}>
+                      <div>
+                        <time>{formatActivityTime(event.startsAt)}</time>
+                        <strong>{person?.initials || initialsFromName(event.ownerName)}</strong>
+                      </div>
+                      <b>{event.title}</b>
+                      {event.location && <span>{event.location}</span>}
+                      {event.notes && <p>{event.notes}</p>}
+                      <button className="btn ghost" type="button" onClick={() => onDelete(event)}>Eliminar</button>
+                    </article>
+                  );
+                }) : <small className="emptyDay">Sin eventos</small>}
+              </div>
             </section>
           );
         })}
@@ -1075,15 +1073,12 @@ function Progress({ value, label }: { value: number; label: string }) {
   );
 }
 
-function currentWeekDays() {
+function nextSevenDays() {
   const today = new Date();
-  const monday = startOfDay(today);
-  const day = monday.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-  monday.setDate(monday.getDate() + diff);
+  const firstDay = startOfDay(today);
   return Array.from({ length: 7 }, (_, index) => {
-    const date = new Date(monday);
-    date.setDate(monday.getDate() + index);
+    const date = new Date(firstDay);
+    date.setDate(firstDay.getDate() + index);
     return date;
   });
 }
@@ -1137,7 +1132,7 @@ function calendarDraftFromQuickText(text: string, defaultOwner: CalendarPerson, 
   const lower = normalizeText(text);
   const owner = people.find((person) => lower.includes(normalizeText(person.name).split(" ")[0])) || defaultOwner;
   const date = parseQuickDate(lower);
-  const time = lower.match(/(?:a las|las|hora)\s+(\d{1,2})(?::|\.|h)?(\d{2})?/) || lower.match(/\b(\d{1,2}):(\d{2})\b/);
+  const time = parseQuickTime(lower);
   const location = text.match(/\ben\s+([^,.;]+)/i)?.[1]?.trim() || "";
   const title = cleanQuickTitle(text) || "Evento";
 
@@ -1145,10 +1140,29 @@ function calendarDraftFromQuickText(text: string, defaultOwner: CalendarPerson, 
     title,
     ownerName: owner.name,
     date: toDateInputValue(date),
-    time: time ? `${time[1].padStart(2, "0")}:${(time[2] || "00").padStart(2, "0")}` : "09:00",
+    time,
     location,
     notes: text
   };
+}
+
+function parseQuickTime(lowerText: string) {
+  const match = lowerText.match(/(?:a las|las|hora|sobre las|a eso de las)\s+(\d{1,2})(?::|\.|h)?(\d{2})?\s*(am|pm)?/);
+  const clockMatch = match || lowerText.match(/\b(\d{1,2}):(\d{2})\s*(am|pm)?\b/);
+  const meridiemMatch = clockMatch ? null : lowerText.match(/\b(\d{1,2})\s*(am|pm)\b/);
+  const selected = clockMatch || meridiemMatch;
+
+  if (!selected) return "09:00";
+
+  let hour = Number(selected[1]);
+  const minute = Number(meridiemMatch ? "0" : selected[2] || "0");
+  const meridiem = meridiemMatch ? selected[2] : selected[3];
+
+  if (meridiem === "pm" && hour < 12) hour += 12;
+  if (meridiem === "am" && hour === 12) hour = 0;
+  if (hour > 23 || minute > 59) return "09:00";
+
+  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 }
 
 function parseQuickDate(lowerText: string) {
@@ -1178,7 +1192,9 @@ function cleanQuickTitle(text: string) {
   return text
     .replace(/\b(tengo|tiene|manuel|vinelis)\b/gi, "")
     .replace(/\b(pasado mañana|pasado manana|mañana|manana|hoy|el día \d{1,2}|el dia \d{1,2}|día \d{1,2}|dia \d{1,2})\b/gi, "")
-    .replace(/\b(a las|las|hora)\s+\d{1,2}(?::|\.|h)?\d{0,2}\b/gi, "")
+    .replace(/\b(a las|las|hora|sobre las|a eso de las)\s+\d{1,2}(?::|\.|h)?\d{0,2}\s*(am|pm)?\b/gi, "")
+    .replace(/\b\d{1,2}:\d{2}\s*(am|pm)?\b/gi, "")
+    .replace(/\b\d{1,2}\s*(am|pm)\b/gi, "")
     .replace(/\ben\s+[^,.;]+/gi, "")
     .replace(/\s+/g, " ")
     .trim();

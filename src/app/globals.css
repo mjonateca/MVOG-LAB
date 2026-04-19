@@ -1344,36 +1344,20 @@ label {
   font-size: 1.6rem;
 }
 
-.personLane {
-  display: grid;
-  grid-template-columns: 2rem minmax(0, 1fr);
-  gap: 0.45rem;
-  align-items: start;
-}
-
-.personLane > strong {
-  display: grid;
-  place-items: center;
-  width: 2rem;
-  height: 2rem;
-  color: #06100c;
-  background: var(--green);
-  border-radius: 999px;
-  font-size: 0.72rem;
-  font-weight: 950;
-}
-
-.personLane > div {
+.dayAgenda {
   display: grid;
   gap: 0.45rem;
+  min-height: 18rem;
+  align-content: start;
 }
 
-.personLane small {
+.emptyDay {
   color: var(--muted);
   font-size: 0.74rem;
+  opacity: 0.58;
 }
 
-.personLane article {
+.calendarEventCard {
   display: grid;
   gap: 0.25rem;
   padding: 0.55rem;
@@ -1382,14 +1366,34 @@ label {
   border-radius: var(--radius);
 }
 
-.personLane time {
+.calendarEventCard > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.calendarEventCard time {
   color: var(--aqua);
   font-size: 0.72rem;
   font-weight: 900;
 }
 
-.personLane span,
-.personLane p {
+.calendarEventCard strong {
+  display: grid;
+  place-items: center;
+  min-width: 1.9rem;
+  height: 1.9rem;
+  padding: 0 0.35rem;
+  color: #06100c;
+  background: var(--green);
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 950;
+}
+
+.calendarEventCard span,
+.calendarEventCard p {
   margin: 0;
   color: var(--muted);
   font-size: 0.76rem;
