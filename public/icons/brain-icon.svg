@@ -1,48 +1,85 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="MVOG Lab orbital brain icon">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="MVOG Lab orbital brain logo">
   <defs>
-    <radialGradient id="bg" cx="50%" cy="45%" r="70%">
-      <stop offset="0" stop-color="#11261f"/>
-      <stop offset="0.45" stop-color="#07120f"/>
-      <stop offset="1" stop-color="#020504"/>
+    <radialGradient id="bg" cx="48%" cy="43%" r="80%">
+      <stop offset="0" stop-color="#17372e"/>
+      <stop offset="0.42" stop-color="#152a2c"/>
+      <stop offset="0.78" stop-color="#13191a"/>
+      <stop offset="1" stop-color="#0a0d0c"/>
     </radialGradient>
-    <radialGradient id="core" cx="42%" cy="35%" r="72%">
-      <stop offset="0" stop-color="#f7ff82"/>
-      <stop offset="0.35" stop-color="#48f2a5"/>
-      <stop offset="0.78" stop-color="#35d2d9"/>
-      <stop offset="1" stop-color="#167b7e"/>
+    <radialGradient id="aura" cx="44%" cy="42%" r="52%">
+      <stop offset="0" stop-color="#39f29f" stop-opacity="0.54"/>
+      <stop offset="0.34" stop-color="#35d2d9" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#35d2d9" stop-opacity="0"/>
     </radialGradient>
-    <filter id="softGlow" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
-      <feGaussianBlur stdDeviation="10" result="blur"/>
-      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.18 0 0 0 0 0.96 0 0 0 0 0.62 0 0 0 0.68 0"/>
-      <feBlend in="SourceGraphic"/>
+    <filter id="blur" x="-45%" y="-45%" width="190%" height="190%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="9"/>
+    </filter>
+    <filter id="nodeGlow" x="-80%" y="-80%" width="260%" height="260%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="8" result="glow"/>
+      <feBlend in="SourceGraphic" in2="glow"/>
     </filter>
   </defs>
+
   <rect width="512" height="512" rx="108" fill="url(#bg)"/>
-  <circle cx="256" cy="256" r="176" fill="#48f2a5" opacity="0.045"/>
-  <circle cx="122" cy="120" r="62" fill="#48f2a5" opacity="0.12"/>
-  <circle cx="394" cy="398" r="82" fill="#35d2d9" opacity="0.10"/>
+  <circle cx="236" cy="238" r="178" fill="url(#aura)"/>
+  <circle cx="414" cy="384" r="124" fill="#7d6bff" opacity="0.11" filter="url(#blur)"/>
+  <circle cx="86" cy="122" r="112" fill="#2bf59a" opacity="0.09" filter="url(#blur)"/>
 
   <g fill="none" stroke-linecap="round">
-    <ellipse cx="256" cy="256" rx="180" ry="82" stroke="#48f2a5" stroke-width="5" opacity="0.52" transform="rotate(-18 256 256)"/>
-    <ellipse cx="256" cy="256" rx="158" ry="68" stroke="#35d2d9" stroke-width="4" opacity="0.45" transform="rotate(24 256 256)"/>
-    <ellipse cx="256" cy="256" rx="116" ry="178" stroke="#9b8cff" stroke-width="3" opacity="0.28" transform="rotate(-36 256 256)"/>
+    <ellipse cx="258" cy="252" rx="226" ry="126" stroke="#6ddd42" stroke-width="2.4" opacity="0.58" transform="rotate(14 258 252)"/>
+    <ellipse cx="256" cy="258" rx="206" ry="108" stroke="#f08c4a" stroke-width="2.2" opacity="0.46" transform="rotate(-58 256 258)"/>
+    <ellipse cx="252" cy="255" rx="168" ry="78" stroke="#7d6bff" stroke-width="2" opacity="0.58" transform="rotate(4 252 255)"/>
+    <ellipse cx="260" cy="260" rx="142" ry="66" stroke="#f065a3" stroke-width="1.8" opacity="0.5" transform="rotate(-2 260 260)"/>
+    <ellipse cx="250" cy="256" rx="118" ry="56" stroke="#f3d85d" stroke-width="1.8" opacity="0.45" transform="rotate(-17 250 256)"/>
   </g>
 
-  <g filter="url(#softGlow)">
-    <circle cx="256" cy="256" r="76" fill="url(#core)"/>
-    <path d="M213 244c6-25 28-43 53-43 27 0 50 20 54 47M196 278c22-14 51-12 70 6 17 16 42 18 62 4M231 215c-7 19-2 38 13 51M281 206c-14 23-13 49 2 75M224 310c28 12 59 5 78-18" fill="none" stroke="#05100b" stroke-width="10" stroke-linecap="round" opacity="0.58"/>
-    <circle cx="256" cy="256" r="20" fill="#f7ff82" opacity="0.9"/>
+  <g opacity="0.38" stroke="#35d2d9" stroke-width="0.9">
+    <path d="M154 282 326 204"/>
+    <path d="M186 204 356 276"/>
+    <path d="M198 306 278 190"/>
+    <path d="M145 265 392 336"/>
   </g>
 
-  <g>
-    <circle cx="111" cy="290" r="10" fill="#48f2a5"/>
-    <circle cx="397" cy="216" r="9" fill="#35d2d9"/>
-    <circle cx="337" cy="108" r="7" fill="#f7ff82"/>
-    <circle cx="176" cy="386" r="8" fill="#9b8cff"/>
-    <g fill="#ffffff" opacity="0.84">
-      <circle cx="256" cy="74" r="3"/>
-      <circle cx="430" cy="314" r="3"/>
-      <circle cx="90" cy="184" r="3"/>
-    </g>
+  <g filter="url(#nodeGlow)">
+    <circle cx="110" cy="258" r="9" fill="#e85d97"/>
+    <circle cx="160" cy="202" r="13" fill="#35d2d9"/>
+    <circle cx="197" cy="162" r="15" fill="#35d2d9"/>
+    <circle cx="233" cy="156" r="13" fill="#35d2d9"/>
+    <circle cx="278" cy="170" r="14" fill="#35d2d9"/>
+    <circle cx="310" cy="202" r="14" fill="#35d2d9"/>
+    <circle cx="335" cy="256" r="13" fill="#35d2d9"/>
+    <circle cx="315" cy="304" r="13" fill="#35d2d9"/>
+    <circle cx="265" cy="338" r="12" fill="#35d2d9"/>
+    <circle cx="202" cy="322" r="11" fill="#35d2d9"/>
+    <circle cx="156" cy="286" r="14" fill="#35d2d9"/>
+    <circle cx="382" cy="324" r="14" fill="#e85d97"/>
+    <circle cx="192" cy="374" r="13" fill="#f3d85d"/>
+    <circle cx="276" cy="438" r="14" fill="#8674ff"/>
+    <circle cx="234" cy="214" r="13" fill="#43d68e"/>
+    <circle cx="188" cy="236" r="12" fill="#43d68e"/>
+    <circle cx="274" cy="226" r="13" fill="#43d68e"/>
+    <circle cx="318" cy="234" r="12" fill="#43d68e"/>
+    <circle cx="286" cy="274" r="12" fill="#43d68e"/>
+    <circle cx="236" cy="282" r="12" fill="#43d68e"/>
+  </g>
+
+  <g font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="900" text-anchor="middle" fill="#07100e">
+    <circle cx="156" cy="252" r="25" fill="#35d2d9" opacity="0.9"/>
+    <text x="156" y="259">MO</text>
+    <circle cx="190" cy="188" r="25" fill="#35d2d9" opacity="0.9"/>
+    <text x="190" y="195">VG</text>
+    <circle cx="230" cy="240" r="25" fill="#43d68e" opacity="0.92"/>
+    <text x="230" y="247">MO</text>
+    <circle cx="332" cy="316" r="25" fill="#35d2d9" opacity="0.9"/>
+    <text x="332" y="323">VG</text>
+  </g>
+
+  <g filter="url(#nodeGlow)">
+    <circle cx="442" cy="286" r="5" fill="#96f05d"/>
+    <circle cx="384" cy="332" r="5" fill="#a58dff"/>
+    <circle cx="142" cy="250" r="5" fill="#e85d97"/>
+    <circle cx="285" cy="314" r="6" fill="#f3d85d"/>
+    <circle cx="68" cy="198" r="6" fill="#ff9f5f"/>
+    <circle cx="232" cy="62" r="14" fill="#8674ff"/>
   </g>
 </svg>
