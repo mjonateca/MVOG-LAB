@@ -68,6 +68,7 @@ export type CalendarEvent = {
   endsAt?: string | null;
   location: string;
   notes: string;
+  completedAt?: string | null;
   createdAt: string;
 };
 
@@ -107,4 +108,5 @@ export type CalendarEventInput = {
   endsAt?: string | null;
   location: string;
   notes: string;
+  completedAt?: string | null;
 };

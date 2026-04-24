@@ -150,6 +150,36 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
     });
   }
 
+  async function patchCalendarEvent(event: CalendarEvent, patch: Partial<CalendarEventInput>) {
+    const nextEvent = { ...event, ...patch };
+    setState((current) => ({
+      ...current,
+      calendarEvents: current.calendarEvents
+        .map((item) => (item.id === event.id ? nextEvent : item))
+        .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())
+    }));
+
+    const response = await fetch(`/api/calendar/${event.id}`, {
+      method: "PATCH",
+      headers: authHeaders(accessToken),
+      body: JSON.stringify(patch)
+    });
+
+    if (response.ok) {
+      await refresh();
+    }
+  }
+
+  async function moveCalendarEvent(event: CalendarEvent, nextDate: string) {
+    const movedStartsAt = moveEventToDate(event.startsAt, nextDate);
+    const movedEndsAt = event.endsAt ? moveEventToDate(event.endsAt, nextDate) : null;
+    await patchCalendarEvent(event, { startsAt: movedStartsAt, endsAt: movedEndsAt });
+  }
+
+  async function toggleCalendarEventComplete(event: CalendarEvent) {
+    await patchCalendarEvent(event, { completedAt: event.completedAt ? null : new Date().toISOString() });
+  }
+
   async function moveIdea(idea: Idea, statusId: string) {
     const status = state.statuses.find((item) => item.id === statusId);
     if (!status) return;
@@ -374,6 +404,8 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
             events={state.calendarEvents}
             onCreate={() => setEventOpen(true)}
             onDelete={removeCalendarEvent}
+            onMove={moveCalendarEvent}
+            onToggleComplete={toggleCalendarEventComplete}
             people={calendarPeople(state, userEmail)}
           />
         )}
@@ -409,11 +441,15 @@ function CalendarView({
   events,
   onCreate,
   onDelete,
+  onMove,
+  onToggleComplete,
   people
 }: {
   events: CalendarEvent[];
   onCreate: () => void;
   onDelete: (event: CalendarEvent) => void;
+  onMove: (event: CalendarEvent, nextDate: string) => void;
+  onToggleComplete: (event: CalendarEvent) => void;
   people: CalendarPerson[];
 }) {
   const weekDays = nextSevenDays();
@@ -449,8 +485,9 @@ function CalendarView({
               <div className="dayAgenda">
                 {dayEvents.length ? dayEvents.map((event) => {
                   const person = people.find((item) => normalizeText(item.name) === normalizeText(event.ownerName));
+                  const currentDate = toDateInputValue(new Date(event.startsAt));
                   return (
-                    <article className="calendarEventCard" key={event.id}>
+                    <article className={`calendarEventCard ${event.completedAt ? "done" : ""}`} key={event.id}>
                       <div>
                         <time>{formatActivityTime(event.startsAt)}</time>
                         <strong>{person?.initials || initialsFromName(event.ownerName)}</strong>
@@ -458,7 +495,21 @@ function CalendarView({
                       <b>{event.title}</b>
                       {event.location && <span>{event.location}</span>}
                       {event.notes && <p>{event.notes}</p>}
-                      <button className="btn ghost" type="button" onClick={() => onDelete(event)}>Eliminar</button>
+                      <label className="calendarMove">
+                        <span>Mover a</span>
+                        <select value={currentDate} onChange={(moveEvent) => onMove(event, moveEvent.target.value)}>
+                          {weekDays.map((optionDay) => {
+                            const value = toDateInputValue(optionDay);
+                            return <option key={value} value={value}>{weekdayLabel(optionDay)} {optionDay.getDate()}</option>;
+                          })}
+                        </select>
+                      </label>
+                      <div className="calendarEventActions">
+                        <button className="btn ghost" type="button" onClick={() => onToggleComplete(event)}>
+                          {event.completedAt ? "Reabrir" : "Completar"}
+                        </button>
+                        <button className="btn ghost" type="button" onClick={() => onDelete(event)}>Eliminar</button>
+                      </div>
                     </article>
                   );
                 }) : <small className="emptyDay">Sin eventos</small>}
@@ -1103,28 +1154,16 @@ function weekdayLabel(value: Date) {
 }
 
 function calendarPeople(state: ControlRoomState, userEmail: string): CalendarPerson[] {
-  const defaults = [
-    defaultCalendarOwner("mjcalvo92@gmail.com"),
-    defaultCalendarOwner("vinelis13@gmail.com"),
-    defaultCalendarOwner(userEmail)
-  ];
-  const fromUsers = state.users.map((user) => ({
-    name: user.name,
-    email: user.email,
-    initials: initialsFromName(user.name)
-  }));
-  const byName = new Map<string, CalendarPerson>();
-  [...defaults, ...fromUsers].forEach((person) => {
-    if (person.name) byName.set(normalizeText(person.name), person);
-  });
-  return [...byName.values()];
+  void state;
+  void userEmail;
+  return [defaultCalendarOwner("mjcalvo92@gmail.com"), defaultCalendarOwner("vinelis13@gmail.com")];
 }
 
 function defaultCalendarOwner(email: string): CalendarPerson {
   const normalized = email.trim().toLowerCase();
   if (normalized === "vinelis13@gmail.com") return { name: "Vinelis Garcia", email: normalized, initials: "VG" };
   if (normalized === "mjcalvo92@gmail.com") return { name: "Manuel Onate", email: normalized, initials: "MO" };
-  return { name: normalized ? normalized.split("@")[0] : "MVOG", email: normalized || null, initials: creatorInitialsForEmail(normalized || "mv") };
+  return defaultCalendarOwner("mjcalvo92@gmail.com");
 }
 
 function initialsFromName(name: string) {
@@ -1210,6 +1249,13 @@ function toDateInputValue(value: Date) {
   const month = String(value.getMonth() + 1).padStart(2, "0");
   const day = String(value.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function moveEventToDate(isoValue: string, nextDate: string) {
+  const source = new Date(isoValue);
+  const [year, month, day] = nextDate.split("-").map(Number);
+  source.setFullYear(year, month - 1, day);
+  return source.toISOString();
 }
 
 function calendarEventFromInput(input: CalendarEventInput): CalendarEvent {

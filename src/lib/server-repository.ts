@@ -42,6 +42,7 @@ type CalendarEventRow = {
   ends_at: string | null;
   location: string;
   notes: string;
+  completed_at: string | null;
   created_at: string;
 };
 type IdeaPhaseNoteRow = {
@@ -112,10 +113,11 @@ export async function createCalendarEvent(input: CalendarEventInput) {
       title: input.title,
       owner_name: input.ownerName,
       owner_email: input.ownerEmail || null,
-      starts_at: input.startsAt,
-      ends_at: input.endsAt || null,
-      location: input.location,
-      notes: input.notes
+        starts_at: input.startsAt,
+        ends_at: input.endsAt || null,
+        location: input.location,
+        notes: input.notes,
+        completed_at: input.completedAt || null
     })
     .select("id")
     .single();
@@ -126,6 +128,38 @@ export async function createCalendarEvent(input: CalendarEventInput) {
 
   await addActivity(`${input.ownerName} tiene ${input.title} en calendario.`);
   return data.id as string;
+}
+
+export async function updateCalendarEvent(id: string, input: Partial<CalendarEventInput>) {
+  const supabase = createSupabaseAdmin();
+  if (!supabase) {
+    return null;
+  }
+
+  const patch: Record<string, unknown> = {};
+  if (input.title !== undefined) patch.title = input.title;
+  if (input.ownerName !== undefined) patch.owner_name = input.ownerName;
+  if (input.ownerEmail !== undefined) patch.owner_email = input.ownerEmail || null;
+  if (input.startsAt !== undefined) patch.starts_at = input.startsAt;
+  if (input.endsAt !== undefined) patch.ends_at = input.endsAt || null;
+  if (input.location !== undefined) patch.location = input.location;
+  if (input.notes !== undefined) patch.notes = input.notes;
+  if (input.completedAt !== undefined) patch.completed_at = input.completedAt || null;
+
+  const { error } = await supabase.from("calendar_events").update(patch).eq("id", id);
+  if (error) {
+    throw error;
+  }
+
+  if (input.completedAt !== undefined) {
+    await addActivity(input.completedAt ? "Un evento fue marcado como completado." : "Un evento fue reabierto en el calendario.");
+  } else if (input.startsAt !== undefined) {
+    await addActivity("Un evento del calendario cambió de día.");
+  } else {
+    await addActivity("Un evento del calendario fue actualizado.");
+  }
+
+  return id;
 }
 
 export async function deleteCalendarEvent(id: string) {
@@ -385,7 +419,7 @@ async function fetchCalendarEvents() {
 
   const { data, error } = await supabase
     .from("calendar_events")
-    .select("id,title,owner_name,owner_email,starts_at,ends_at,location,notes,created_at")
+    .select("id,title,owner_name,owner_email,starts_at,ends_at,location,notes,completed_at,created_at")
     .gte("starts_at", start.toISOString())
     .lte("starts_at", end.toISOString())
     .order("starts_at");
@@ -486,6 +520,7 @@ function mapCalendarEvent(row: CalendarEventRow): CalendarEvent {
     endsAt: row.ends_at,
     location: row.location,
     notes: row.notes,
+    completedAt: row.completed_at,
     createdAt: row.created_at
   };
 }
