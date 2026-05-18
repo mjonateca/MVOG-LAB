@@ -1,12 +1,8 @@
 import { NextResponse } from "next/server";
-import { requireAuthenticatedRequest } from "@/lib/auth";
 import { createCalendarEvent, getControlRoomState, unavailableResponse } from "@/lib/server-repository";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 
-export async function GET(request: Request) {
-  const auth = await requireAuthenticatedRequest(request);
-  if (auth.response) return auth.response;
-
+export async function GET() {
   try {
     return NextResponse.json(await getControlRoomState());
   } catch (error) {
@@ -15,8 +11,6 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const auth = await requireAuthenticatedRequest(request);
-  if (auth.response) return auth.response;
   if (!createSupabaseAdmin()) return unavailableResponse();
 
   try {
