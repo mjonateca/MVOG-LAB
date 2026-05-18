@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { requireAuthenticatedRequest } from "@/lib/auth";
 import { deleteIdea, unavailableResponse, updateIdea } from "@/lib/server-repository";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 
@@ -8,8 +7,6 @@ type RouteContext = {
 };
 
 export async function PATCH(request: Request, context: RouteContext) {
-  const auth = await requireAuthenticatedRequest(request);
-  if (auth.response) return auth.response;
   if (!createSupabaseAdmin()) return unavailableResponse();
 
   try {
@@ -23,8 +20,6 @@ export async function PATCH(request: Request, context: RouteContext) {
 }
 
 export async function DELETE(_request: Request, context: RouteContext) {
-  const auth = await requireAuthenticatedRequest(_request);
-  if (auth.response) return auth.response;
   if (!createSupabaseAdmin()) return unavailableResponse();
 
   try {
