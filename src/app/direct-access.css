@@ -1,0 +1,4 @@
+/* MVOG Lab now opens directly. Hide the former session controls. */
+.sessionBox {
+  display: none;
+}
