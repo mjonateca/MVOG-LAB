@@ -9,11 +9,18 @@ type Props = {
 
 export function DirectControlRoom({ initialState }: Props) {
   return (
-    <ControlRoomApp
-      accessToken=""
-      initialState={initialState}
-      onSignOut={() => window.location.reload()}
-      userEmail="Acceso directo"
-    />
+    <>
+      <style jsx global>{`
+        .sessionBox {
+          display: none;
+        }
+      `}</style>
+      <ControlRoomApp
+        accessToken=""
+        initialState={initialState}
+        onSignOut={() => window.location.reload()}
+        userEmail="Acceso directo"
+      />
+    </>
   );
 }
