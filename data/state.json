@@ -150,6 +150,17 @@
   ],
   "calendarEvents": [
     {
+      "id": "15c78e81-05f6-41a9-aafd-ad22fd535548",
+      "title": "CENA RAFAEL",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-05-24T23:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "",
+      "createdAt": "2026-05-24T18:03:52.860Z"
+    },
+    {
       "id": "059f4e13-2494-4471-b2ef-7ee16805d970",
       "title": "Reunión con Giovanni",
       "ownerName": "Manuel Onate",
@@ -162,6 +173,11 @@
     }
   ],
   "activity": [
+    {
+      "id": "82fad1df-fd1d-4e55-8399-ad794390afd3",
+      "at": "2026-05-24T18:03:52.860Z",
+      "text": "Manuel Onate tiene CENA RAFAEL en calendario."
+    },
     {
       "id": "4d1c1837-2340-45eb-84dd-348ace77d4ae",
       "at": "2026-05-24T17:38:02.222Z",
