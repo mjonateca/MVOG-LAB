@@ -1,49 +1,34 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useRef } from "react";
 import type { ControlRoomState } from "@/lib/types";
 import { ControlRoomApp } from "./ControlRoomApp";
-
-const STORAGE_KEY = "mvog-lab-state";
 
 type Props = {
   initialState: ControlRoomState;
 };
 
 export function DirectControlRoom({ initialState }: Props) {
-  const [loaded, setLoaded] = useState<ControlRoomState | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        setLoaded(JSON.parse(saved) as ControlRoomState);
-        return;
-      }
-    } catch {
-      // ignore parse errors
-    }
-    setLoaded(initialState);
-  }, [initialState]);
-
-  function handleStateChange(state: ControlRoomState) {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch {
-      // ignore storage errors (private mode, quota, etc.)
-    }
-  }
-
-  if (!loaded) return null;
+  const handleStateChange = useCallback((state: ControlRoomState) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      fetch("/api/state", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(state)
+      }).catch(() => {
+        // silent fail — UI already updated optimistically
+      });
+    }, 2000); // 2s debounce: aguarda que el usuario termine de editar
+  }, []);
 
   return (
     <ControlRoomApp
       accessToken=""
-      initialState={loaded}
-      onSignOut={() => {
-        localStorage.removeItem(STORAGE_KEY);
-        window.location.reload();
-      }}
+      initialState={initialState}
+      onSignOut={() => window.location.reload()}
       userEmail="MVOG"
       onStateChange={handleStateChange}
     />

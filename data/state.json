@@ -1,0 +1,159 @@
+{
+  "statuses": [
+    {
+      "id": "idea",
+      "name": "IDEA",
+      "position": 10,
+      "wipLimit": 99
+    },
+    {
+      "id": "concept",
+      "name": "Concepto explicado",
+      "position": 20,
+      "wipLimit": 99
+    },
+    {
+      "id": "research",
+      "name": "Investigación realizada",
+      "position": 30,
+      "wipLimit": 99
+    },
+    {
+      "id": "development",
+      "name": "En desarrollo",
+      "position": 40,
+      "wipLimit": 3
+    },
+    {
+      "id": "test",
+      "name": "En test",
+      "position": 50,
+      "wipLimit": 3
+    },
+    {
+      "id": "production",
+      "name": "En producción",
+      "position": 60,
+      "wipLimit": 3
+    },
+    {
+      "id": "sales",
+      "name": "En venta",
+      "position": 70,
+      "wipLimit": 99
+    }
+  ],
+  "roles": [
+    {
+      "id": "creator",
+      "name": "Creador digital"
+    },
+    {
+      "id": "finance",
+      "name": "Financiero"
+    },
+    {
+      "id": "product",
+      "name": "Producto"
+    },
+    {
+      "id": "user",
+      "name": "Usuario"
+    }
+  ],
+  "users": [
+    {
+      "id": "manuel",
+      "name": "Manuel Oñate",
+      "email": "mvogsrl@gmail.com",
+      "role": "Creador digital",
+      "verified": true
+    },
+    {
+      "id": "vinelis",
+      "name": "Vinelis Garcia",
+      "email": "vinelis13@gmail.com",
+      "role": "Producto",
+      "verified": true
+    }
+  ],
+  "ideas": [
+    {
+      "id": "idea-inventory",
+      "name": "Inventario predictivo para colmados",
+      "market": "Colmados y minimarkets",
+      "ownerId": null,
+      "owner": "",
+      "statusId": "concept",
+      "status": "Concepto explicado",
+      "value": "Alto",
+      "effort": "Media",
+      "notes": "Detectar productos que se agotan, sugerir compras y alertar sobre inventario muerto.",
+      "prompt": "Define un MVP de inventario predictivo para colmados con módulos, datos mínimos y pantallas clave.",
+      "tags": [
+        "IA",
+        "Inventario",
+        "Alertas"
+      ],
+      "phaseNotes": [],
+      "developmentProgress": 20,
+      "returnScore": 8,
+      "difficultyScore": 5,
+      "updatedAt": "2026-05-23T16:14:56.106Z"
+    },
+    {
+      "id": "idea-ibarber",
+      "name": "Ibarber",
+      "market": "Barberías y salones pequeños",
+      "ownerId": null,
+      "owner": "",
+      "statusId": "research",
+      "status": "Investigación realizada",
+      "value": "Alto",
+      "effort": "Media",
+      "notes": "App mobile-first para barberías pequeñas: reservas por link, WhatsApp, recordatorios, depósitos, clientes recurrentes y métricas simples.",
+      "prompt": "Construye un MVP para barberías de 1-5 sillas.",
+      "tags": [
+        "Reservas",
+        "Barbería",
+        "SaaS"
+      ],
+      "phaseNotes": [],
+      "developmentProgress": 35,
+      "returnScore": 8,
+      "difficultyScore": 4,
+      "updatedAt": "2026-05-18T16:14:56.106Z"
+    },
+    {
+      "id": "idea-mvog-website",
+      "name": "Página web MVOG",
+      "market": "Clientes potenciales de MVOG",
+      "ownerId": null,
+      "owner": "",
+      "statusId": "production",
+      "status": "En producción",
+      "value": "Alto",
+      "effort": "Media",
+      "notes": "Web comercial para explicar servicios, casos de uso, captación de leads y posicionamiento de MVOG.",
+      "prompt": "Crea una arquitectura de página web para vender servicios MVOG.",
+      "tags": [
+        "Web",
+        "Marketing",
+        "Ventas"
+      ],
+      "phaseNotes": [],
+      "developmentProgress": 80,
+      "returnScore": 8,
+      "difficultyScore": 4,
+      "updatedAt": "2026-05-15T16:14:56.106Z"
+    }
+  ],
+  "calendarEvents": [],
+  "activity": [
+    {
+      "id": "act-init",
+      "at": "2026-05-24T16:14:56.106Z",
+      "text": "MVOG Lab iniciado con backend GitHub JSON."
+    }
+  ]
+}
