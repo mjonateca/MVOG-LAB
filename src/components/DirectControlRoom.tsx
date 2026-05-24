@@ -15,6 +15,7 @@ const SAVE_DEBOUNCE_MS = 1_200;
 
 export function DirectControlRoom({ initialState }: Props) {
   const [state, setState] = useState(initialState);
+  const [remoteVersion, setRemoteVersion] = useState(0);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("ready");
   const [syncMessage, setSyncMessage] = useState("Sincronizado con GitHub JSON");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -38,6 +39,7 @@ export function DirectControlRoom({ initialState }: Props) {
         skipNextSaveRef.current = true;
         stateHashRef.current = remoteHash;
         setState(remoteState);
+        setRemoteVersion((version) => version + 1);
         setSyncStatus("saved");
         setSyncMessage("Cambios recibidos desde GitHub");
       }
@@ -97,6 +99,7 @@ export function DirectControlRoom({ initialState }: Props) {
         {syncMessage}
       </div>
       <ControlRoomApp
+        key={remoteVersion}
         accessToken=""
         initialState={state}
         onSignOut={() => window.location.reload()}
