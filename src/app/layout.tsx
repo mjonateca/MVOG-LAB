@@ -10,8 +10,14 @@ export const metadata: Metadata = {
   applicationName: "MVOG Lab",
   manifest: "/manifest.webmanifest",
   themeColor: "#6aa8ff",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "MVOG Lab"
+  },
   icons: {
-    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }]
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/favicon.svg", type: "image/svg+xml" }]
   }
 };
 
