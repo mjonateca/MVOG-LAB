@@ -1,49 +1,45 @@
 # MVOG Control Room
 
-Webapp interna para planificar ideas, moverlas por un kanban operativo, revisar KPIs y gestionar usuarios/roles con verificación.
+Webapp interna para planificar ideas, reminders/calendario y pipeline operativo de MVOG.
 
-La carpeta conserva `ideas-pyme-lab.html` como versión HTML legacy. La app preparada para GitHub + Vercel + Supabase vive en `src/`.
+La app actual funciona sin Supabase: lee y escribe el estado compartido en `data/state.json` usando la API de GitHub desde rutas server-side de Next.js. Vercel guarda el token como variable privada, por lo que el token nunca se expone al navegador.
 
-## Stack preparado
+## Stack actual
 
 - Next.js App Router
-- React client components para drag and drop y detalle de tareas
-- Supabase Postgres para roles, usuarios, estados, ideas, etiquetas y actividad
-- API routes server-side para usar `SUPABASE_SERVICE_ROLE_KEY` sin exponerla al navegador
+- React client components para cerebro de ideas, calendario, kanban y detalle
+- GitHub Contents API como backend JSON compartido
+- `data/state.json` como fuente de verdad
 - Vercel como plataforma de deploy
-- GitHub Actions para typecheck y build
 
-## Estructura
+## Variables de entorno
 
-```text
-.
-├── src/
-│   ├── app/
-│   │   ├── api/
-│   │   │   ├── bootstrap/route.ts
-│   │   │   ├── ideas/route.ts
-│   │   │   ├── ideas/[id]/route.ts
-│   │   │   ├── users/route.ts
-│   │   │   └── users/[id]/verify/route.ts
-│   │   ├── globals.css
-│   │   ├── layout.tsx
-│   │   └── page.tsx
-│   ├── components/ControlRoomApp.tsx
-│   └── lib/
-│       ├── demo-data.ts
-│       ├── server-repository.ts
-│       ├── types.ts
-│       └── supabase/
-├── supabase/
-│   ├── config.toml
-│   ├── migrations/0001_initial_schema.sql
-│   └── seed.sql
-├── .github/workflows/ci.yml
-├── .env.example
-├── next.config.ts
-├── package.json
-└── vercel.json
+Configura al menos una de estas variables privadas en Vercel:
+
+```bash
+GITHUB_STATE_TOKEN=
+# también se aceptan: GITHUB_TOKEN, GITHUB_ACCESS_TOKEN, GH_TOKEN o GH_PAT
 ```
+
+Opcionales si se quiere cambiar el repo, path o rama:
+
+```bash
+GITHUB_STATE_OWNER=mjonateca
+GITHUB_STATE_REPO=MVOG-LAB
+GITHUB_STATE_PATH=data/state.json
+GITHUB_STATE_BRANCH=main
+```
+
+El token necesita permiso de lectura y escritura sobre Contents del repositorio.
+
+## Funcionamiento
+
+1. La página carga el estado inicial desde `data/state.json`.
+2. Cada cambio en ideas o calendario se guarda por `PUT /api/state`.
+3. El cliente consulta `GET /api/state` periódicamente para traer cambios hechos desde otro dispositivo.
+4. La UI muestra una burbuja de sincronización: guardando, guardado o error.
+
+Si falta el token o es inválido, `/api/state` responde con error y la UI lo muestra en pantalla.
 
 ## Arranque local
 
@@ -53,47 +49,28 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Si no hay variables de Supabase, la app carga datos demo para poder diseñar y revisar la UI. Las mutaciones se aplican optimistamente en pantalla, pero la persistencia real requiere Supabase.
+En `.env.local`, define `GITHUB_STATE_TOKEN` para probar persistencia real. Sin token, la app puede cargar datos demo como fallback visual, pero no guardará cambios.
 
-## Supabase
+## Estructura principal
 
-1. Crea un proyecto en Supabase.
-2. Ejecuta `supabase/migrations/0001_initial_schema.sql` en SQL Editor o con Supabase CLI.
-3. Ejecuta `supabase/seed.sql` para cargar datos iniciales.
-4. Copia las claves del proyecto a `.env.local`:
-
-```bash
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
+```text
+src/
+  app/
+    api/state/route.ts
+    globals.css
+    sync.css
+    layout.tsx
+    page.tsx
+  components/
+    ControlRoomApp.tsx
+    DirectControlRoom.tsx
+  lib/
+    github-state.ts
+    demo-data.ts
+    types.ts
+data/state.json
 ```
 
-La service role key solo debe existir en local y en variables privadas de Vercel. No la expongas en cliente ni la subas a GitHub.
+## Notas
 
-## GitHub
-
-Desde esta carpeta:
-
-```bash
-git init
-git add .
-git commit -m "Initial MVOG Control Room app"
-git branch -M main
-git remote add origin <tu-repo>
-git push -u origin main
-```
-
-## Vercel
-
-1. Importa el repositorio desde GitHub.
-2. Framework: Next.js.
-3. Root Directory: esta carpeta si el repo contiene más proyectos.
-4. Añade las variables de entorno:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - `SUPABASE_SERVICE_ROLE_KEY`
-5. Deploy.
-
-## Notas de seguridad
-
-La migración activa RLS y deja acceso `anon` solo de lectura. Las escrituras pasan por API routes con service role. Para producción completa, el siguiente paso recomendado es añadir Supabase Auth o un proveedor de auth gestionado y endurecer las policies por usuario/rol.
+Quedan algunos archivos legacy de la versión Supabase para referencia histórica, pero el cliente Supabase está deshabilitado y la app principal usa GitHub JSON.
