@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
+import "./sync.css";
 
 export const metadata: Metadata = {
   title: "MVOG Control Room",
   description: "Planificador interno de ideas, pipeline kanban y control operativo para MVOG.",
   applicationName: "MVOG Lab",
   manifest: "/manifest.webmanifest",
-  themeColor: "#48f2a5",
+  themeColor: "#6aa8ff",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
