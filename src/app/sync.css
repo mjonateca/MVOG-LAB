@@ -1,0 +1,109 @@
+:root {
+  --bg: #06101f;
+  --text: #f5f9ff;
+  --muted: #aebbd0;
+  --green: #6aa8ff;
+  --aqua: #54d8ff;
+}
+
+body {
+  background:
+    radial-gradient(circle at 18% 10%, rgba(79, 152, 255, 0.26), transparent 30rem),
+    radial-gradient(circle at 85% 2%, rgba(84, 216, 255, 0.18), transparent 28rem),
+    linear-gradient(145deg, #06101f 0%, #0c1828 54%, #050b16 100%);
+}
+
+.labSidebar {
+  background: rgba(5, 12, 24, 0.82);
+}
+
+.sidebar {
+  background: rgba(5, 12, 24, 0.76);
+}
+
+.signal.active,
+.signal:hover {
+  border-color: rgba(106, 168, 255, 0.58);
+  background: rgba(106, 168, 255, 0.12);
+}
+
+.kpi.active,
+.kpi:hover {
+  border-color: rgba(106, 168, 255, 0.56);
+  background: rgba(106, 168, 255, 0.1);
+}
+
+.brainWrap {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    radial-gradient(28rem 18rem at 52% 46%, rgba(115, 183, 255, 0.24), transparent 68%),
+    conic-gradient(from 218deg at 50% 48%, rgba(74, 144, 255, 0.3), rgba(69, 216, 255, 0.18), rgba(199, 167, 255, 0.2), rgba(255, 159, 197, 0.12), rgba(74, 144, 255, 0.3)),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.025));
+  background-size: 3.25rem 3.25rem, 3.25rem 3.25rem, auto, auto, auto;
+}
+
+.brainWrap::before {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  content: "";
+  background:
+    radial-gradient(circle at 22% 18%, rgba(255, 255, 255, 0.7) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 72% 24%, rgba(184, 228, 255, 0.62) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 38% 78%, rgba(199, 167, 255, 0.55) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 88% 68%, rgba(69, 216, 255, 0.6) 0 1px, transparent 1.5px);
+  background-size: 12rem 9rem, 15rem 11rem, 13rem 10rem, 17rem 12rem;
+  opacity: 0.32;
+  pointer-events: none;
+}
+
+.brainGlow {
+  background:
+    radial-gradient(16rem 16rem at 50% 48%, rgba(115, 183, 255, 0.2), transparent 66%),
+    linear-gradient(116deg, transparent 18%, rgba(106, 168, 255, 0.16) 30%, transparent 42%),
+    linear-gradient(64deg, transparent 50%, rgba(69, 216, 255, 0.14) 60%, transparent 72%);
+}
+
+.brainLegend {
+  background: rgba(6, 16, 31, 0.58);
+}
+
+.syncBanner {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: min(28rem, calc(100vw - 2rem));
+  padding: 0.7rem 0.85rem;
+  color: var(--text);
+  background: rgba(6, 16, 31, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(16px);
+  font-size: 0.78rem;
+  font-weight: 780;
+}
+
+.syncBanner span {
+  width: 0.55rem;
+  height: 0.55rem;
+  flex: 0 0 auto;
+  background: var(--aqua);
+  border-radius: 50%;
+  box-shadow: 0 0 1rem var(--aqua);
+}
+
+.syncBanner.saving span {
+  background: #f3c969;
+  box-shadow: 0 0 1rem #f3c969;
+}
+
+.syncBanner.error span {
+  background: #ff6868;
+  box-shadow: 0 0 1rem #ff6868;
+}
