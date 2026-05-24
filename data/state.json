@@ -169,8 +169,25 @@
       "updatedAt": "2026-05-15T16:14:56.106Z"
     }
   ],
-  "calendarEvents": [],
+  "calendarEvents": [
+    {
+      "id": "059f4e13-2494-4471-b2ef-7ee16805d970",
+      "title": "Reunión con Giovanni",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-05-25T21:30:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "Reunión con Giovanni",
+      "createdAt": "2026-05-24T17:37:42.629Z"
+    }
+  ],
   "activity": [
+    {
+      "id": "018657f4-4695-4d5a-996f-99f578c1d896",
+      "at": "2026-05-24T17:37:42.629Z",
+      "text": "Manuel Onate tiene Reunión con Giovanni en calendario."
+    },
     {
       "id": "e1d146ba-8c04-4ef0-8850-b61f9435f59c",
       "at": "2026-05-24T17:36:31.121Z",
