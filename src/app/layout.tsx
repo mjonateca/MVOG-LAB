@@ -9,7 +9,10 @@ export const metadata: Metadata = {
   description: "Planificador interno de ideas, pipeline kanban y control operativo para MVOG.",
   applicationName: "MVOG Lab",
   manifest: "/manifest.webmanifest",
-  themeColor: "#6aa8ff"
+  themeColor: "#6aa8ff",
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }]
+  }
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
