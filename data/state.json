@@ -79,6 +79,27 @@
   ],
   "ideas": [
     {
+      "id": "0a2635e6-64ac-4d41-99ba-6ab94ebb560a",
+      "name": "prueba",
+      "market": "General",
+      "ownerId": null,
+      "owner": "",
+      "statusId": "idea",
+      "status": "IDEA",
+      "value": "Medio",
+      "effort": "Media",
+      "notes": "",
+      "prompt": "",
+      "tags": [
+        "creator:MV"
+      ],
+      "phaseNotes": [],
+      "developmentProgress": 0,
+      "returnScore": null,
+      "difficultyScore": null,
+      "updatedAt": "2026-05-24T17:36:31.120Z"
+    },
+    {
       "id": "idea-inventory",
       "name": "Inventario predictivo para colmados",
       "market": "Colmados y minimarkets",
@@ -150,6 +171,11 @@
   ],
   "calendarEvents": [],
   "activity": [
+    {
+      "id": "e1d146ba-8c04-4ef0-8850-b61f9435f59c",
+      "at": "2026-05-24T17:36:31.121Z",
+      "text": "prueba fue creada."
+    },
     {
       "id": "act-init",
       "at": "2026-05-24T16:14:56.106Z",
