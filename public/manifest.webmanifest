@@ -5,10 +5,16 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#06100c",
-  "theme_color": "#48f2a5",
+  "background_color": "#06101f",
+  "theme_color": "#6aa8ff",
   "orientation": "portrait",
   "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
     {
       "src": "/icons/brain-icon-192.png",
       "sizes": "192x192",
