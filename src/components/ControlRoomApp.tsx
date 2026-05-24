@@ -13,12 +13,17 @@ type Props = {
   initialState: ControlRoomState;
   onSignOut: () => void;
   userEmail: string;
+  onStateChange?: (state: ControlRoomState) => void;
 };
 
 const STATUS_COLORS = ["#48f2a5", "#39d5ff", "#f4d35e", "#ff7aa8", "#9b8cff", "#ff9f5f", "#9ef05d"];
 
-export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail }: Props) {
+export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail, onStateChange }: Props) {
   const [state, setState] = useState(initialState);
+
+  useEffect(() => {
+    onStateChange?.(state);
+  }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
   const [activeView, setActiveView] = useState<ViewKey>("brain");
   const [selectedId, setSelectedId] = useState("");
   const [filter, setFilter] = useState<FilterKey>("all");
@@ -71,17 +76,7 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
     }
   ];
 
-  async function refresh() {
-    const response = await fetch("/api/bootstrap", {
-      cache: "no-store",
-      headers: authHeaders(accessToken)
-    });
-    if (response.ok) {
-      setState(await response.json());
-    }
-  }
-
-  async function saveIdea(input: IdeaInput) {
+  function saveIdea(input: IdeaInput) {
     const conceptStatus = input.notes.trim() ? findStatusByName(state.statuses, "Concepto") : null;
     const inputWithCreator = {
       ...input,
@@ -99,21 +94,9 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
     setSelectedId(localIdea.id);
     setDraftOpen(false);
     setActiveView("detail");
-
-    const response = await fetch("/api/ideas", {
-      method: "POST",
-      headers: authHeaders(accessToken),
-      body: JSON.stringify(inputWithCreator)
-    });
-
-    if (response.ok) {
-      const saved = await response.json();
-      if (saved.id) setSelectedId(saved.id);
-      await refresh();
-    }
   }
 
-  async function saveCalendarEvent(input: CalendarEventInput) {
+  function saveCalendarEvent(input: CalendarEventInput) {
     const localEvent = calendarEventFromInput(input);
     setState((current) => ({
       ...current,
@@ -122,19 +105,9 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
     }));
     setEventOpen(false);
     setActiveView("calendar");
-
-    const response = await fetch("/api/calendar", {
-      method: "POST",
-      headers: authHeaders(accessToken),
-      body: JSON.stringify(input)
-    });
-
-    if (response.ok) {
-      await refresh();
-    }
   }
 
-  async function removeCalendarEvent(event: CalendarEvent) {
+  function removeCalendarEvent(event: CalendarEvent) {
     const confirmed = window.confirm(`Eliminar "${event.title}" del calendario?`);
     if (!confirmed) return;
 
@@ -143,14 +116,9 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
       calendarEvents: current.calendarEvents.filter((item) => item.id !== event.id),
       activity: [{ id: crypto.randomUUID(), at: new Date().toISOString(), text: `${event.title} fue eliminado del calendario.` }, ...current.activity]
     }));
-
-    await fetch(`/api/calendar/${event.id}`, {
-      method: "DELETE",
-      headers: authHeaders(accessToken)
-    });
   }
 
-  async function patchCalendarEvent(event: CalendarEvent, patch: Partial<CalendarEventInput>) {
+  function patchCalendarEvent(event: CalendarEvent, patch: Partial<CalendarEventInput>) {
     const nextEvent = { ...event, ...patch };
     setState((current) => ({
       ...current,
@@ -158,29 +126,19 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
         .map((item) => (item.id === event.id ? nextEvent : item))
         .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())
     }));
-
-    const response = await fetch(`/api/calendar/${event.id}`, {
-      method: "PATCH",
-      headers: authHeaders(accessToken),
-      body: JSON.stringify(patch)
-    });
-
-    if (response.ok) {
-      await refresh();
-    }
   }
 
-  async function moveCalendarEvent(event: CalendarEvent, nextDate: string) {
+  function moveCalendarEvent(event: CalendarEvent, nextDate: string) {
     const movedStartsAt = moveEventToDate(event.startsAt, nextDate);
     const movedEndsAt = event.endsAt ? moveEventToDate(event.endsAt, nextDate) : null;
-    await patchCalendarEvent(event, { startsAt: movedStartsAt, endsAt: movedEndsAt });
+    patchCalendarEvent(event, { startsAt: movedStartsAt, endsAt: movedEndsAt });
   }
 
-  async function toggleCalendarEventComplete(event: CalendarEvent) {
-    await patchCalendarEvent(event, { completedAt: event.completedAt ? null : new Date().toISOString() });
+  function toggleCalendarEventComplete(event: CalendarEvent) {
+    patchCalendarEvent(event, { completedAt: event.completedAt ? null : new Date().toISOString() });
   }
 
-  async function moveIdea(idea: Idea, statusId: string) {
+  function moveIdea(idea: Idea, statusId: string) {
     const status = state.statuses.find((item) => item.id === statusId);
     if (!status) return;
 
@@ -191,12 +149,6 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
       )
     }));
     setSelectedId(idea.id);
-
-    await fetch(`/api/ideas/${idea.id}`, {
-      method: "PATCH",
-      headers: authHeaders(accessToken),
-      body: JSON.stringify({ statusId, status: status.name, name: idea.name })
-    });
   }
 
   function openIdea(idea: Idea) {
@@ -204,7 +156,7 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
     setActiveView("detail");
   }
 
-  async function updateIdeaMemory(idea: Idea, patch: Partial<IdeaInput>) {
+  function updateIdeaMemory(idea: Idea, patch: Partial<IdeaInput>) {
     setState((current) => ({
       ...current,
       ideas: current.ideas.map((item) =>
@@ -218,15 +170,9 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
           : item
       )
     }));
-
-    await fetch(`/api/ideas/${idea.id}`, {
-      method: "PATCH",
-      headers: authHeaders(accessToken),
-      body: JSON.stringify({ name: idea.name, ...patch })
-    });
   }
 
-  async function removeIdea(idea: Idea) {
+  function removeIdea(idea: Idea) {
     const confirmed = window.confirm(`Eliminar "${idea.name}"?`);
     if (!confirmed) return;
 
@@ -237,11 +183,6 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
     }));
     setSelectedId("");
     setActiveView("brain");
-
-    await fetch(`/api/ideas/${idea.id}`, {
-      method: "DELETE",
-      headers: authHeaders(accessToken)
-    });
   }
 
   return (
@@ -1394,9 +1335,3 @@ function numberOrNull(value: FormDataEntryValue | null) {
   return Number(value);
 }
 
-function authHeaders(accessToken: string) {
-  return {
-    authorization: `Bearer ${accessToken}`,
-    "content-type": "application/json"
-  };
-}

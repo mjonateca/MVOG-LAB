@@ -1,7 +1,6 @@
 import { DirectControlRoom } from "@/components/DirectControlRoom";
-import { getControlRoomState } from "@/lib/server-repository";
+import { demoState } from "@/lib/demo-data";
 
-export default async function Page() {
-  const initialState = await getControlRoomState();
-  return <DirectControlRoom initialState={initialState} />;
+export default function Page() {
+  return <DirectControlRoom initialState={demoState} />;
 }
