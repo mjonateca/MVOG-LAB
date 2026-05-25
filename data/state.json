@@ -193,9 +193,25 @@
       "location": "",
       "notes": "",
       "createdAt": "2026-05-25T02:08:52.973Z"
+    },
+    {
+      "id": "154a6694-1044-48ac-aa1e-3268f99969df",
+      "title": "Publicidad La Brasa Cup",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-05-27T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "",
+      "createdAt": "2026-05-25T02:10:04.436Z"
     }
   ],
   "activity": [
+    {
+      "id": "e6e51e5d-8e08-4505-8079-bf167b16b6db",
+      "at": "2026-05-25T02:10:04.436Z",
+      "text": "Manuel Onate tiene Publicidad La Brasa Cup en calendario."
+    },
     {
       "id": "5d2993ba-1dfe-483a-bb2a-b0e5846a3b5e",
       "at": "2026-05-25T02:09:32.514Z",
