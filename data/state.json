@@ -150,6 +150,17 @@
   ],
   "calendarEvents": [
     {
+      "id": "0315a10b-b4c1-4a99-aeb5-fd5c8b23ef9f",
+      "title": "reunión Idental Santo Domingo Este",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-05-24T21:30:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "",
+      "createdAt": "2026-05-25T02:09:32.514Z"
+    },
+    {
       "id": "15c78e81-05f6-41a9-aafd-ad22fd535548",
       "title": "CENA RAFAEL",
       "ownerName": "Manuel Onate",
@@ -185,6 +196,11 @@
     }
   ],
   "activity": [
+    {
+      "id": "5d2993ba-1dfe-483a-bb2a-b0e5846a3b5e",
+      "at": "2026-05-25T02:09:32.514Z",
+      "text": "Manuel Onate tiene reunión Idental Santo Domingo Este en calendario."
+    },
     {
       "id": "1747f4d1-4139-4677-828c-4921c0a7827a",
       "at": "2026-05-25T02:08:52.973Z",
