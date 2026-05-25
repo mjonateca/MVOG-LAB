@@ -79,6 +79,27 @@
   ],
   "ideas": [
     {
+      "id": "cf7ebdbb-7bf6-435f-a91f-bd2bf90e76e0",
+      "name": "Página para crear Páginas webs de bodas ",
+      "market": "General",
+      "ownerId": null,
+      "owner": "",
+      "statusId": "idea",
+      "status": "IDEA",
+      "value": "Medio",
+      "effort": "Media",
+      "notes": "",
+      "prompt": "",
+      "tags": [
+        "creator:MV"
+      ],
+      "phaseNotes": [],
+      "developmentProgress": 0,
+      "returnScore": null,
+      "difficultyScore": null,
+      "updatedAt": "2026-05-25T23:31:35.646Z"
+    },
+    {
       "id": "idea-inventory",
       "name": "Inventario predictivo para colmados",
       "market": "Colmados y minimarkets",
@@ -209,6 +230,11 @@
     }
   ],
   "activity": [
+    {
+      "id": "46d8ef93-3cc8-4df4-9dcc-0196e6cac82e",
+      "at": "2026-05-25T23:31:35.647Z",
+      "text": "Página para crear Páginas webs de bodas  fue creada."
+    },
     {
       "id": "e6e51e5d-8e08-4505-8079-bf167b16b6db",
       "at": "2026-05-25T02:10:04.436Z",
