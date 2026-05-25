@@ -171,9 +171,25 @@
       "location": "",
       "notes": "Reunión con Giovanni",
       "createdAt": "2026-05-24T17:37:42.629Z"
+    },
+    {
+      "id": "3833f8ea-6cbf-4630-9ea7-5e17e9ca3dc8",
+      "title": "Cumpleaños LOI",
+      "ownerName": "Vinelis Garcia",
+      "ownerEmail": "vinelis13@gmail.com",
+      "startsAt": "2026-05-25T22:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "",
+      "createdAt": "2026-05-25T02:08:52.973Z"
     }
   ],
   "activity": [
+    {
+      "id": "1747f4d1-4139-4677-828c-4921c0a7827a",
+      "at": "2026-05-25T02:08:52.973Z",
+      "text": "Vinelis Garcia tiene Cumpleaños LOI en calendario."
+    },
     {
       "id": "82fad1df-fd1d-4e55-8399-ad794390afd3",
       "at": "2026-05-24T18:03:52.860Z",
