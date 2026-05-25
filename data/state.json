@@ -227,9 +227,25 @@
       "location": "",
       "notes": "",
       "createdAt": "2026-05-25T02:10:04.436Z"
+    },
+    {
+      "id": "b555bd73-733c-4492-980a-67c3354c5f28",
+      "title": "Pasado mañana, presentación o moda jaecoo",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-05-27T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "",
+      "createdAt": "2026-05-25T23:32:29.667Z"
     }
   ],
   "activity": [
+    {
+      "id": "4f1a37d7-0cb7-4491-99fb-b6289f75db5e",
+      "at": "2026-05-25T23:32:29.667Z",
+      "text": "Manuel Onate tiene Pasado mañana, presentación o moda jaecoo en calendario."
+    },
     {
       "id": "46d8ef93-3cc8-4df4-9dcc-0196e6cac82e",
       "at": "2026-05-25T23:31:35.647Z",
