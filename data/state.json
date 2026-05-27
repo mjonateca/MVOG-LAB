@@ -238,9 +238,25 @@
       "location": "",
       "notes": "",
       "createdAt": "2026-05-25T23:32:29.667Z"
+    },
+    {
+      "id": "ad5c7d60-0520-4cad-a0ce-c84289571fad",
+      "title": "cambiar logo de correo de hola@voggix",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-05-28T01:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "",
+      "createdAt": "2026-05-27T13:15:42.215Z"
     }
   ],
   "activity": [
+    {
+      "id": "92d7f1cd-d305-4c39-aa89-87e5c88e9c5b",
+      "at": "2026-05-27T13:15:42.216Z",
+      "text": "Manuel Onate tiene cambiar logo de correo de hola@voggix en calendario."
+    },
     {
       "id": "4f1a37d7-0cb7-4491-99fb-b6289f75db5e",
       "at": "2026-05-25T23:32:29.667Z",
