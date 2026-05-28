@@ -218,17 +218,6 @@
       "createdAt": "2026-05-25T02:09:32.514Z"
     },
     {
-      "id": "b555bd73-733c-4492-980a-67c3354c5f28",
-      "title": "Pasado mañana, presentación o moda jaecoo",
-      "ownerName": "Manuel Onate",
-      "ownerEmail": "mjcalvo92@gmail.com",
-      "startsAt": "2026-05-27T13:00:00.000Z",
-      "endsAt": null,
-      "location": "",
-      "notes": "",
-      "createdAt": "2026-05-25T23:32:29.667Z"
-    },
-    {
       "id": "ad5c7d60-0520-4cad-a0ce-c84289571fad",
       "title": "cambiar logo de correo de hola@voggix",
       "ownerName": "Manuel Onate",
@@ -252,6 +241,11 @@
     }
   ],
   "activity": [
+    {
+      "id": "555e9e9d-b066-4c32-b0de-f9bef930f8da",
+      "at": "2026-05-28T00:18:49.541Z",
+      "text": "Pasado mañana, presentación o moda jaecoo fue eliminado del calendario."
+    },
     {
       "id": "92d7f1cd-d305-4c39-aa89-87e5c88e9c5b",
       "at": "2026-05-27T13:15:42.216Z",
