@@ -218,17 +218,6 @@
       "createdAt": "2026-05-25T02:09:32.514Z"
     },
     {
-      "id": "154a6694-1044-48ac-aa1e-3268f99969df",
-      "title": "Publicidad La Brasa Cup",
-      "ownerName": "Manuel Onate",
-      "ownerEmail": "mjcalvo92@gmail.com",
-      "startsAt": "2026-05-27T13:00:00.000Z",
-      "endsAt": null,
-      "location": "",
-      "notes": "",
-      "createdAt": "2026-05-25T02:10:04.436Z"
-    },
-    {
       "id": "b555bd73-733c-4492-980a-67c3354c5f28",
       "title": "Pasado mañana, presentación o moda jaecoo",
       "ownerName": "Manuel Onate",
@@ -249,6 +238,17 @@
       "location": "",
       "notes": "",
       "createdAt": "2026-05-27T13:15:42.215Z"
+    },
+    {
+      "id": "154a6694-1044-48ac-aa1e-3268f99969df",
+      "title": "Publicidad La Brasa Cup",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-05-28T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "",
+      "createdAt": "2026-05-25T02:10:04.436Z"
     }
   ],
   "activity": [
