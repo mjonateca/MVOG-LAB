@@ -218,17 +218,6 @@
       "createdAt": "2026-05-25T02:09:32.514Z"
     },
     {
-      "id": "ad5c7d60-0520-4cad-a0ce-c84289571fad",
-      "title": "cambiar logo de correo de hola@voggix",
-      "ownerName": "Manuel Onate",
-      "ownerEmail": "mjcalvo92@gmail.com",
-      "startsAt": "2026-05-28T01:00:00.000Z",
-      "endsAt": null,
-      "location": "",
-      "notes": "",
-      "createdAt": "2026-05-27T13:15:42.215Z"
-    },
-    {
       "id": "154a6694-1044-48ac-aa1e-3268f99969df",
       "title": "Publicidad La Brasa Cup",
       "ownerName": "Manuel Onate",
@@ -238,6 +227,17 @@
       "location": "",
       "notes": "",
       "createdAt": "2026-05-25T02:10:04.436Z"
+    },
+    {
+      "id": "ad5c7d60-0520-4cad-a0ce-c84289571fad",
+      "title": "cambiar logo de correo de hola@voggix",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-05-29T01:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "",
+      "createdAt": "2026-05-27T13:15:42.215Z"
     }
   ],
   "activity": [
