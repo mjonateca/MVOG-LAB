@@ -238,9 +238,25 @@
       "location": "",
       "notes": "",
       "createdAt": "2026-05-27T13:15:42.215Z"
+    },
+    {
+      "id": "fe4f879f-7f44-44f2-bdb1-8b91c9048d5b",
+      "title": "Probar pika labs mcp",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-05-29T13:00:00.000Z",
+      "endsAt": null,
+      "location": "claude",
+      "notes": "Probar pika labs mcp en claude",
+      "createdAt": "2026-05-29T12:12:40.215Z"
     }
   ],
   "activity": [
+    {
+      "id": "716ae3d8-acd3-40f6-9517-2400a3eb11ac",
+      "at": "2026-05-29T12:12:40.215Z",
+      "text": "Manuel Onate tiene Probar pika labs mcp en calendario."
+    },
     {
       "id": "3f4cf0a5-81e3-4afc-b7f6-38e002891b62",
       "at": "2026-05-28T00:18:57.425Z",
