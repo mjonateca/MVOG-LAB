@@ -249,9 +249,25 @@
       "location": "claude",
       "notes": "Probar pika labs mcp en claude",
       "createdAt": "2026-05-29T12:12:40.215Z"
+    },
+    {
+      "id": "289f0a61-f169-4cb1-b604-624ba29700fd",
+      "title": "Compartir post Ofi- Despedida Ana",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-03T09:00:00.000Z",
+      "endsAt": null,
+      "location": "Casa de Melissa",
+      "notes": "",
+      "createdAt": "2026-05-29T17:28:31.603Z"
     }
   ],
   "activity": [
+    {
+      "id": "971db6fc-40c1-4928-9bb6-b7f639a5f5b3",
+      "at": "2026-05-29T17:28:31.603Z",
+      "text": "Manuel Onate tiene Compartir post Ofi- Despedida Ana en calendario."
+    },
     {
       "id": "716ae3d8-acd3-40f6-9517-2400a3eb11ac",
       "at": "2026-05-29T12:12:40.215Z",
