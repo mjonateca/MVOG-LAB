@@ -287,6 +287,17 @@
       "completedAt": "2026-06-03T23:46:54.255Z"
     },
     {
+      "id": "cf71afd4-aa3d-4272-9c63-d6e557e76052",
+      "title": "17:30 visita en paseo del sendero arriba (tipo zares 2)",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-03T21:30:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "",
+      "createdAt": "2026-06-03T23:47:32.794Z"
+    },
+    {
       "id": "55d9b796-66b0-4c6d-9e50-968439844165",
       "title": "Seguimiento Sandalias roxy Alexandra",
       "ownerName": "Manuel Onate",
@@ -300,6 +311,11 @@
     }
   ],
   "activity": [
+    {
+      "id": "7bd34a87-74d8-486f-ae7c-d031722fc5a2",
+      "at": "2026-06-03T23:47:32.794Z",
+      "text": "Manuel Onate tiene 17:30 visita en paseo del sendero arriba (tipo zares 2) en calendario."
+    },
     {
       "id": "85da948b-5602-42d7-81c9-bf1c69f8993a",
       "at": "2026-06-03T13:24:39.410Z",
