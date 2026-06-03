@@ -260,9 +260,25 @@
       "location": "Casa de Melissa",
       "notes": "",
       "createdAt": "2026-05-29T17:28:31.603Z"
+    },
+    {
+      "id": "a3e3114b-a1f1-4274-97f5-a24a3f3ae3e4",
+      "title": "Seguimiento Cambios Bikinis Samantha Agua Menta",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-03T17:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "Seguimiento Cambios Bikinis Samantha Agua Menta",
+      "createdAt": "2026-06-03T13:18:51.569Z"
     }
   ],
   "activity": [
+    {
+      "id": "23c816e5-a632-42c4-9ac6-957c8af583d5",
+      "at": "2026-06-03T13:18:51.570Z",
+      "text": "Manuel Onate tiene Seguimiento Cambios Bikinis Samantha Agua Menta en calendario."
+    },
     {
       "id": "971db6fc-40c1-4928-9bb6-b7f639a5f5b3",
       "at": "2026-05-29T17:28:31.603Z",
