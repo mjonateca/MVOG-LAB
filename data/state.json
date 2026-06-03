@@ -262,6 +262,17 @@
       "createdAt": "2026-05-29T17:28:31.603Z"
     },
     {
+      "id": "090d4cf9-91ac-4577-9dd5-769bf728889f",
+      "title": "Enviar Propuestas SGAs",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-03T13:30:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "Enviar Propuestas SGAs",
+      "createdAt": "2026-06-03T13:24:39.410Z"
+    },
+    {
       "id": "a3e3114b-a1f1-4274-97f5-a24a3f3ae3e4",
       "title": "Seguimiento Cambios Bikinis Samantha Agua Menta",
       "ownerName": "Manuel Onate",
@@ -285,6 +296,11 @@
     }
   ],
   "activity": [
+    {
+      "id": "85da948b-5602-42d7-81c9-bf1c69f8993a",
+      "at": "2026-06-03T13:24:39.410Z",
+      "text": "Manuel Onate tiene Enviar Propuestas SGAs en calendario."
+    },
     {
       "id": "b531bc85-17e7-461a-8b49-de6a1bc9b058",
       "at": "2026-06-03T13:19:09.758Z",
