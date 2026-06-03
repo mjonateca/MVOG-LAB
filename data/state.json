@@ -271,9 +271,25 @@
       "location": "",
       "notes": "Seguimiento Cambios Bikinis Samantha Agua Menta",
       "createdAt": "2026-06-03T13:18:51.569Z"
+    },
+    {
+      "id": "55d9b796-66b0-4c6d-9e50-968439844165",
+      "title": "Seguimiento Sandalias roxy Alexandra",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-05T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "Seguimiento Sandalias roxy Alexandra",
+      "createdAt": "2026-06-03T13:19:09.758Z"
     }
   ],
   "activity": [
+    {
+      "id": "b531bc85-17e7-461a-8b49-de6a1bc9b058",
+      "at": "2026-06-03T13:19:09.758Z",
+      "text": "Manuel Onate tiene Seguimiento Sandalias roxy Alexandra en calendario."
+    },
     {
       "id": "23c816e5-a632-42c4-9ac6-957c8af583d5",
       "at": "2026-06-03T13:18:51.570Z",
