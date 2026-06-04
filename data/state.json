@@ -287,6 +287,17 @@
       "completedAt": "2026-06-03T23:46:54.255Z"
     },
     {
+      "id": "99db6dad-dde3-42fb-a762-8e20cc41d7c1",
+      "title": "Visita a las 11:00 en vista cana ",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-04T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "",
+      "createdAt": "2026-06-04T01:12:57.131Z"
+    },
+    {
       "id": "cf71afd4-aa3d-4272-9c63-d6e557e76052",
       "title": "17:30 visita en paseo del sendero arriba (tipo zares 2)",
       "ownerName": "Manuel Onate",
@@ -322,6 +333,11 @@
     }
   ],
   "activity": [
+    {
+      "id": "fd171871-b895-410b-80f7-92d8e7e7ab57",
+      "at": "2026-06-04T01:12:57.131Z",
+      "text": "Manuel Onate tiene Visita a las 11:00 en vista cana  en calendario."
+    },
     {
       "id": "87c1f90a-2e5b-46fd-bc1b-b1456804de5e",
       "at": "2026-06-04T00:18:14.891Z",
