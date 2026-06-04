@@ -263,6 +263,17 @@
       "completedAt": "2026-06-03T23:46:50.542Z"
     },
     {
+      "id": "d10bb557-5328-4949-8db1-dbd6edfba515",
+      "title": "Visita a las 17:00 con taili guerrero (palmas 2)",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-03T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "",
+      "createdAt": "2026-06-04T02:18:02.238Z"
+    },
+    {
       "id": "090d4cf9-91ac-4577-9dd5-769bf728889f",
       "title": "Enviar Propuestas SGAs",
       "ownerName": "Manuel Onate",
@@ -355,6 +366,11 @@
     }
   ],
   "activity": [
+    {
+      "id": "35c391d3-1104-424b-acb4-c0ada8eb3e5f",
+      "at": "2026-06-04T02:18:02.238Z",
+      "text": "Manuel Onate tiene Visita a las 17:00 con taili guerrero (palmas 2) en calendario."
+    },
     {
       "id": "7db946bf-19b7-4c17-84dc-bc5e53bef8c2",
       "at": "2026-06-04T02:17:21.403Z",
