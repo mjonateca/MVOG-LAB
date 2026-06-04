@@ -331,6 +331,17 @@
       "createdAt": "2026-06-04T02:17:21.403Z"
     },
     {
+      "id": "d790bde7-071d-4f27-9137-9b384072c877",
+      "title": "Visita a las 14:00 Lenny Reyes",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-04T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "",
+      "createdAt": "2026-06-04T16:18:07.852Z"
+    },
+    {
       "id": "cf71afd4-aa3d-4272-9c63-d6e557e76052",
       "title": "17:30 visita en paseo del sendero arriba (tipo zares 2)",
       "ownerName": "Manuel Onate",
@@ -366,6 +377,11 @@
     }
   ],
   "activity": [
+    {
+      "id": "9e7f7c38-12dc-4d75-8fdf-541af1c77f7e",
+      "at": "2026-06-04T16:18:07.852Z",
+      "text": "Manuel Onate tiene Visita a las 14:00 Lenny Reyes en calendario."
+    },
     {
       "id": "35c391d3-1104-424b-acb4-c0ada8eb3e5f",
       "at": "2026-06-04T02:18:02.238Z",
