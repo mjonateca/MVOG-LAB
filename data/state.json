@@ -308,9 +308,25 @@
       "notes": "Seguimiento Sandalias roxy Alexandra",
       "createdAt": "2026-06-03T13:19:09.758Z",
       "completedAt": "2026-06-03T23:46:57.924Z"
+    },
+    {
+      "id": "6fbd993a-2713-4c9c-9048-72ded4cb057d",
+      "title": "Visita palmas 3 9:30",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-06T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "",
+      "createdAt": "2026-06-04T00:18:14.891Z"
     }
   ],
   "activity": [
+    {
+      "id": "87c1f90a-2e5b-46fd-bc1b-b1456804de5e",
+      "at": "2026-06-04T00:18:14.891Z",
+      "text": "Manuel Onate tiene Visita palmas 3 9:30 en calendario."
+    },
     {
       "id": "7bd34a87-74d8-486f-ae7c-d031722fc5a2",
       "at": "2026-06-03T23:47:32.794Z",
