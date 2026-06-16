@@ -389,9 +389,25 @@
       "location": "",
       "notes": "",
       "createdAt": "2026-06-04T00:18:14.891Z"
+    },
+    {
+      "id": "7e6129d4-4823-4a2d-91ca-ce7b82313604",
+      "title": "Probar recuentos cíclicos ; meter criterios generales y específicos por familias.",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-15T13:00:00.000Z",
+      "endsAt": null,
+      "location": "SGA",
+      "notes": "Probar recuentos cíclicos en SGA; meter criterios generales y específicos por familias. ",
+      "createdAt": "2026-06-16T01:17:44.013Z"
     }
   ],
   "activity": [
+    {
+      "id": "97d73e11-598f-47b7-9872-61c722a6bc5c",
+      "at": "2026-06-16T01:17:44.013Z",
+      "text": "Manuel Onate tiene Probar recuentos cíclicos ; meter criterios generales y específicos por familias. en calendario."
+    },
     {
       "id": "c546b708-59aa-499e-939c-e4190d06127a",
       "at": "2026-06-04T16:19:44.797Z",
