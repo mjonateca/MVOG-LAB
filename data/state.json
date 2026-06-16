@@ -400,9 +400,25 @@
       "location": "SGA",
       "notes": "Probar recuentos cíclicos en SGA; meter criterios generales y específicos por familias. ",
       "createdAt": "2026-06-16T01:17:44.013Z"
+    },
+    {
+      "id": "9173c0a2-29bd-4c5b-9810-cebaabcba901",
+      "title": "Plan de acción almacen",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-15T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "Plan de acción almacen",
+      "createdAt": "2026-06-16T01:18:11.606Z"
     }
   ],
   "activity": [
+    {
+      "id": "4472978e-1f02-491b-bf8e-7e5486848f5f",
+      "at": "2026-06-16T01:18:11.606Z",
+      "text": "Manuel Onate tiene Plan de acción almacen en calendario."
+    },
     {
       "id": "97d73e11-598f-47b7-9872-61c722a6bc5c",
       "at": "2026-06-16T01:17:44.013Z",
