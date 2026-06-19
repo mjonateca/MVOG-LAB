@@ -424,22 +424,38 @@
       "createdAt": "2026-06-16T01:18:25.518Z"
     },
     {
-      "id": "06f43ccb-03c6-4040-a51f-b982a673a40f",
-      "title": "Rematar mesa azulejos",
+      "id": "432cf191-9255-408e-b592-915b105e339a",
+      "title": "Pintar casa",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-19T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "Pintar casa",
+      "createdAt": "2026-06-19T19:26:21.328Z"
+    },
+    {
+      "id": "c8904615-1a6c-4413-a946-fd668b19b61e",
+      "title": "Rematar mesa piedra",
       "ownerName": "Manuel Onate",
       "ownerEmail": "mjcalvo92@gmail.com",
       "startsAt": "2026-06-20T13:00:00.000Z",
       "endsAt": null,
       "location": "",
-      "notes": "Rematar mesa azulejos",
-      "createdAt": "2026-06-19T19:26:33.499Z"
+      "notes": "Rematar mesa piedra",
+      "createdAt": "2026-06-19T19:26:43.200Z"
     }
   ],
   "activity": [
     {
-      "id": "e18f1b86-7be8-49d8-a697-91f1472ed70a",
-      "at": "2026-06-19T19:26:33.499Z",
-      "text": "Manuel Onate tiene Rematar mesa azulejos en calendario."
+      "id": "f737219e-e0b0-4404-97d0-27338dfd536b",
+      "at": "2026-06-19T19:26:43.201Z",
+      "text": "Manuel Onate tiene Rematar mesa piedra en calendario."
+    },
+    {
+      "id": "54898771-9469-4aff-866a-cebf35651c87",
+      "at": "2026-06-19T19:26:21.328Z",
+      "text": "Manuel Onate tiene Pintar casa en calendario."
     },
     {
       "id": "4339f503-a069-40a2-9ad0-ebce11734a65",
