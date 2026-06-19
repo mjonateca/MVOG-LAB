@@ -444,9 +444,25 @@
       "location": "",
       "notes": "Rematar mesa piedra",
       "createdAt": "2026-06-19T19:26:43.200Z"
+    },
+    {
+      "id": "220c793e-78c5-427a-91bf-488d19e4c2e8",
+      "title": "Hacer mesa centro piedra",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-20T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "Hacer mesa centro piedra ",
+      "createdAt": "2026-06-19T19:26:55.644Z"
     }
   ],
   "activity": [
+    {
+      "id": "6568ed01-e60c-4954-b9ce-7420a1a9a6d4",
+      "at": "2026-06-19T19:26:55.644Z",
+      "text": "Manuel Onate tiene Hacer mesa centro piedra en calendario."
+    },
     {
       "id": "f737219e-e0b0-4404-97d0-27338dfd536b",
       "at": "2026-06-19T19:26:43.201Z",
