@@ -422,9 +422,25 @@
       "location": "",
       "notes": "Prueba pedidos almacén SGA",
       "createdAt": "2026-06-16T01:18:25.518Z"
+    },
+    {
+      "id": "432cf191-9255-408e-b592-915b105e339a",
+      "title": "Pintar casa",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-19T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "Pintar casa",
+      "createdAt": "2026-06-19T19:26:21.328Z"
     }
   ],
   "activity": [
+    {
+      "id": "54898771-9469-4aff-866a-cebf35651c87",
+      "at": "2026-06-19T19:26:21.328Z",
+      "text": "Manuel Onate tiene Pintar casa en calendario."
+    },
     {
       "id": "4339f503-a069-40a2-9ad0-ebce11734a65",
       "at": "2026-06-16T01:18:25.518Z",
