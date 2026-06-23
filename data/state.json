@@ -499,9 +499,25 @@
       "location": "",
       "notes": "Vinelis avisar a Claro ",
       "createdAt": "2026-06-23T04:07:12.858Z"
+    },
+    {
+      "id": "53b008bd-04b5-4305-acbd-d3134660f65d",
+      "title": "Microondas",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-23T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "Microondas",
+      "createdAt": "2026-06-23T13:14:43.547Z"
     }
   ],
   "activity": [
+    {
+      "id": "28dcbe07-ecd2-4b60-83b3-f951297fae9b",
+      "at": "2026-06-23T13:14:43.547Z",
+      "text": "Manuel Onate tiene Microondas en calendario."
+    },
     {
       "id": "011b8843-38ce-4db2-b3f8-95c9b859549a",
       "at": "2026-06-23T04:07:12.858Z",
