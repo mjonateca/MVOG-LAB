@@ -477,9 +477,25 @@
       "location": "",
       "notes": "Confirmar mudanza barata ",
       "createdAt": "2026-06-23T04:06:50.668Z"
+    },
+    {
+      "id": "a652b39c-89ac-4741-9cb5-c905a64e2b7c",
+      "title": "avisar a Nancy",
+      "ownerName": "Vinelis Garcia",
+      "ownerEmail": "vinelis13@gmail.com",
+      "startsAt": "2026-06-23T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "Vinelis avisar a Nancy ",
+      "createdAt": "2026-06-23T04:07:03.673Z"
     }
   ],
   "activity": [
+    {
+      "id": "2617575b-0bb8-47ec-8163-27c2d722f9a4",
+      "at": "2026-06-23T04:07:03.673Z",
+      "text": "Vinelis Garcia tiene avisar a Nancy en calendario."
+    },
     {
       "id": "ec565390-c516-45f2-a99a-6e52fd65365c",
       "at": "2026-06-23T04:06:50.668Z",
