@@ -521,9 +521,25 @@
       "location": "",
       "notes": "Cojines tapiceria",
       "createdAt": "2026-06-23T13:14:55.000Z"
+    },
+    {
+      "id": "93c64fe2-b33f-4536-aa0b-3415817795df",
+      "title": "confirmar colchones",
+      "ownerName": "Vinelis Garcia",
+      "ownerEmail": "vinelis13@gmail.com",
+      "startsAt": "2026-06-23T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "Vinelis confirmar colchones ",
+      "createdAt": "2026-06-23T13:15:07.466Z"
     }
   ],
   "activity": [
+    {
+      "id": "c10334e9-d750-41b9-8745-91a5ed91044d",
+      "at": "2026-06-23T13:15:07.466Z",
+      "text": "Vinelis Garcia tiene confirmar colchones en calendario."
+    },
     {
       "id": "7f74e33c-4e59-4b04-b6d8-026be5122bab",
       "at": "2026-06-23T13:14:55.001Z",
