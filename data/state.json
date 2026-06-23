@@ -466,9 +466,25 @@
       "location": "",
       "notes": "Llamar a Madesol",
       "createdAt": "2026-06-23T04:06:39.021Z"
+    },
+    {
+      "id": "944b1a4e-6099-4bcc-bdd2-690e1dffbd91",
+      "title": "Confirmar mudanza barata",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-23T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "Confirmar mudanza barata ",
+      "createdAt": "2026-06-23T04:06:50.668Z"
     }
   ],
   "activity": [
+    {
+      "id": "ec565390-c516-45f2-a99a-6e52fd65365c",
+      "at": "2026-06-23T04:06:50.668Z",
+      "text": "Manuel Onate tiene Confirmar mudanza barata en calendario."
+    },
     {
       "id": "05096025-685b-43de-98c2-19b4d4a0293f",
       "at": "2026-06-23T04:06:39.021Z",
