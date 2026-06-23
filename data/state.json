@@ -455,9 +455,25 @@
       "location": "",
       "notes": "Hacer mesa centro piedra ",
       "createdAt": "2026-06-19T19:26:55.644Z"
+    },
+    {
+      "id": "48baec45-4f2e-4f5f-879e-328985626e00",
+      "title": "Llamar a Madesol",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-23T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "Llamar a Madesol",
+      "createdAt": "2026-06-23T04:06:39.021Z"
     }
   ],
   "activity": [
+    {
+      "id": "05096025-685b-43de-98c2-19b4d4a0293f",
+      "at": "2026-06-23T04:06:39.021Z",
+      "text": "Manuel Onate tiene Llamar a Madesol en calendario."
+    },
     {
       "id": "6568ed01-e60c-4954-b9ce-7420a1a9a6d4",
       "at": "2026-06-19T19:26:55.644Z",
