@@ -463,6 +463,7 @@ function CalendarView({
                 {dayEvents.length ? dayEvents.map((event) => {
                   const person = people.find((item) => normalizeText(item.name) === normalizeText(event.ownerName));
                   const currentDate = toDateInputValue(new Date(event.startsAt));
+                  const showNotes = Boolean(event.notes && normalizeText(event.notes) !== normalizeText(event.title));
                   return (
                     <article
                       className={`calendarEventCard ${event.completedAt ? "done" : ""} ${draggedId === event.id ? "dragging" : ""}`}
@@ -483,10 +484,10 @@ function CalendarView({
                         <strong>{person?.initials || initialsFromName(event.ownerName)}</strong>
                       </div>
                       <b>{event.title}</b>
-                      {event.location && <span>{event.location}</span>}
-                      {event.notes && <p>{event.notes}</p>}
+                      {event.location && <span className="calendarEventLocation">{event.location}</span>}
+                      {showNotes && <p className="calendarEventNote">{event.notes}</p>}
                       <label className="calendarMove">
-                        <span>Mover a</span>
+                        <span>Mover</span>
                         <select value={currentDate} onChange={(moveEvent) => onMove(event, moveEvent.target.value)}>
                           {weekDays.map((optionDay) => {
                             const value = toDateInputValue(optionDay);
