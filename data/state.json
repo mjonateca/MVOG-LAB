@@ -532,9 +532,25 @@
       "location": "",
       "notes": "Vinelis confirmar colchones ",
       "createdAt": "2026-06-23T13:15:07.466Z"
+    },
+    {
+      "id": "23070e40-28a0-4030-b4b5-96329236148f",
+      "title": "Confirmar Hector Luz",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-23T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "Confirmar Hector Luz",
+      "createdAt": "2026-06-23T13:53:20.942Z"
     }
   ],
   "activity": [
+    {
+      "id": "50346e4f-c98a-405a-b253-8b6c3dae4b48",
+      "at": "2026-06-23T13:53:20.942Z",
+      "text": "Manuel Onate tiene Confirmar Hector Luz en calendario."
+    },
     {
       "id": "c10334e9-d750-41b9-8745-91a5ed91044d",
       "at": "2026-06-23T13:15:07.466Z",
