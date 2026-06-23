@@ -488,9 +488,25 @@
       "location": "",
       "notes": "Vinelis avisar a Nancy ",
       "createdAt": "2026-06-23T04:07:03.673Z"
+    },
+    {
+      "id": "e616611f-b011-4048-8317-8bd4571a6304",
+      "title": "avisar a Claro",
+      "ownerName": "Vinelis Garcia",
+      "ownerEmail": "vinelis13@gmail.com",
+      "startsAt": "2026-06-23T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "Vinelis avisar a Claro ",
+      "createdAt": "2026-06-23T04:07:12.858Z"
     }
   ],
   "activity": [
+    {
+      "id": "011b8843-38ce-4db2-b3f8-95c9b859549a",
+      "at": "2026-06-23T04:07:12.858Z",
+      "text": "Vinelis Garcia tiene avisar a Claro en calendario."
+    },
     {
       "id": "2617575b-0bb8-47ec-8163-27c2d722f9a4",
       "at": "2026-06-23T04:07:03.673Z",
