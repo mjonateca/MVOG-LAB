@@ -30,6 +30,7 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
   const [query, setQuery] = useState("");
   const [draftOpen, setDraftOpen] = useState(false);
   const [eventOpen, setEventOpen] = useState(false);
+  const [eventDefaultDate, setEventDefaultDate] = useState<string | undefined>();
   const [draftStatus, setDraftStatus] = useState(initialState.statuses[0]?.id || "");
 
   const selectedIdea = state.ideas.find((idea) => idea.id === selectedId) || null;
@@ -105,6 +106,11 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
     }));
     setEventOpen(false);
     setActiveView("calendar");
+  }
+
+  function openCalendarEvent(date?: string) {
+    setEventDefaultDate(date);
+    setEventOpen(true);
   }
 
   function removeCalendarEvent(event: CalendarEvent) {
@@ -238,7 +244,7 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
                 <button className="btn secondary mobileCalendarAction" type="button" onClick={() => setActiveView("calendar")}>
                   Ver calendario
                 </button>
-                <button className="btn secondary mobileEventAction" type="button" onClick={() => setEventOpen(true)}>
+                <button className="btn secondary mobileEventAction" type="button" onClick={() => openCalendarEvent()}>
                   Nuevo evento
                 </button>
               </>
@@ -343,7 +349,7 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
         {activeView === "calendar" && (
           <CalendarView
             events={state.calendarEvents}
-            onCreate={() => setEventOpen(true)}
+            onCreate={openCalendarEvent}
             onDelete={removeCalendarEvent}
             onMove={moveCalendarEvent}
             onToggleComplete={toggleCalendarEventComplete}
@@ -368,6 +374,7 @@ export function ControlRoomApp({ accessToken, initialState, onSignOut, userEmail
         <dialog open>
           <CalendarEventForm
             defaultOwner={defaultCalendarOwner(userEmail)}
+            initialDate={eventDefaultDate}
             onClose={() => setEventOpen(false)}
             onSave={(input) => saveCalendarEvent(input)}
             people={calendarPeople(state, userEmail)}
@@ -387,16 +394,21 @@ function CalendarView({
   people
 }: {
   events: CalendarEvent[];
-  onCreate: () => void;
+  onCreate: (date?: string) => void;
   onDelete: (event: CalendarEvent) => void;
   onMove: (event: CalendarEvent, nextDate: string) => void;
   onToggleComplete: (event: CalendarEvent) => void;
   people: CalendarPerson[];
 }) {
-  const weekDays = nextSevenDays();
+  const [weekOffset, setWeekOffset] = useState(0);
+  const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [dropDate, setDropDate] = useState<string | null>(null);
+  const weekDays = workWeekDays(weekOffset);
   const weekStart = startOfDay(weekDays[0]);
   const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekEnd.getDate() + 7);
+  weekEnd.setDate(weekEnd.getDate() + weekDays.length);
+  const todayValue = toDateInputValue(new Date());
+  const weekLabel = formatWeekRange(weekDays[0], weekDays[weekDays.length - 1]);
   const weekEvents = events
     .filter((event) => {
       const startsAt = new Date(event.startsAt);
@@ -412,13 +424,37 @@ function CalendarView({
           <h2>Calendario de actividades</h2>
           <p>Ideas, partidos, cumpleaños, reuniones y cualquier cosa que no se debe perder.</p>
         </div>
-        <button className="btn" type="button" onClick={onCreate}>Nuevo evento</button>
+        <div className="calendarWeekActions">
+          <button className="btn ghost small" type="button" onClick={() => setWeekOffset((value) => value - 1)}>Anterior</button>
+          <span className="calendarWeekLabel">{weekLabel}</span>
+          <button className="btn ghost small" type="button" onClick={() => setWeekOffset((value) => value + 1)}>Siguiente</button>
+          <button className="btn secondary small" type="button" onClick={() => setWeekOffset(0)}>Hoy</button>
+          <button className="btn small" type="button" onClick={() => onCreate()}>Nuevo evento</button>
+        </div>
       </div>
       <div className="weekCalendar">
         {weekDays.map((day) => {
           const dayEvents = weekEvents.filter((event) => sameDay(new Date(event.startsAt), day));
+          const dateValue = toDateInputValue(day);
+          const isToday = dateValue === todayValue;
           return (
-            <section key={day.toISOString()}>
+            <section
+              className={`${isToday ? "today" : ""} ${dropDate === dateValue ? "dragOver" : ""}`}
+              key={day.toISOString()}
+              onDragLeave={() => setDropDate((current) => (current === dateValue ? null : current))}
+              onDragOver={(dragEvent) => {
+                dragEvent.preventDefault();
+                setDropDate(dateValue);
+              }}
+              onDrop={(dropEvent) => {
+                dropEvent.preventDefault();
+                const eventId = dropEvent.dataTransfer.getData("text/plain") || draggedId;
+                const draggedEvent = events.find((item) => item.id === eventId);
+                setDraggedId(null);
+                setDropDate(null);
+                if (draggedEvent && !sameDay(new Date(draggedEvent.startsAt), day)) onMove(draggedEvent, dateValue);
+              }}
+            >
               <div className="dayHead">
                 <span>{weekdayLabel(day)}</span>
                 <b>{day.getDate()}</b>
@@ -428,7 +464,20 @@ function CalendarView({
                   const person = people.find((item) => normalizeText(item.name) === normalizeText(event.ownerName));
                   const currentDate = toDateInputValue(new Date(event.startsAt));
                   return (
-                    <article className={`calendarEventCard ${event.completedAt ? "done" : ""}`} key={event.id}>
+                    <article
+                      className={`calendarEventCard ${event.completedAt ? "done" : ""} ${draggedId === event.id ? "dragging" : ""}`}
+                      draggable
+                      key={event.id}
+                      onDragEnd={() => {
+                        setDraggedId(null);
+                        setDropDate(null);
+                      }}
+                      onDragStart={(dragEvent) => {
+                        setDraggedId(event.id);
+                        dragEvent.dataTransfer.setData("text/plain", event.id);
+                        dragEvent.dataTransfer.effectAllowed = "move";
+                      }}
+                    >
                       <div>
                         <time>{formatActivityTime(event.startsAt)}</time>
                         <strong>{person?.initials || initialsFromName(event.ownerName)}</strong>
@@ -454,6 +503,7 @@ function CalendarView({
                     </article>
                   );
                 }) : <small className="emptyDay">Sin eventos</small>}
+                <button className="addDayEvent" type="button" onClick={() => onCreate(dateValue)}>+ evento</button>
               </div>
             </section>
           );
@@ -912,21 +962,23 @@ function StageLinkForm({
 
 function CalendarEventForm({
   defaultOwner,
+  initialDate,
   onClose,
   onSave,
   people
 }: {
   defaultOwner: CalendarPerson;
+  initialDate?: string;
   onClose: () => void;
   onSave: (input: CalendarEventInput) => void;
   people: CalendarPerson[];
 }) {
   const [quickText, setQuickText] = useState("");
-  const [draft, setDraft] = useState(() => calendarDraftFromQuickText("", defaultOwner, people));
+  const [draft, setDraft] = useState(() => calendarDraftFromQuickText("", defaultOwner, people, initialDate));
 
   function applyQuickText(value: string) {
     setQuickText(value);
-    setDraft(calendarDraftFromQuickText(value, defaultOwner, people));
+    setDraft(calendarDraftFromQuickText(value, defaultOwner, people, initialDate));
   }
 
   return (
@@ -1070,12 +1122,14 @@ function Progress({ value, label }: { value: number; label: string }) {
   );
 }
 
-function nextSevenDays() {
+function workWeekDays(weekOffset = 0) {
   const today = new Date();
-  const firstDay = startOfDay(today);
-  return Array.from({ length: 7 }, (_, index) => {
-    const date = new Date(firstDay);
-    date.setDate(firstDay.getDate() + index);
+  const dayOfWeek = today.getDay();
+  const monday = startOfDay(today);
+  monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1) + weekOffset * 7);
+  return Array.from({ length: 6 }, (_, index) => {
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + index);
     return date;
   });
 }
@@ -1092,6 +1146,14 @@ function sameDay(left: Date, right: Date) {
 
 function weekdayLabel(value: Date) {
   return new Intl.DateTimeFormat("es", { weekday: "short" }).format(value).replace(".", "");
+}
+
+function monthShortLabel(value: Date) {
+  return new Intl.DateTimeFormat("es", { month: "short" }).format(value).replace(".", "");
+}
+
+function formatWeekRange(start: Date, end: Date) {
+  return `${start.getDate()} ${monthShortLabel(start)} - ${end.getDate()} ${monthShortLabel(end)} ${end.getFullYear()}`;
 }
 
 function calendarPeople(state: ControlRoomState, userEmail: string): CalendarPerson[] {
@@ -1113,10 +1175,10 @@ function initialsFromName(name: string) {
   return parts.slice(0, 2).map((part) => part[0]?.toUpperCase()).join("");
 }
 
-function calendarDraftFromQuickText(text: string, defaultOwner: CalendarPerson, people: CalendarPerson[]) {
+function calendarDraftFromQuickText(text: string, defaultOwner: CalendarPerson, people: CalendarPerson[], fallbackDate?: string) {
   const lower = normalizeText(text);
   const owner = people.find((person) => lower.includes(normalizeText(person.name).split(" ")[0])) || defaultOwner;
-  const date = parseQuickDate(lower);
+  const date = parseQuickDate(lower, fallbackDate);
   const time = parseQuickTime(lower);
   const location = text.match(/\ben\s+([^,.;]+)/i)?.[1]?.trim() || "";
   const title = cleanQuickTitle(text) || "Evento";
@@ -1150,8 +1212,8 @@ function parseQuickTime(lowerText: string) {
   return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 }
 
-function parseQuickDate(lowerText: string) {
-  const date = new Date();
+function parseQuickDate(lowerText: string, fallbackDate?: string) {
+  const date = fallbackDate ? new Date(`${fallbackDate}T00:00:00`) : new Date();
   if (lowerText.includes("pasado manana") || lowerText.includes("pasado mañana")) {
     date.setDate(date.getDate() + 2);
     return date;
