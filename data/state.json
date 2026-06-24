@@ -481,17 +481,6 @@
       "completedAt": "2026-06-23T15:13:37.491Z"
     },
     {
-      "id": "e616611f-b011-4048-8317-8bd4571a6304",
-      "title": "avisar a Claro",
-      "ownerName": "Vinelis Garcia",
-      "ownerEmail": "vinelis13@gmail.com",
-      "startsAt": "2026-06-23T13:00:00.000Z",
-      "endsAt": null,
-      "location": "",
-      "notes": "Vinelis avisar a Claro ",
-      "createdAt": "2026-06-23T04:07:12.858Z"
-    },
-    {
       "id": "53b008bd-04b5-4305-acbd-d3134660f65d",
       "title": "Microondas",
       "ownerName": "Manuel Onate",
@@ -535,6 +524,17 @@
       "location": "",
       "notes": "Confirmar Hector Luz",
       "createdAt": "2026-06-23T13:53:20.942Z"
+    },
+    {
+      "id": "e616611f-b011-4048-8317-8bd4571a6304",
+      "title": "avisar a Claro",
+      "ownerName": "Vinelis Garcia",
+      "ownerEmail": "vinelis13@gmail.com",
+      "startsAt": "2026-06-24T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "Vinelis avisar a Claro ",
+      "createdAt": "2026-06-23T04:07:12.858Z"
     },
     {
       "id": "48baec45-4f2e-4f5f-879e-328985626e00",
