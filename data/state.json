@@ -481,28 +481,6 @@
       "completedAt": "2026-06-23T15:13:37.491Z"
     },
     {
-      "id": "53b008bd-04b5-4305-acbd-d3134660f65d",
-      "title": "Microondas",
-      "ownerName": "Manuel Onate",
-      "ownerEmail": "mjcalvo92@gmail.com",
-      "startsAt": "2026-06-23T13:00:00.000Z",
-      "endsAt": null,
-      "location": "",
-      "notes": "Microondas",
-      "createdAt": "2026-06-23T13:14:43.547Z"
-    },
-    {
-      "id": "9e49cd5c-28d4-42c9-93ca-520c2b106ee1",
-      "title": "Cojines tapiceria",
-      "ownerName": "Manuel Onate",
-      "ownerEmail": "mjcalvo92@gmail.com",
-      "startsAt": "2026-06-23T13:00:00.000Z",
-      "endsAt": null,
-      "location": "",
-      "notes": "Cojines tapiceria",
-      "createdAt": "2026-06-23T13:14:55.000Z"
-    },
-    {
       "id": "93c64fe2-b33f-4536-aa0b-3415817795df",
       "title": "confirmar colchones",
       "ownerName": "Vinelis Garcia",
@@ -525,6 +503,28 @@
       "notes": "Confirmar Hector Luz",
       "createdAt": "2026-06-23T13:53:20.942Z",
       "completedAt": "2026-06-24T13:40:22.800Z"
+    },
+    {
+      "id": "53b008bd-04b5-4305-acbd-d3134660f65d",
+      "title": "Microondas",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-24T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "Microondas",
+      "createdAt": "2026-06-23T13:14:43.547Z"
+    },
+    {
+      "id": "9e49cd5c-28d4-42c9-93ca-520c2b106ee1",
+      "title": "Cojines tapiceria",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-24T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "Cojines tapiceria",
+      "createdAt": "2026-06-23T13:14:55.000Z"
     },
     {
       "id": "e616611f-b011-4048-8317-8bd4571a6304",
