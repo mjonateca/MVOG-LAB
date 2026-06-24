@@ -457,17 +457,6 @@
       "createdAt": "2026-06-19T19:26:55.644Z"
     },
     {
-      "id": "48baec45-4f2e-4f5f-879e-328985626e00",
-      "title": "Llamar a Madesol",
-      "ownerName": "Manuel Onate",
-      "ownerEmail": "mjcalvo92@gmail.com",
-      "startsAt": "2026-06-23T13:00:00.000Z",
-      "endsAt": null,
-      "location": "",
-      "notes": "Llamar a Madesol",
-      "createdAt": "2026-06-23T04:06:39.021Z"
-    },
-    {
       "id": "944b1a4e-6099-4bcc-bdd2-690e1dffbd91",
       "title": "Confirmar mudanza barata",
       "ownerName": "Manuel Onate",
@@ -546,6 +535,17 @@
       "location": "",
       "notes": "Confirmar Hector Luz",
       "createdAt": "2026-06-23T13:53:20.942Z"
+    },
+    {
+      "id": "48baec45-4f2e-4f5f-879e-328985626e00",
+      "title": "Llamar a Madesol",
+      "ownerName": "Manuel Onate",
+      "ownerEmail": "mjcalvo92@gmail.com",
+      "startsAt": "2026-06-24T13:00:00.000Z",
+      "endsAt": null,
+      "location": "",
+      "notes": "Llamar a Madesol",
+      "createdAt": "2026-06-23T04:06:39.021Z"
     }
   ],
   "activity": [
