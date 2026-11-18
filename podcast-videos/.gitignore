@@ -11,3 +11,4 @@ episodios/*/m[0-9].jpg
 render_all.sh
 render_all.out
 render.log
+drive/
