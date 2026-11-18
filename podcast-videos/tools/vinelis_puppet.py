@@ -232,6 +232,112 @@ def paris_beret(img):
     cv2.line(lay, (503, 296), (509, 276), (30, 25, 50, 255), 6, cv2.LINE_AA)
     return over(img, lay)
 
+
+# ---------- Roma: túnica con fajín rojo, cinturón dorado y corona de laurel ----------
+def roma_body(img):
+    b, g, r, a = img[..., 0], img[..., 1], img[..., 2], img[..., 3]
+    zone = (yy > 600) & (yy < 980) & (xx > 360) & (xx < 600)
+    pink = zone & (r > 170) & (r - g > 35) & (b > g - 10) & (a > 0)
+    lum = (0.3 * r + 0.59 * g + 0.11 * b) / 255.0
+    img[..., 2] = np.where(pink, 70 + 140 * lum, r)
+    img[..., 1] = np.where(pink, 20 + 30 * lum, g)
+    img[..., 0] = np.where(pink, 25 + 35 * lum, b)
+    lay = np.zeros_like(img)
+    cv2.line(lay, (404, 716), (552, 716), (40, 160, 225, 255), 9, cv2.LINE_AA)
+    cv2.circle(lay, (478, 716), 11, (30, 140, 210, 255), -1, cv2.LINE_AA)
+    for x in (430, 520): cv2.circle(lay, (x, 716), 5, (90, 200, 245, 255), -1, cv2.LINE_AA)
+    return over(img, lay)
+
+def roma_wreath(img):
+    lay = np.zeros_like(img)
+    cx, cy, rx, ry = 478, 420, 112, 70
+    for side in (-1, 1):
+        for k in range(9):
+            ang = math.radians(200 + k * 15) if side < 0 else math.radians(340 - k * 15)
+            x = cx + rx * math.cos(ang); y = cy + ry * math.sin(ang)
+            tilt = math.degrees(ang) + (60 if side < 0 else -60)
+            cv2.ellipse(lay, (int(x), int(y)), (24, 10), tilt, 0, 360, (50, 180, 235, 255), -1, cv2.LINE_AA)
+            cv2.ellipse(lay, (int(x - 3), int(y - 2)), (12, 4), tilt, 0, 360, (140, 230, 255, 255), -1, cv2.LINE_AA)
+            cv2.ellipse(lay, (int(x), int(y)), (24, 10), tilt, 0, 360, (20, 100, 160, 255), 2, cv2.LINE_AA)
+    pts = [(int(cx + rx * math.cos(math.radians(a_))), int(cy + ry * math.sin(math.radians(a_)))) for a_ in range(195, 346, 5)]
+    cv2.polylines(lay, [np.array(pts, np.int32)], False, (30, 130, 200, 255), 6, cv2.LINE_AA)
+    return over(img, lay)
+
+
+# ---------- Madrid: chulapa (pañuelo blanco, clavel rojo, vestido de lunares) ----------
+def madrid_body(img):
+    lay = np.zeros_like(img)
+    dress = np.array([(415, 628), (450, 612), (478, 640), (506, 612), (541, 628), (556, 700), (552, 760), (598, 958), (358, 958), (404, 760), (400, 700)], np.int32)
+    mask = np.zeros(img.shape[:2], np.uint8); cv2.fillPoly(mask, [dress], 255)
+    st = np.zeros_like(img); st[..., :] = (40, 30, 30, 255)
+    for yy_ in range(600, 980, 26):
+        for xx_ in range(350, 610, 26):
+            cv2.circle(st, (xx_ + (13 if (yy_ // 26) % 2 else 0), yy_), 5, (245, 245, 248, 255), -1, cv2.LINE_AA)
+    st[..., 3] = mask.astype(np.float32)
+    lay = over(lay, st)
+    cv2.polylines(lay, [dress], True, (20, 15, 15, 255), 3, cv2.LINE_AA)
+    cv2.line(lay, (404, 760), (552, 760), (40, 40, 200, 255), 8, cv2.LINE_AA)
+    return over(img, lay)
+
+def flower(lay, cx, cy, r, col=(40, 40, 210, 255), core=(30, 30, 170, 255), n=10):
+    for k in range(n):
+        a = k * (360 / n) * math.pi / 180
+        cv2.circle(lay, (int(cx + math.cos(a) * r * .6), int(cy + math.sin(a) * r * .6)), int(r * .55), col, -1, cv2.LINE_AA)
+    cv2.circle(lay, (cx, cy), int(r * .5), core, -1, cv2.LINE_AA)
+
+def madrid_head(img):
+    lay = np.zeros_like(img)
+    for (x, y, r) in ((372, 392, 30), (398, 360, 24)):
+        flower(lay, x, y, r)
+    cv2.ellipse(lay, (360, 420), (22, 8), -30, 0, 360, (60, 140, 60, 255), -1, cv2.LINE_AA)
+    return over(img, lay)
+
+def madrid_shawl(img):
+    lay = np.zeros_like(img)
+    shawl = np.array([(400, 620), (556, 620), (548, 690), (478, 740), (408, 690)], np.int32)
+    cv2.fillPoly(lay, [shawl], (225, 240, 248, 255), cv2.LINE_AA)
+    for (x, y) in ((440, 650), (515, 650), (478, 700)):
+        flower(lay, x, y, 13)
+        cv2.ellipse(lay, (x + 14, y + 10), (10, 4), 30, 0, 360, (60, 140, 60, 255), -1, cv2.LINE_AA)
+    cv2.polylines(lay, [shawl], True, (90, 120, 150, 255), 3, cv2.LINE_AA)
+    for k in range(18):
+        t_ = k / 17
+        if t_ < .5: x0, y0 = 408 + (478 - 408) * t_ * 2, 690 + (740 - 690) * t_ * 2
+        else: x0, y0 = 478 + (548 - 478) * (t_ - .5) * 2, 740 - (740 - 690) * (t_ - .5) * 2
+        cv2.line(lay, (int(x0), int(y0)), (int(x0), int(y0) + 22), (160, 200, 230, 255), 3, cv2.LINE_AA)
+    return over(img, lay)
+
+# ---------- Santo Domingo: traje típico dominicano (blusa blanca, falda de volantes azul-blanco-rojo, flor de bayahíbe) ----------
+SD = dict(blue=(98, 45, 0, 255), red=(38, 17, 206, 255), white=(246, 246, 248, 255))
+def sd_body(img):
+    lay = np.zeros_like(img)
+    blouse = np.array([(415, 628), (450, 612), (478, 640), (506, 612), (541, 628), (556, 700), (552, 764), (404, 764), (400, 700)], np.int32)
+    cv2.fillPoly(lay, [blouse], SD['white'], cv2.LINE_AA)
+    cv2.polylines(lay, [np.array([(415, 628), (450, 612), (478, 640), (506, 612), (541, 628)], np.int32)], False, SD['blue'], 7, cv2.LINE_AA)
+    cv2.polylines(lay, [blouse], True, (180, 180, 190, 255), 2, cv2.LINE_AA)
+    bands = [(760, 828, SD['blue']), (822, 890, SD['white']), (884, 960, SD['red'])]
+    for (y0, y1, col) in bands:
+        f0 = (y0 - 760) / 200.0; f1 = (y1 - 760) / 200.0
+        xl0, xr0 = 404 - 46 * f0, 552 + 46 * f0; xl1, xr1 = 404 - 46 * f1, 552 + 46 * f1
+        poly = np.array([(xl0, y0), (xr0, y0), (xr1, y1), (xl1, y1)], np.int32)
+        cv2.fillPoly(lay, [poly], col, cv2.LINE_AA)
+        n = 8
+        for k in range(n):
+            cx_ = int(xl1 + (xr1 - xl1) * (k + .5) / n)
+            cv2.ellipse(lay, (cx_, int(y1)), (int((xr1 - xl1) / n / 2) + 1, 8), 0, 0, 180, col, -1, cv2.LINE_AA)
+            cv2.ellipse(lay, (cx_, int(y1)), (int((xr1 - xl1) / n / 2) + 1, 8), 0, 0, 180, (60, 60, 60, 200), 1, cv2.LINE_AA)
+    cv2.line(lay, (404, 764), (552, 764), SD['red'], 7, cv2.LINE_AA)
+    return over(img, lay)
+
+def sd_head(img):
+    lay = np.zeros_like(img)
+    cv2.ellipse(lay, (352, 418), (24, 9), -35, 0, 360, (60, 140, 60, 255), -1, cv2.LINE_AA)
+    flower(lay, 378, 388, 32, (180, 105, 240, 255), (120, 60, 200, 255), 6)
+    cv2.circle(lay, (378, 388), 7, (60, 210, 250, 255), -1, cv2.LINE_AA)
+    flower(lay, 404, 356, 20, (200, 140, 250, 255), (150, 90, 230, 255), 6)
+    cv2.circle(lay, (404, 356), 5, (60, 210, 250, 255), -1, cv2.LINE_AA)
+    return over(img, lay)
+
 # crop window (union of poses) and output scale
 CX0, CY0, CX1, CY1 = 60, 230, 900, 1030
 SCALE = 0.72
@@ -241,6 +347,16 @@ for pose, (la, ra) in POSES.items():
         gap = (yy > 966) & (yy < 1000) & (xx > 440) & (xx < 530) & (body[..., :3].min(2) > 170)
         body[..., 3] *= np.where(gap, 0, 1)
         body = kimono_body(body)
+    if OUTFIT == 'roma':
+        body = roma_body(body)
+    if OUTFIT == 'santodomingo':
+        gap = (yy > 930) & (yy < 990) & (xx > 360) & (xx < 600) & (((body[..., 2] > body[..., 0] + 25) & (body[..., 1] > 120)) | (body[..., :3].min(2) > 170))
+        body[..., 3] *= np.where(gap, 0, 1)
+        body = sd_body(body)
+    if OUTFIT == 'madrid':
+        gap = (yy > 930) & (yy < 990) & (xx > 360) & (xx < 600) & (((body[..., 2] > body[..., 0] + 25) & (body[..., 1] > 120)) | (body[..., :3].min(2) > 170))
+        body[..., 3] *= np.where(gap, 0, 1)
+        body = madrid_body(body)
     if OUTFIT == 'paris':
         gap = (yy > 930) & (yy < 990) & (xx > 360) & (xx < 600) & (((body[..., 2] > body[..., 0] + 25) & (body[..., 1] > 120)) | (body[..., :3].min(2) > 170))
         body[..., 3] *= np.where(gap, 0, 1)
@@ -249,6 +365,12 @@ for pose, (la, ra) in POSES.items():
     body = over(body, rot_layer(arm_layers['R'], ARMS['R']['pivot'], ra))
     if OUTFIT == 'kimono':
         body = kimono_sleeve(body, 'L', la); body = kimono_sleeve(body, 'R', ra)
+    if OUTFIT == 'roma':
+        body = roma_wreath(body)
+    if OUTFIT == 'madrid':
+        body = madrid_head(body); body = madrid_shawl(body)
+    if OUTFIT == 'santodomingo':
+        body = sd_head(body)
     if OUTFIT == 'paris':
         body = paris_sleeve(body, 'L', la); body = paris_sleeve(body, 'R', ra); body = paris_beret(body)
     for m in (0, 1, 2):

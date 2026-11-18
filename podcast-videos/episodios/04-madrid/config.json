@@ -1,0 +1,515 @@
+{
+ "audio": "madrid.mp3",
+ "transcript": "transcript_fixed.json",
+ "workdir": ".",
+ "out": "madrid-para-ninos-mi-pequeno-atlas.mp4",
+ "chip": "Mi Pequeño Atlas  ·  Capítulo 4: Madrid",
+ "spreaker_episode_id": 69478475,
+ "outfit": "madrid",
+ "char_scale": 1.25,
+ "hide_silence": 3.0,
+ "subtitles": false,
+ "hide": [
+  [
+   49.8,
+   74.0
+  ],
+  [
+   395.4,
+   412
+  ],
+  [
+   439.8,
+   455
+  ],
+  [
+   462.2,
+   471.4
+  ],
+  [
+   492.2,
+   504.8
+  ],
+  [
+   579.6,
+   586.2
+  ],
+  [
+   651.6,
+   668.2
+  ]
+ ],
+ "schedule": [
+  [
+   0,
+   "ma_intro"
+  ],
+  [
+   24.4,
+   "ma_retiro_ninos"
+  ],
+  [
+   32.0,
+   "ma_palacio"
+  ],
+  [
+   33.7,
+   "ma_prado"
+  ],
+  [
+   35.8,
+   "ma_churros"
+  ],
+  [
+   40.4,
+   "ma_granvia"
+  ],
+  [
+   43.0,
+   "ma_granvia",
+   [
+    [
+     960,
+     1.75,
+     520
+    ]
+   ]
+  ],
+  [
+   49.6,
+   "vuelo"
+  ],
+  [
+   74.0,
+   "ma_mapa"
+  ],
+  [
+   95.6,
+   "ma_granvia"
+  ],
+  [
+   112.1,
+   "ma_plazamayor"
+  ],
+  [
+   127.8,
+   "ma_hablar"
+  ],
+  [
+   155.3,
+   "ma_palabras"
+  ],
+  [
+   173.5,
+   "ma_mola"
+  ],
+  [
+   188.0,
+   "ma_mercado"
+  ],
+  [
+   208.0,
+   "ma_cocina"
+  ],
+  [
+   214.2,
+   "ma_cocido"
+  ],
+  [
+   238.5,
+   "ma_cocido3"
+  ],
+  [
+   260.8,
+   "ma_tortilla"
+  ],
+  [
+   284.9,
+   "ma_bocadillo"
+  ],
+  [
+   313.7,
+   "ma_churros"
+  ],
+  [
+   334.5,
+   "ma_ninos"
+  ],
+  [
+   354.6,
+   "ma_ropa"
+  ],
+  [
+   369.4,
+   "ma_zapatos"
+  ],
+  [
+   382.6,
+   "ma_paseo"
+  ],
+  [
+   395.1,
+   "ma_retiro"
+  ],
+  [
+   439.6,
+   "ma_palacio"
+  ],
+  [
+   462.0,
+   "ma_sol"
+  ],
+  [
+   471.5,
+   "ma_km0"
+  ],
+  [
+   484.3,
+   "ma_sol"
+  ],
+  [
+   492.0,
+   "ma_prado"
+  ],
+  [
+   505.2,
+   "ma_prado_sala"
+  ],
+  [
+   511.0,
+   "ma_historia"
+  ],
+  [
+   530.0,
+   "ma_santiago"
+  ],
+  [
+   545.5,
+   "ma_viaje"
+  ],
+  [
+   554.0,
+   "ma_retiro_ninos"
+  ],
+  [
+   579.5,
+   "ma_bernabeu"
+  ],
+  [
+   586.3,
+   "ma_retiro_ninos"
+  ],
+  [
+   595.9,
+   "ma_flamenco"
+  ],
+  [
+   619.5,
+   "ma_arbol"
+  ],
+  [
+   630.9,
+   "ma_sanisidro"
+  ],
+  [
+   639.9,
+   "ma_rd_fiesta"
+  ],
+  [
+   647.9,
+   "ma_arbol"
+  ],
+  [
+   651.5,
+   "ma_cibeles"
+  ],
+  [
+   668.3,
+   "ma_juntos"
+  ],
+  [
+   682.0,
+   "ma_moraleja"
+  ],
+  [
+   698.4,
+   "ma_atardecer"
+  ],
+  [
+   705.7,
+   "ma_postales"
+  ],
+  [
+   721.4,
+   "ma_compartir"
+  ],
+  [
+   745.2,
+   "ma_outro"
+  ]
+ ],
+ "stage": {
+  "ma_intro": [
+   [
+    1710,
+    0.98
+   ],
+   [
+    240,
+    0.95
+   ]
+  ],
+  "ma_retiro_ninos": [
+   [
+    300,
+    0.9
+   ]
+  ],
+  "ma_palacio": [
+   [
+    1780,
+    0.75
+   ]
+  ],
+  "ma_prado": [
+   [
+    1760,
+    0.8
+   ]
+  ],
+  "ma_churros": [
+   [
+    1700,
+    0.8
+   ]
+  ],
+  "ma_granvia": [
+   [
+    300,
+    0.9
+   ],
+   [
+    1620,
+    0.9
+   ]
+  ],
+  "vuelo": [
+   [
+    1660,
+    0.95
+   ]
+  ],
+  "ma_mapa": [
+   [
+    330,
+    1.1
+   ]
+  ],
+  "ma_plazamayor": [
+   [
+    1100,
+    0.85
+   ],
+   [
+    300,
+    0.85
+   ]
+  ],
+  "ma_hablar": [
+   [
+    260,
+    0.9
+   ]
+  ],
+  "ma_palabras": [
+   [
+    960,
+    0.8
+   ]
+  ],
+  "ma_mola": [
+   [
+    1600,
+    0.9
+   ]
+  ],
+  "ma_mercado": [
+   [
+    1720,
+    0.85
+   ]
+  ],
+  "ma_cocina": [
+   [
+    300,
+    0.9
+   ]
+  ],
+  "ma_cocido": [
+   [
+    1780,
+    0.6
+   ]
+  ],
+  "ma_cocido3": [
+   [
+    960,
+    0.62
+   ]
+  ],
+  "ma_tortilla": [
+   [
+    1800,
+    0.55
+   ]
+  ],
+  "ma_bocadillo": [
+   [
+    1780,
+    0.7
+   ]
+  ],
+  "ma_ninos": [
+   [
+    1500,
+    0.85
+   ]
+  ],
+  "ma_ropa": [
+   [
+    960,
+    0.8
+   ]
+  ],
+  "ma_zapatos": [
+   [
+    300,
+    0.9
+   ]
+  ],
+  "ma_paseo": [
+   [
+    1600,
+    0.9
+   ]
+  ],
+  "ma_retiro": [
+   [
+    1760,
+    0.85
+   ]
+  ],
+  "ma_sol": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "ma_km0": [
+   [
+    300,
+    0.95
+   ]
+  ],
+  "ma_prado_sala": [
+   [
+    1760,
+    0.8
+   ]
+  ],
+  "ma_historia": [
+   [
+    1760,
+    0.75
+   ]
+  ],
+  "ma_santiago": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "ma_viaje": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "ma_bernabeu": [
+   [
+    1760,
+    0.8
+   ]
+  ],
+  "ma_flamenco": [
+   [
+    1780,
+    0.6
+   ]
+  ],
+  "ma_arbol": [
+   [
+    300,
+    0.9
+   ]
+  ],
+  "ma_sanisidro": [
+   [
+    1780,
+    0.7
+   ]
+  ],
+  "ma_rd_fiesta": [
+   [
+    1760,
+    0.75
+   ]
+  ],
+  "ma_cibeles": [
+   [
+    1780,
+    0.7
+   ]
+  ],
+  "ma_juntos": [
+   [
+    1760,
+    0.8
+   ]
+  ],
+  "ma_moraleja": [
+   [
+    1780,
+    0.7
+   ]
+  ],
+  "ma_atardecer": [
+   [
+    1600,
+    0.9
+   ]
+  ],
+  "ma_postales": [
+   [
+    1780,
+    0.6
+   ]
+  ],
+  "ma_compartir": [
+   [
+    300,
+    0.9
+   ]
+  ],
+  "ma_outro": [
+   [
+    290,
+    1.05
+   ],
+   [
+    1630,
+    1.0
+   ]
+  ]
+ }
+}
