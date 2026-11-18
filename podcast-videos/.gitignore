@@ -8,3 +8,6 @@ episodios/*/*.log
 episodios/*/*_[0-9]*.jpg
 episodios/*/*grid.jpg
 episodios/*/m[0-9].jpg
+render_all.sh
+render_all.out
+render.log
