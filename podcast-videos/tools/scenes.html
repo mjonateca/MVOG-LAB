@@ -372,7 +372,7 @@ function sparkle(x,y,s,t,ph=0){const k=0.6+0.4*Math.abs(S(t,4,ph));return `<path
 const KC=[['#ff5a5f','#2b2020'],['#4fb3f6','#3a2a2a'],['#7ed957','#2b2020'],['#ffd34d','#5a3a2a'],['#b388ff','#2b2020'],['#ff9be0','#3a2a2a']];
 
 Object.assign(scenes,{
-vuelo(t){return `<rect width="${W}" height="${H}" fill="url(#skyDay)"/>${sun(1650,170,70,t)}
+vuelo(t){return `${RD}<rect width="${W}" height="${H}" fill="url(#skyDay)"/>${rSun(1650,170,70)}
 ${[...Array(9)].map((_,i)=>cloud(((i*260)-(t/L*W*2)%260*1)+(i%2)*60,760+(i%3)*90,1.6,1)).join('')}
 ${driftClouds(t,[[100,240,0.7,2],[900,320,0.6,2],[1500,200,0.8,2]])}
 <g transform="translate(${900+S(t,1)*80},${440+S(t,2)*30}) rotate(${-6+S(t,1)*3})" stroke="${OL}" stroke-width="7" stroke-linejoin="round">
@@ -740,4 +740,6 @@ window.renderChar=(pose,m,b)=>{const c=document.getElementById('c');c.setAttribu
 window.renderScene=(name,t)=>{document.getElementById('c').innerHTML=defs+scenes[name](t)};
 window.renderMascot=(m,b)=>{const c=document.getElementById('c');c.setAttribute('width',340);c.setAttribute('height',340);c.setAttribute('viewBox','0 0 340 340');document.body.style.width='340px';c.innerHTML=mascot(m,b)};
 window.sceneNames=Object.keys(scenes);
-</script></body></html>
+</script><script src="scenes_real.js"></script><script src="scenes_real_a.js"></script><script src="scenes_real_b.js"></script><script src="scenes_real_c.js"></script>
+<script>window.sceneNames=Object.keys(scenes);</script>
+</body></html>

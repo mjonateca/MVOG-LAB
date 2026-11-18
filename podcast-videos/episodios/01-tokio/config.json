@@ -7,23 +7,27 @@
  "schedule": [
   [
    0,
-   "intro"
+   "r_intro"
   ],
   [
    27,
-   "robotemplo"
+   "r_robotemplo"
   ],
   [
    34,
-   "tren"
+   "r_tren"
   ],
   [
-   37.5,
-   "noche"
+   37.4,
+   "r_yokocho"
+  ],
+  [
+   38.6,
+   "r_neon"
   ],
   [
    41,
-   "skyline",
+   "r_torre",
    [
     [
      960,
@@ -42,19 +46,27 @@
   ],
   [
    80,
-   "multitud"
+   "r_aerea"
   ],
   [
    102,
-   "calle"
+   "r_calle"
   ],
   [
    123,
-   "robotemplo"
+   "r_tradtec"
   ],
   [
    140,
-   "kimono"
+   "r_kimono"
+  ],
+  [
+   171,
+   "r_boda"
+  ],
+  [
+   183,
+   "r_kimonos4"
   ],
   [
    206,
@@ -65,84 +77,116 @@
    "sensoji"
   ],
   [
+   262,
+   "r_nakamise"
+  ],
+  [
    275,
-   "akihabara"
+   "r_akiba"
+  ],
+  [
+   298,
+   "r_akiba_tienda"
   ],
   [
    314,
-   "tres"
+   "r_tres"
   ],
   [
    331,
-   "edo"
+   "r_edo"
   ],
   [
    346,
-   "maquinas"
+   "r_maquinas"
   ],
   [
-   395,
-   "skyline"
+   376,
+   "r_estacion"
+  ],
+  [
+   394,
+   "r_torre"
   ],
   [
    416,
-   "comida"
+   "r_sushi"
+  ],
+  [
+   443,
+   "r_ramen"
   ],
   [
    478,
-   "onigiri"
+   "r_onigiri"
   ],
   [
    507,
-   "dango"
+   "r_dango"
   ],
   [
    525,
-   "bento"
+   "r_bento"
   ],
   [
    559,
-   "skyline"
+   "r_torre"
   ],
   [
    588,
-   "escuela"
+   "r_genkan"
+  ],
+  [
+   605,
+   "r_kenji_calle"
   ],
   [
    630,
-   "aula"
+   "r_getabako"
+  ],
+  [
+   641,
+   "r_aula"
   ],
   [
    662,
-   "reverencia"
+   "r_reverencia"
+  ],
+  [
+   674,
+   "r_vagon"
   ],
   [
    681,
-   "matsuri"
+   "r_matsuri"
   ],
   [
    703,
-   "parque"
+   "r_sakura"
   ],
   [
    745,
-   "hanami"
+   "r_hanami"
   ],
   [
    762,
-   "parque"
+   "r_rama"
   ],
   [
    780,
-   "escritura"
+   "r_pizarra"
   ],
   [
-   804,
-   "idioma"
+   807,
+   "r_saludos"
+  ],
+  [
+   818,
+   "r_carteles"
   ],
   [
    838,
-   "hanami"
+   "r_hanami"
   ],
   [
    849,
@@ -150,7 +194,7 @@
   ],
   [
    868,
-   "outro"
+   "r_outro"
   ]
  ],
  "stage": {
@@ -410,6 +454,254 @@
    [
     240,
     0.85
+   ]
+  ],
+  "r_intro": [
+   [
+    1710,
+    0.98
+   ],
+   [
+    240,
+    0.95
+   ]
+  ],
+  "r_robotemplo": [
+   [
+    960,
+    0.85
+   ]
+  ],
+  "r_tren": [
+   [
+    260,
+    0.85
+   ]
+  ],
+  "r_yokocho": [
+   [
+    1720,
+    0.85
+   ]
+  ],
+  "r_neon": [
+   [
+    1720,
+    0.85
+   ]
+  ],
+  "r_torre": [
+   [
+    1500,
+    0.9
+   ],
+   [
+    400,
+    0.9
+   ]
+  ],
+  "r_aerea": [
+   [
+    1700,
+    0.9
+   ]
+  ],
+  "r_calle": [
+   [
+    1650,
+    0.9
+   ],
+   [
+    700,
+    0.9
+   ]
+  ],
+  "r_tradtec": [
+   [
+    960,
+    0.85
+   ]
+  ],
+  "r_kimono": [
+   [
+    1790,
+    0.8
+   ],
+   [
+    140,
+    0.8
+   ]
+  ],
+  "r_boda": [
+   [
+    1650,
+    0.9
+   ]
+  ],
+  "r_kimonos4": [
+   [
+    1830,
+    0.62
+   ]
+  ],
+  "r_nakamise": [
+   [
+    960,
+    0.85
+   ]
+  ],
+  "r_akiba": [
+   [
+    960,
+    0.85
+   ]
+  ],
+  "r_akiba_tienda": [
+   [
+    960,
+    0.8
+   ]
+  ],
+  "r_tres": [
+   [
+    1800,
+    0.6
+   ]
+  ],
+  "r_edo": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "r_maquinas": [
+   [
+    1840,
+    0.66
+   ]
+  ],
+  "r_estacion": [
+   [
+    420,
+    0.9
+   ]
+  ],
+  "r_sushi": [
+   [
+    1700,
+    0.9
+   ]
+  ],
+  "r_ramen": [
+   [
+    1840,
+    0.6
+   ]
+  ],
+  "r_onigiri": [
+   [
+    1850,
+    0.6
+   ]
+  ],
+  "r_dango": [
+   [
+    1750,
+    0.85
+   ]
+  ],
+  "r_bento": [
+   [
+    1850,
+    0.58
+   ]
+  ],
+  "r_genkan": [
+   [
+    1600,
+    0.8
+   ]
+  ],
+  "r_kenji_calle": [
+   [
+    640,
+    0.8
+   ]
+  ],
+  "r_getabako": [
+   [
+    1800,
+    0.8
+   ]
+  ],
+  "r_aula": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "r_reverencia": [
+   [
+    1650,
+    0.85
+   ]
+  ],
+  "r_vagon": [
+   [
+    1500,
+    0.85
+   ]
+  ],
+  "r_matsuri": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "r_sakura": [
+   [
+    350,
+    0.85
+   ]
+  ],
+  "r_hanami": [
+   [
+    960,
+    0.85
+   ]
+  ],
+  "r_rama": [
+   [
+    960,
+    0.9
+   ]
+  ],
+  "r_pizarra": [
+   [
+    260,
+    0.85
+   ]
+  ],
+  "r_saludos": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "r_carteles": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "r_outro": [
+   [
+    300,
+    1.05
+   ],
+   [
+    1630,
+    1.0
    ]
   ]
  },
