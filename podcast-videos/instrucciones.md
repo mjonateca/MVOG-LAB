@@ -71,7 +71,7 @@ Orden de trabajo: **Tokio** (ya hecho, pendiente de aprobación), después **Par
 4. **Cierre:** Vinelis se despide, invita a suscribirse y a ver el siguiente capítulo, y menciona el libro de esa ciudad si existe.
 
 **En todo el vídeo:**
-- **Subtítulos en español** sincronizados con la voz, con letra grande y legible, colocados en el lado contrario al de Vinelis.
+- **Sin subtítulos incrustados.** El vídeo sale limpio; los subtítulos se entregan aparte en un archivo `.srt` (español, sincronizado con la voz) que se sube a YouTube en "Subtítulos → Subir archivo". Se genera con `tools/make_srt.py episodios/NN-ciudad/config.json`.
 - Rótulo pequeño arriba: "Mi Pequeño Atlas · Capítulo N: Ciudad".
 - Barra de progreso fina abajo.
 
@@ -84,8 +84,12 @@ Orden de trabajo: **Tokio** (ya hecho, pendiente de aprobación), después **Par
 - **Miniatura:** 1280×720 en JPG. La ciudad a pantalla completa, Vinelis pequeña abajo a la izquierda (con el vestuario del destino) y un texto gigante de 1–4 palabras (ej. "¡TOKIO!").
 - **Shorts (2–3 por capítulo):** vertical 9:16, de 30 a 50 segundos, una curiosidad por Short, gancho en el primer segundo, subtítulos incrustados, terminar invitando a ver el vídeo largo. Nombre: `short-ciudad-curiosidad.mp4` (ej. `short-tokio-shibuya.mp4`).
 - **Sin anuncios** dentro del vídeo.
-- **Entrega:** en la carpeta de Drive **"Videos YouTube Completos"** (dentro de "Audios para Claude (YouTube)"), y aviso a mipequenoatlass@gmail.com.
-  - La conexión con Drive solo permite subir archivos de **hasta 10 MB**. El vídeo (unos 120 MB) se entrega como archivo para descargar y lo sube a Drive una persona. La miniatura y la descripción sí se suben directamente.
+- **Entrega (solo por Google Drive):** dentro de "Audios para Claude (YouTube)" → "Videos YouTube Completos", una carpeta por capítulo llamada **"Capítulo N - Ciudad (video en partes)"** con:
+  - el vídeo partido en trozos de 2,9 MB con 7-Zip (`7z a -t7z -mx=0 -v2900k ciudad-para-ninos-mi-pequeno-atlas.7z video.mp4`), porque la conexión con Drive solo admite unos 3 MB por archivo. Antes de subirlos, comprobar que se vuelven a unir en el vídeo idéntico al original;
+  - un `LEEME.txt` con los pasos para unirlos (7-Zip en Windows, Keka o The Unarchiver en Mac, ZArchiver en Android);
+  - el `.srt` de subtítulos;
+  - la miniatura y la descripción se dejan en "Videos YouTube Completos".
+  - La subida de los trozos se puede repartir entre subagentes, uno por capítulo, y al final verificar que cada trozo esté una sola vez.
 - **Revisión:** Bibi o Vinelis revisan antes de publicar. Quien genera el vídeo **no lo sube a YouTube ni a ninguna red social**.
 
 ---
@@ -135,7 +139,8 @@ El código está en el zip **`mi-pequeno-atlas-videos-v5.zip`**, en la carpeta d
 - `tools/build.sh episodios/NN-ciudad [--preview INICIO DURACION]`: lo hace todo de una vez. Descarga el audio, transcribe (Whisper "small"), genera a Vinelis con el vestuario, renderiza las escenas y monta el vídeo.
 - `tools/scenes_real*.js`: las escenas realistas (SVG animado, bucles de 8 s renderizados con Playwright).
 - `tools/vinelis_puppet.py`: la animación por partes de la ilustración de Vinelis. Las poses son rest, mid, talkA, talkB, point, wave1, wave2 y open; el vestuario se elige con el parámetro `outfit`.
-- `tools/compose.py`: el montaje final. Lee `config.json`:
+- `tools/make_srt.py`: genera el `.srt` de subtítulos desde la transcripción corregida.
+- `tools/compose.py`: el montaje final (sin subtítulos incrustados salvo `"subtitles": true` en el config). Lee `config.json`:
   - `schedule`: lista `[segundo, escena]`, opcionalmente con `[[x, escala, desplazamiento_y]]` para un encuadre concreto (por ejemplo, el plano cercano);
   - `stage`: dónde se coloca Vinelis en cada escena;
   - `hide`: los tramos en los que no aparece;

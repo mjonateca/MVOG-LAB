@@ -54,6 +54,7 @@ def build_cues(words, maxc=58):
         out.append((s, min(max(e + 0.3, s + 1.0), nxt, e + 0.8), t))
     return out
 cues = build_cues(words)
+SUBS = cfg.get('subtitles', False)  # por defecto SIN subtítulos incrustados (se suben aparte en .srt)
 font = ImageFont.truetype(os.path.join(TOOLS, 'fredoka-600.ttf'), 50)
 font_chip = ImageFont.truetype(os.path.join(TOOLS, 'fredoka-600.ttf'), 34)
 NAVY = (43, 58, 103)
@@ -221,7 +222,7 @@ for f in range(f0, f1):
     # subtitle (opposite side of Vinelis)
     while ci < len(cues) and cues[ci][1] < t: ci += 1
     if ci > 0 and cues[ci-1][1] >= t: ci -= 1
-    if ci < len(cues) and cues[ci][0] <= t <= cues[ci][1]:
+    if SUBS and ci < len(cues) and cues[ci][0] <= t <= cues[ci][1]:
         txt = cues[ci][2]
         if txt not in sub_cache:
             if len(sub_cache) > 50: sub_cache.clear()
