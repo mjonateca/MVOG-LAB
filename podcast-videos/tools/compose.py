@@ -148,7 +148,12 @@ for i, ent in enumerate(sched):
     for k in range(n):
         pl = places[k % len(places)]
         kf.append((st_ + k * (en_ - st_) / n, pl[0], pl[1], pl[2] if len(pl) > 2 else 0))
-HIDE = cfg.get('hide', [])   # [[t0, t1], ...] Vinelis sale de escena
+HIDE = list(cfg.get('hide', []))   # [[t0, t1], ...] Vinelis sale de escena
+GAP = cfg.get('hide_silence', 2.0)  # ocultar a Vinelis en silencios/música de más de GAP s
+if GAP:
+    for a_, b_ in zip(words, words[1:]):
+        if b_['s'] - a_['e'] >= GAP:
+            HIDE.append([a_['e'] + 0.35, b_['s'] - 0.35])
 def visible(t, ramp=0.45):
     v = 1.0
     for a, b in HIDE:

@@ -497,7 +497,118 @@ ${kid(700,960,0.9,t,{shirt:'#ff5a5f',walk:false,ph:0,bun:true})}${kid(900,950,1.
 ${fallingPetals(t,45,93)}${title('Hanami 花見',W/2,120,'#e8352a')}`},
 });
 
+/* ---------- realistic-ish landmarks ---------- */
+const defs2=`<defs>
+<linearGradient id="roofG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#55657a"/><stop offset="1" stop-color="#232b38"/></linearGradient>
+<linearGradient id="vermG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b62a1c"/><stop offset=".45" stop-color="#e2452d"/><stop offset="1" stop-color="#9c2016"/></linearGradient>
+<radialGradient id="lanG" cx=".45" cy=".4" r=".7"><stop offset="0" stop-color="#ff6a45"/><stop offset=".7" stop-color="#d42a18"/><stop offset="1" stop-color="#8e140c"/></radialGradient>
+<linearGradient id="stoneG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfc6b6"/><stop offset="1" stop-color="#a99f8f"/></linearGradient>
+<linearGradient id="nightG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1030"/><stop offset=".6" stop-color="#2a2160"/><stop offset="1" stop-color="#4b2c6e"/></linearGradient>
+<linearGradient id="asphG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b2c3c"/><stop offset="1" stop-color="#3f4052"/></linearGradient>
+<linearGradient id="glassG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a4a7a"/><stop offset="1" stop-color="#1c2348"/></linearGradient>
+<linearGradient id="silverG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8e97a8"/><stop offset=".4" stop-color="#e6ebf2"/><stop offset="1" stop-color="#7b8496"/></linearGradient>
+<filter id="glowF" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="softF"><feGaussianBlur stdDeviation="18"/></filter>
+</defs>`;
+function jroof(cx,y,w,h,lift=40){ // japanese curved roof
+ return `<path d="M${cx-w/2-lift},${y-lift*0.6} Q${cx-w/2+w*0.12},${y+4} ${cx-w*0.3},${y-h*0.15} L${cx-w*0.18},${y-h} L${cx+w*0.18},${y-h} L${cx+w*0.3},${y-h*0.15} Q${cx+w/2-w*0.12},${y+4} ${cx+w/2+lift},${y-lift*0.6} L${cx+w/2+lift*0.7},${y-lift*0.2} Q${cx},${y+18} ${cx-w/2-lift*0.7},${y-lift*0.2}Z" fill="url(#roofG)" stroke="#141a24" stroke-width="4"/>
+ ${[...Array(Math.floor(w/26))].map((_,i)=>`<line x1="${cx-w*0.28+i*(w*0.56/Math.floor(w/26))}" y1="${y-h*0.9}" x2="${cx-w*0.42+i*(w*0.84/Math.floor(w/26))}" y2="${y-h*0.18}" stroke="#3d4858" stroke-width="2" opacity=".7"/>`).join('')}`}
+function tinyPerson(x,y,s,t,ph,col,dir=1){const st=S(t,8,ph)*5;return `<g transform="translate(${x},${y}) scale(${s*dir},${s})"><path d="M-4,-20 L${-4+st},0 M4,-20 L${4-st},0" stroke="#2b2b3a" stroke-width="5" stroke-linecap="round"/><rect x="-9" y="-46" width="18" height="28" rx="7" fill="${col}"/><circle cx="0" cy="-54" r="9" fill="#f1c9a5"/><path d="M-9,-56 Q0,-68 9,-56Z" fill="#2b2020"/></g>`}
+
+scenes.sensoji=function(t){
+ let s=defs2+`<rect width="${W}" height="${H}" fill="url(#skyDusk)"/><circle cx="1480" cy="330" r="300" fill="#fff3c4" opacity=".55" filter="url(#softF)"/>
+ ${driftClouds(t,[[150,140,0.8,1],[1100,90,0.7,1]])}
+ <path d="M0,560 Q200,470 420,540 Q640,470 860,535 Q1100,460 1350,530 Q1600,470 1920,540 L1920,700 L0,700Z" fill="#4f7a4a"/>
+ ${sakuraTree(120,720,0.9,61,t)}${sakuraTree(1840,720,0.85,62,t)}`;
+ // five-story pagoda (right)
+ s+=`<g transform="translate(1530,0)">`;
+ for(let i=0;i<5;i++){const y=700-i*92,w=230-i*26;s+=`<rect x="${-w*0.36}" y="${y-62}" width="${w*0.72}" height="62" fill="url(#vermG)" stroke="#5a140c" stroke-width="3"/>
+  ${[...Array(3)].map((_,k)=>`<rect x="${-w*0.3+k*w*0.22}" y="${y-52}" width="${w*0.14}" height="40" fill="#f3e6c8" stroke="#5a140c" stroke-width="2"/>`).join('')}${jroof(0,y-58,w,40,26)}`}
+ s+=`<rect x="-6" y="150" width="12" height="100" fill="#b08a2e"/>${[0,1,2,3,4,5,6].map(i=>`<ellipse cx="0" cy="${160+i*12}" rx="${14-i}" ry="4" fill="#d4a93c" stroke="#7a5a12" stroke-width="2"/>`).join('')}<path d="M0,120 L8,150 L-8,150Z" fill="#d4a93c"/></g>`;
+ // main hall (hondo) behind
+ s+=`<g><rect x="380" y="560" width="620" height="170" fill="url(#vermG)" stroke="#5a140c" stroke-width="4"/>
+ ${[...Array(9)].map((_,i)=>`<rect x="${398+i*70}" y="560" width="16" height="170" fill="#9a1f14"/>`).join('')}
+ ${[...Array(8)].map((_,i)=>`<rect x="${420+i*70}" y="600" width="44" height="80" fill="#f0dfb8" opacity=".9"/>`).join('')}
+ ${jroof(690,575,640,170,70)}<path d="M600,420 Q690,395 780,420" stroke="#141a24" stroke-width="10" fill="none"/></g>`;
+ // ground & nakamise
+ s+=`<rect x="0" y="720" width="${W}" height="${H-720}" fill="url(#stoneG)"/>
+ ${[...Array(12)].map((_,i)=>`<line x1="${960+(i-6)*40}" y1="720" x2="${960+(i-6)*260}" y2="${H}" stroke="#9c9282" stroke-width="2"/>`).join('')}
+ ${[0,1,2,3,4,5].map(i=>`<line x1="0" y1="${745+i*i*12}" x2="${W}" y2="${745+i*i*12}" stroke="#9c9282" stroke-width="2"/>`).join('')}`;
+ for(const side of [-1,1])for(let i=0;i<3;i++){const x=side<0?20+i*120:W-140-i*120,y=760+i*14;s+=`<g stroke="#3a2418" stroke-width="3"><rect x="${x}" y="${y-110}" width="120" height="110" fill="#e9d2a8"/><path d="M${x-10},${y-110} L${x+130},${y-110} L${x+120},${y-140} L${x},${y-140}Z" fill="#7a2a1c"/><rect x="${x+8}" y="${y-100}" width="104" height="26" fill="#c8321f"/><text x="${x+60}" y="${y-80}" font-family="IPAGothic" font-size="20" text-anchor="middle" fill="#fff" stroke="none">仲見世</text><rect x="${x+12}" y="${y-64}" width="96" height="54" fill="#fff6dd"/></g>${lantern(x+60,y-160,0.32,t+i,'')}`}
+ // Kaminarimon gate (front)
+ s+=`<g transform="translate(960,0)">
+ <rect x="-360" y="560" width="720" height="40" fill="#7a1a10"/>
+ ${[-330,-170,170,330].map(x=>`<rect x="${x-20}" y="560" width="40" height="360" fill="url(#vermG)" stroke="#5a140c" stroke-width="3"/>`).join('')}
+ <rect x="-330" y="610" width="140" height="300" fill="#5a140c" opacity=".55"/><rect x="190" y="610" width="140" height="300" fill="#5a140c" opacity=".55"/>
+ ${[-260,260].map((x,k)=>`<g transform="translate(${x},860)"><ellipse cx="0" cy="-150" rx="40" ry="46" fill="${k?'#c03a2a':'#3f8a4f'}"/><circle cx="0" cy="-210" r="26" fill="${k?'#c03a2a':'#3f8a4f'}"/><path d="M-50,-180 Q0,-260 50,-180" stroke="#e8d27a" stroke-width="10" fill="none"/><rect x="-36" y="-110" width="72" height="110" fill="${k?'#a0301f':'#356f40'}"/></g>
+ <g stroke="#3a1a10" stroke-width="3">${[0,1,2,3,4,5].map(i=>`<line x1="${x-70+i*28}" y1="610" x2="${x-70+i*28}" y2="910"/>`).join('')}</g>`).join('')}
+ ${jroof(0,575,720,190,90)}
+ <rect x="-70" y="400" width="140" height="70" rx="4" fill="#1b1b1b" stroke="#c9a23c" stroke-width="5"/><text x="0" y="450" font-family="IPAGothic" font-size="46" text-anchor="middle" fill="#e2c15a">金龍山</text>
+ <g transform="rotate(${S(t,1)*1.5} 0 600)">
+ <line x1="0" y1="596" x2="0" y2="620" stroke="#222" stroke-width="6"/>
+ <rect x="-118" y="618" width="236" height="34" rx="8" fill="#1e1e1e" stroke="#c9a23c" stroke-width="3"/>
+ <path d="M-130,650 Q-160,790 -125,930 L125,930 Q160,790 130,650Z" fill="url(#lanG)" stroke="#5a0e08" stroke-width="5"/>
+ ${[0,1,2,3,4,5].map(i=>`<path d="M-140,${680+i*42} Q0,${672+i*42} 140,${680+i*42}" stroke="#a51a10" stroke-width="3" fill="none" opacity=".6"/>`).join('')}
+ <text x="0" y="845" font-family="IPAGothic" font-size="150" font-weight="bold" text-anchor="middle" fill="#141414">雷門</text>
+ <rect x="-118" y="926" width="236" height="34" rx="8" fill="#1e1e1e" stroke="#c9a23c" stroke-width="3"/>
+ <path d="M-90,960 Q0,985 90,960" stroke="#c9a23c" stroke-width="6" fill="none"/></g></g>`;
+ // visitors
+ const R=rng(515);for(let i=0;i<18;i++){const dir=i%2?1:-1;const x=((R()*W+dir*t/L*260)%W+W)%W;const y=960+R()*100;s+=tinyPerson(x,y,1.3+(y-960)/200,t,i,KC[i%6][0],dir)}
+ return s+title('Templo Senso-ji · Asakusa',W/2,110,'#e8352a',50)};
+
 scenes.shibuya=function(t){
+ const scroll=(t/L*1600)%1600;
+ const screenContent=(x,y,w,h,ph)=>{const hue=Math.floor((t/L*360+ph*90)%360);return `<g><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="hsl(${hue},85%,55%)"/>
+  <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#dots)" opacity=".5"/>
+  <circle cx="${x+w*0.28}" cy="${y+h*0.55+S(t,4,ph)*h*0.06}" r="${h*0.28}" fill="#fff4dc" stroke="#222" stroke-width="3"/><circle cx="${x+w*0.24}" cy="${y+h*0.5}" r="${h*0.04}" fill="#222"/><circle cx="${x+w*0.32}" cy="${y+h*0.5}" r="${h*0.04}" fill="#222"/><path d="M${x+w*0.22},${y+h*0.62} Q${x+w*0.28},${y+h*0.7} ${x+w*0.34},${y+h*0.62}" stroke="#222" stroke-width="3" fill="none"/>
+  <text x="${x+w*0.72}" y="${y+h*0.45}" font-family="Fredoka" font-weight="700" font-size="${h*0.2}" text-anchor="middle" fill="#fff">TOKYO</text><text x="${x+w*0.72}" y="${y+h*0.72}" font-family="IPAGothic" font-size="${h*0.17}" text-anchor="middle" fill="#fff">渋谷</text></g>`};
+ const vsign=(x,y,txt,col,ph)=>{const o=0.8+0.2*Math.max(0,S(t,4,ph));return `<g filter="url(#glowF)" opacity="${o}"><rect x="${x}" y="${y}" width="58" height="${txt.length*58+30}" rx="8" fill="#151530" stroke="${col}" stroke-width="5"/>${[...txt].map((c,i)=>`<text x="${x+29}" y="${y+60+i*58}" font-family="IPAGothic" font-size="46" text-anchor="middle" fill="${col}">${c}</text>`).join('')}</g>`};
+ let s=defs2+`<rect width="${W}" height="${H}" fill="url(#nightG)"/>${stars(t)}`;
+ // Shibuya 109 cylinder (left)
+ s+=`<g><rect x="60" y="150" width="260" height="560" fill="url(#silverG)" stroke="#3a3f4f" stroke-width="4"/>${[...Array(14)].map((_,i)=>`<line x1="60" y1="${190+i*38}" x2="320" y2="${190+i*38}" stroke="#9aa3b5" stroke-width="3"/>`).join('')}
+ <rect x="110" y="70" width="160" height="100" fill="#1a1a2e" stroke="#3a3f4f" stroke-width="4"/><text x="190" y="148" font-family="Fredoka" font-weight="700" font-size="84" text-anchor="middle" fill="#ff3d6e" filter="url(#glowF)">109</text></g>`;
+ // QFRONT-like glass building with giant screen (center-left)
+ s+=`<g><rect x="360" y="120" width="560" height="590" fill="url(#glassG)" stroke="#11152e" stroke-width="4"/>${[...Array(10)].map((_,i)=>`<line x1="360" y1="${470+i*24}" x2="920" y2="${470+i*24}" stroke="#5b6ea8" stroke-width="2" opacity=".6"/>`).join('')}
+ <rect x="380" y="140" width="520" height="300" fill="#05060f"/>${screenContent(392,152,496,276,0)}
+ <rect x="380" y="140" width="520" height="300" fill="#fff" opacity=".06" filter="url(#softF)"/>
+ <rect x="360" y="660" width="560" height="50" fill="#0c0f22"/><g clip-path="url(#tick)"></g>
+ <text x="${920-scroll}" y="695" font-family="Fredoka" font-weight="700" font-size="36" fill="#ffe14f">★ SHIBUYA CROSSING ★ 渋谷スクランブル交差点 ★ TOKYO ★</text></g>`;
+ // building with stacked screens (center-right)
+ s+=`<g><rect x="960" y="210" width="420" height="500" fill="#2a2f55" stroke="#11152e" stroke-width="4"/>
+ <rect x="980" y="230" width="380" height="150" fill="#05060f"/>${screenContent(988,238,364,134,1)}
+ <rect x="980" y="400" width="180" height="120" fill="#05060f"/>${screenContent(986,406,168,108,2)}<rect x="1180" y="400" width="180" height="120" fill="#05060f"/>${screenContent(1186,406,168,108,3)}
+ ${[...Array(4)].map((_,i)=>`<rect x="${985+i*95}" y="545" width="70" height="40" fill="#ffe8a8" opacity=".85"/><rect x="${985+i*95}" y="610" width="70" height="40" fill="#ffe8a8" opacity=".7"/>`).join('')}</g>`;
+ // tall right building with vertical signs
+ s+=`<g><rect x="1420" y="90" width="460" height="620" fill="#232848" stroke="#11152e" stroke-width="4"/>
+ ${[...Array(9)].map((_,r)=>[...Array(5)].map((_,c)=>`<rect x="${1440+c*88}" y="${120+r*62}" width="60" height="34" fill="${(r*5+c)%3?'#ffe8a8':'#8fb4ff'}" opacity=".75"/>`).join('')).join('')}</g>
+ ${vsign(1400,150,'カラオケ','#ff4fa3',0)}${vsign(1830,200,'ラーメン','#3fe0ff',1.5)}${vsign(330,240,'渋谷','#ffe14f',3)}`;
+ // elevated train line
+ const tx=((t/L)*(W+1400))-1100;
+ s+=`<rect x="0" y="700" width="${W}" height="34" fill="#5b5e6e" stroke="#2a2c38" stroke-width="3"/>${[0,1,2,3,4,5,6].map(i=>`<rect x="${i*300+40}" y="734" width="30" height="40" fill="#4a4d5c"/>`).join('')}
+ <g transform="translate(${tx},700)"><rect x="0" y="-58" width="1000" height="58" rx="14" fill="#e9eef3" stroke="#2a2c38" stroke-width="3"/><rect x="0" y="-26" width="1000" height="12" fill="#8cc63f"/>${[...Array(16)].map((_,i)=>`<rect x="${20+i*60}" y="-50" width="40" height="20" rx="4" fill="#9fd3ff"/>`).join('')}</g>`;
+ // scramble crossing in perspective
+ s+=`<path d="M0,774 L${W},774 L${W},${H} L0,${H}Z" fill="url(#asphG)"/>`;
+ const stripe=(x1,y1,x2,y2,n,wid)=>{let o='';for(let i=0;i<n;i++){const k=(i+0.5)/n;const x=x1+(x2-x1)*k,y=y1+(y2-y1)*k;o+=`<circle cx="${x}" cy="${y}" r="0"/>`;}return o};
+ for(let i=0;i<16;i++){const x=330+i*80;s+=`<path d="M${x},790 L${x+44},790 L${x+56},830 L${x+6},830Z" fill="#eef0f4" opacity=".92"/>`}
+ for(let i=0;i<16;i++){const x=150+i*104;s+=`<path d="M${x},1030 L${x+62},1030 L${x+72},1080 L${x+4},1080Z" fill="#eef0f4" opacity=".92"/>`}
+ for(let i=0;i<7;i++){const y=850+i*26;s+=`<path d="M${270-i*18},${y} L${340-i*18},${y} L${330-i*20},${y+14} L${255-i*20},${y+14}Z" fill="#eef0f4" opacity=".85"/><path d="M${1580+i*18},${y} L${1650+i*18},${y} L${1665+i*20},${y+14} L${1590+i*20},${y+14}Z" fill="#eef0f4" opacity=".85"/>`}
+ for(let i=0;i<9;i++){const k=i/8;const xa=420+k*1080,ya=840+k*180,xb=1500-k*1080;s+=`<path d="M${xa-30},${ya} l50,0 l12,16 l-50,0Z" fill="#eef0f4" opacity=".55"/><path d="M${xb-30},${ya} l50,0 l-12,16 l-50,0Z" fill="#eef0f4" opacity=".55"/>`}
+ // reflections of screens on wet road
+ s+=`<rect x="400" y="790" width="480" height="240" fill="hsl(${Math.floor((t/L*360)%360)},85%,55%)" opacity=".08" filter="url(#softF)"/>`;
+ // pedestrian lights
+ for(const x of [210,1720]) s+=`<g transform="translate(${x},800)"><rect x="-5" y="0" width="10" height="150" fill="#444"/><rect x="-30" y="-74" width="60" height="74" rx="8" fill="#151515" stroke="#333" stroke-width="3"/><circle cx="0" cy="-37" r="22" fill="${(t%4)<3.3?'#33dd77':'#ff4444'}" filter="url(#glowF)"/></g>`;
+ // crowd: scramble in every direction
+ const R=rng(909);const ppl=[];
+ for(let i=0;i<90;i++){const mode=i%4,sp=0.5+R()*0.5,ph=R();let x,y,dir;
+  const k=((ph+t/L*sp)%1);
+  if(mode==0){x=200+k*1520;y=800+R()*40;dir=1}else if(mode==1){x=1720-k*1520;y=1030+R()*40;dir=-1}
+  else if(mode==2){x=380+k*1160;y=840+k*200+R()*20;dir=1}else{x=1540-k*1160;y=840+k*200+R()*20;dir=-1}
+  ppl.push([y,x,dir,i])}
+ ppl.sort((a,b)=>a[0]-b[0]);
+ for(const [y,x,dir,i] of ppl){const sc=0.9+(y-790)/290*0.7;s+=tinyPerson(x,y,sc,t,i,['#e8352a','#2b3a67','#f4f4f4','#ffd34d','#4fb3f6','#333','#ff9be0'][i%7],dir);if(i%9==0)s+=`<path transform="translate(${x},${y-sc*62}) scale(${sc})" d="M-26,0 Q0,-30 26,0Z" fill="${['#4fb3f6','#ff5a5f','#ffd34d'][i%3]}" stroke="#222" stroke-width="2"/>`}
+ return s+title('Cruce de Shibuya 渋谷',W/2,90,'#e8352a',48)};
+
+scenes.shibuya_old=function(t){
  const scr=(x,y,w,h,ph)=>{const c=['#ff4fa3','#3fe0ff','#ffe14f','#7ed957','#b388ff'];const i=Math.floor((t/L*4+ph))%5;
   return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="#14183a" stroke="${OL}" stroke-width="6"/><rect x="${x+12}" y="${y+12}" width="${w-24}" height="${h-24}" rx="6" fill="${c[i]}"/>
   <circle cx="${x+w*0.3}" cy="${y+h*0.5}" r="${h*0.22}" fill="#fff" opacity=".85"/><rect x="${x+w*0.5}" y="${y+h*0.35}" width="${w*0.35}" height="${h*0.1}" rx="6" fill="#fff" opacity=".85"/><rect x="${x+w*0.5}" y="${y+h*0.55}" width="${w*0.25}" height="${h*0.1}" rx="6" fill="#fff" opacity=".7"/>`};
