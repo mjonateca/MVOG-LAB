@@ -7,3 +7,4 @@ episodios/*/transcript.json
 episodios/*/*.log
 episodios/*/*_[0-9]*.jpg
 episodios/*/*grid.jpg
+episodios/*/m[0-9].jpg
