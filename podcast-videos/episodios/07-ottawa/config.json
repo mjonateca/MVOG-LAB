@@ -1,0 +1,478 @@
+{
+ "audio": "ottawa.mp3",
+ "transcript": "transcript_fixed.json",
+ "workdir": ".",
+ "out": "ottawa-para-ninos-mi-pequeno-atlas.mp4",
+ "chip": "Mi Pequeño Atlas  ·  Capítulo 7: Ottawa",
+ "spreaker_episode_id": 76244750,
+ "outfit": "ottawa",
+ "char_scale": 1.25,
+ "hide_silence": 3.0,
+ "subtitles": false,
+ "others": [
+  [
+   45.6,
+   64.6,
+   "Carlos"
+  ],
+  [
+   77.4,
+   138.2,
+   "Carlos"
+  ],
+  [
+   153.6,
+   231.4,
+   "Carlos"
+  ],
+  [
+   245.4,
+   304.6,
+   "Carlos"
+  ],
+  [
+   321.2,
+   394.4,
+   "Carlos"
+  ],
+  [
+   408.4,
+   483.6,
+   "Carlos"
+  ]
+ ],
+ "hide": [
+  [
+   22.8,
+   24.8
+  ],
+  [
+   107.2,
+   123.4
+  ],
+  [
+   415.3,
+   436.6
+  ]
+ ],
+ "schedule": [
+  [
+   0,
+   "ot_intro"
+  ],
+  [
+   17.8,
+   "ot_maletas"
+  ],
+  [
+   22.6,
+   "vuelo"
+  ],
+  [
+   25.0,
+   "ot_intro"
+  ],
+  [
+   29.0,
+   "ot_invitado"
+  ],
+  [
+   51.6,
+   "ot_dos_caras"
+  ],
+  [
+   62.3,
+   "ot_atlas"
+  ],
+  [
+   70.4,
+   "ot_mapa"
+  ],
+  [
+   85.3,
+   "ot_bosques"
+  ],
+  [
+   91.8,
+   "ot_rios"
+  ],
+  [
+   98.5,
+   "ot_idiomas"
+  ],
+  [
+   106.2,
+   "ot_parlamento"
+  ],
+  [
+   123.4,
+   "ot_guardia"
+  ],
+  [
+   138.9,
+   "ot_canal"
+  ],
+  [
+   157.2,
+   "ot_canal_verano"
+  ],
+  [
+   169.8,
+   "ot_esclusas"
+  ],
+  [
+   178.0,
+   "ot_canal"
+  ],
+  [
+   188.3,
+   "ot_8km"
+  ],
+  [
+   197.6,
+   "ot_escuela"
+  ],
+  [
+   202.5,
+   "ot_cabanas"
+  ],
+  [
+   213.5,
+   "ot_colacastor"
+  ],
+  [
+   221.8,
+   "ot_castor"
+  ],
+  [
+   231.6,
+   "ot_winterlude"
+  ],
+  [
+   267.6,
+   "ot_hielo_noche"
+  ],
+  [
+   272.3,
+   "ot_copos"
+  ],
+  [
+   293.9,
+   "ot_nieve"
+  ],
+  [
+   306.3,
+   "ot_tulipanes"
+  ],
+  [
+   345.7,
+   "ot_princesa"
+  ],
+  [
+   367.5,
+   "ot_hospital"
+  ],
+  [
+   373.5,
+   "ot_bulbos"
+  ],
+  [
+   380.8,
+   "ot_tulipanes"
+  ],
+  [
+   388.8,
+   "ot_festival"
+  ],
+  [
+   395.4,
+   "ot_tulipanes"
+  ],
+  [
+   398.7,
+   "ot_secretos"
+  ],
+  [
+   414.8,
+   "ot_arana"
+  ],
+  [
+   436.6,
+   "ot_totems"
+  ],
+  [
+   454.6,
+   "ot_secretos"
+  ],
+  [
+   457.8,
+   "ot_canadaday"
+  ],
+  [
+   484.3,
+   "ot_parlamento"
+  ],
+  [
+   494.8,
+   "ot_canal"
+  ],
+  [
+   499.3,
+   "ot_nieve"
+  ],
+  [
+   503.3,
+   "ot_tulipanes"
+  ],
+  [
+   507.9,
+   "ot_atlas"
+  ],
+  [
+   511.8,
+   "ot_cuaderno"
+  ],
+  [
+   520.4,
+   "ot_outro"
+  ],
+  [
+   527.1,
+   "ot_libros"
+  ]
+ ],
+ "stage": {
+  "ot_intro": [
+   [
+    1710,
+    0.98
+   ],
+   [
+    240,
+    0.95
+   ]
+  ],
+  "ot_maletas": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "vuelo": [
+   [
+    1660,
+    0.95
+   ]
+  ],
+  "ot_invitado": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "ot_dos_caras": [
+   [
+    960,
+    0.8
+   ]
+  ],
+  "ot_atlas": [
+   [
+    1760,
+    0.75
+   ]
+  ],
+  "ot_mapa": [
+   [
+    300,
+    1.0
+   ]
+  ],
+  "ot_bosques": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "ot_rios": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "ot_idiomas": [
+   [
+    960,
+    0.8
+   ]
+  ],
+  "ot_parlamento": [
+   [
+    1760,
+    0.8
+   ]
+  ],
+  "ot_guardia": [
+   [
+    1760,
+    0.75
+   ]
+  ],
+  "ot_canal": [
+   [
+    1700,
+    0.85
+   ],
+   [
+    300,
+    0.85
+   ]
+  ],
+  "ot_canal_verano": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "ot_esclusas": [
+   [
+    300,
+    0.8
+   ]
+  ],
+  "ot_8km": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "ot_escuela": [
+   [
+    1720,
+    0.85
+   ]
+  ],
+  "ot_cabanas": [
+   [
+    960,
+    0.75
+   ]
+  ],
+  "ot_colacastor": [
+   [
+    1780,
+    0.6
+   ]
+  ],
+  "ot_castor": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "ot_winterlude": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "ot_hielo_noche": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "ot_copos": [
+   [
+    1300,
+    0.8
+   ]
+  ],
+  "ot_nieve": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "ot_tulipanes": [
+   [
+    1700,
+    0.85
+   ],
+   [
+    300,
+    0.85
+   ]
+  ],
+  "ot_princesa": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "ot_hospital": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "ot_bulbos": [
+   [
+    1760,
+    0.75
+   ]
+  ],
+  "ot_festival": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "ot_secretos": [
+   [
+    1780,
+    0.6
+   ]
+  ],
+  "ot_arana": [
+   [
+    1760,
+    0.75
+   ]
+  ],
+  "ot_totems": [
+   [
+    1780,
+    0.7
+   ]
+  ],
+  "ot_canadaday": [
+   [
+    1760,
+    0.75
+   ]
+  ],
+  "ot_cuaderno": [
+   [
+    1760,
+    0.75
+   ]
+  ],
+  "ot_outro": [
+   [
+    290,
+    1.05
+   ],
+   [
+    1630,
+    1.0
+   ]
+  ],
+  "ot_libros": [
+   [
+    1780,
+    0.6
+   ]
+  ]
+ }
+}

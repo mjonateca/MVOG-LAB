@@ -189,9 +189,10 @@ scenes.sd_palabras = function (t) {
 };
 scenes.sd_mesa = function (t) {
   let s = SDALL() + `<rect width="${W}" height="${H}" fill="#f6e2b8"/><rect x="200" y="140" width="420" height="320" fill="#a8e0f0" stroke="#fff" stroke-width="16"/>` + palm(420, 460, .6, t, 1).replace(/<ellipse[^>]*>/, '');
-  s += `<rect x="0" y="700" width="${W}" height="380" fill="#c98a4a"/><path d="M180,640 L1740,640 L1820,760 L100,760Z" fill="#fbfbf7"/>${[...Array(14)].map((_, i) => `<rect x="${180 + i * 112}" y="640" width="56" height="120" fill="#ce1126" opacity=".25"/>`).join('')}`;
+  s += `<rect x="0" y="700" width="${W}" height="380" fill="#c98a4a"/>`;
   const people = [[360, '#4fb3f6', '#9c6a48', 1], [620, '#f2c14e', '#c99470', 1], [1300, '#ce1126', '#5a3a2a', 0], [1560, '#fff', '#e3b48e', 0]];
-  s += people.map(([x, c, sk, ch], i) => rP(x, 700, ch ? 1.9 : 2.3, t, ESC({ ph: i, child: !!ch, top: c, skin: sk, longhair: i % 2 == 0, dir: x > 960 ? -1 : 1 }))).join('');
+  s += people.map(([x, c, sk, ch], i) => rP(x, ch ? 690 : 760, ch ? 1.9 : 2.3, t, ESC({ ph: i, child: !!ch, top: c, skin: sk, longhair: i % 2 == 0, dir: x > 960 ? -1 : 1 }))).join('');
+  s += `<path d="M180,640 L1740,640 L1820,760 L100,760Z" fill="#fbfbf7"/>${[...Array(14)].map((_, i) => `<rect x="${180 + i * 112}" y="640" width="56" height="120" fill="#ce1126" opacity=".25"/>`).join('')}<path d="M100,760 L1820,760 L1800,800 L120,800Z" fill="#e8e2d4"/>${[160, 1740].map(x => `<rect x="${x - 14}" y="800" width="28" height="170" fill="#7a5232"/>`).join('')}${rShadow(960, 975, 820, .15)}`;
   s += plate(960, 690, 150, `<ellipse rx="100" ry="30" fill="#f4f0e6"/><ellipse cx="-30" cy="-8" rx="50" ry="20" fill="#fff"/><ellipse cx="40" cy="-4" rx="40" ry="16" fill="#8a3a2a"/>`) + steam(960, 640, t, 2);
   return s + rLabel('Aquí no se cocina con prisa: ¡se cocina con amor!', W / 2, 960, 40);
 };

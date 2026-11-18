@@ -31,6 +31,14 @@ speak = np.zeros(nfr, bool)
 for w in words:
     speak[int(w['s']*FPS):int(w['e']*FPS)+1] = True
 mouth = np.where(~speak[:nfr], 0, np.where(lvl > 0.55, 2, np.where(lvl > 0.2, 1, 0)))
+# otros hablantes (invitados): Vinelis escucha con la boca cerrada y se muestra el nombre de quien habla
+OTHERS = cfg.get('others', [])   # [[t0, t1, 'Nombre'], ...]
+for o0, o1, _n in OTHERS:
+    mouth[int(o0*FPS):int(o1*FPS)+1] = 0
+def other_at(t):
+    for o0, o1, n in OTHERS:
+        if o0 - 0.2 <= t <= o1 + 0.3: return n, min(1, (t - o0 + 0.2) / 0.4, (o1 + 0.3 - t) / 0.4)
+    return None, 0
 
 # ---------- subtitles ----------
 def build_cues(words, maxc=58):
@@ -85,6 +93,15 @@ def render_chip(text):
     d.text((28 + tw/2, 32), text, font=font_chip, fill=NAVY, anchor='mm')
     return np.array(im)
 chip = render_chip(cfg['chip'])
+def render_speaker(name):
+    f2 = ImageFont.truetype(os.path.join(TOOLS, 'fredoka-700.ttf'), 46)
+    tw = int(f2.getlength(name)); im = Image.new('RGBA', (tw + 130, 84), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+    d.rounded_rectangle((2, 2, tw + 126, 80), radius=40, fill=(255, 255, 255, 240), outline=NAVY, width=4)
+    d.rounded_rectangle((30, 16, 52, 50), radius=11, fill=(220, 50, 50, 255))
+    d.arc((22, 28, 60, 62), 0, 180, fill=NAVY, width=4); d.line((41, 62, 41, 70), fill=NAVY, width=4); d.line((31, 70, 51, 70), fill=NAVY, width=4)
+    d.text((80 + tw/2, 42), name, font=f2, fill=NAVY, anchor='mm')
+    return np.array(im)
+spk_cache = {}
 
 def blend(dst, src, x, y):
     h, w = src.shape[:2]
@@ -129,6 +146,7 @@ for i, sg in enumerate(tr):
     else: p_ = None
     seg_pose.append((sg['start'], sg['end'] + 0.4, p_, i))
 def pose_at(t, f):
+    if other_at(t)[0]: return 'rest'
     for s0, s1, p_, i in seg_pose:
         if s0 - 0.2 <= t <= s1:
             if p_ == 'wave': return 'wave1' if (f // 8) % 2 == 0 else 'wave2'
@@ -234,6 +252,12 @@ for f in range(f0, f1):
         else: sx = (W - sb.shape[1]) // 2
         sx = max(20, min(W - sb.shape[1] - 20, sx))
         blend(fr, sb, sx, H - sb.shape[0] - 40)
+    on, ov = other_at(t)
+    if on and ov > 0.01:
+        if on not in spk_cache: spk_cache[on] = render_speaker(on)
+        sp = spk_cache[on]
+        if ov < 0.999: sp = sp.copy(); sp[..., 3] = (sp[..., 3] * ov).astype(np.uint8)
+        blend(fr, sp, W - sp.shape[1] - 30, 24)
     # progress bar
     p = t / total
     fr[H-10:H, :int(W*p)] = (255, 204, 46)
