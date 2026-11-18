@@ -1,0 +1,11 @@
+Capítulo 4 - Madrid — vídeo para YouTube (Mi Pequeño Atlas)
+
+Archivo: madrid-para-ninos-mi-pequeno-atlas.mp4 (1920x1080, 30 fps, 12:41, sin subtítulos incrustados)
+El vídeo está partido en 31 trozos (7-Zip) porque Drive no permite subidas grandes desde aquí.
+
+Cómo unirlo:
+1. Descarga TODOS los archivos madrid-para-ninos-mi-pequeno-atlas.7z.001 ... madrid-para-ninos-mi-pequeno-atlas.7z.031 en la misma carpeta.
+2. Abre el primero (madrid-para-ninos-mi-pequeno-atlas.7z.001) con 7-Zip (Windows), Keka o The Unarchiver (Mac).
+3. Se extrae el vídeo completo madrid-para-ninos-mi-pequeno-atlas.mp4.
+
+Los subtítulos van aparte en el archivo .srt de esta carpeta (para subirlos a YouTube).

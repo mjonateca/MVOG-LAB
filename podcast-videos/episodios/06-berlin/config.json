@@ -1,0 +1,501 @@
+{
+ "audio": "berlin.mp3",
+ "transcript": "transcript_fixed.json",
+ "workdir": ".",
+ "out": "berlin-para-ninos-mi-pequeno-atlas.mp4",
+ "chip": "Mi Pequeño Atlas  ·  Capítulo 6: Berlín",
+ "spreaker_episode_id": 69673261,
+ "outfit": "berlin",
+ "char_scale": 1.25,
+ "hide_silence": 3.0,
+ "subtitles": false,
+ "hide": [
+  [
+   28.599999999999998,
+   53.3
+  ],
+  [
+   404.6,
+   419.0
+  ],
+  [
+   491.7,
+   519.3
+  ],
+  [
+   581.9,
+   597.8
+  ]
+ ],
+ "schedule": [
+  [
+   0,
+   "be_intro"
+  ],
+  [
+   15.1,
+   "be_oso"
+  ],
+  [
+   19.7,
+   "be_bicis"
+  ],
+  [
+   25.5,
+   "be_moraleja"
+  ],
+  [
+   28.4,
+   "vuelo"
+  ],
+  [
+   36.3,
+   "be_spree"
+  ],
+  [
+   53.3,
+   "be_brandeburgo"
+  ],
+  [
+   58.2,
+   "be_ninos_frio"
+  ],
+  [
+   62.0,
+   "be_eastside"
+  ],
+  [
+   64.7,
+   "be_historia"
+  ],
+  [
+   69.3,
+   "be_spree",
+   [
+    [
+     960,
+     1.75,
+     520
+    ]
+   ]
+  ],
+  [
+   90.8,
+   "be_mapa"
+  ],
+  [
+   97.4,
+   "be_lagos"
+  ],
+  [
+   106.7,
+   "be_spree"
+  ],
+  [
+   112.9,
+   "be_puente"
+  ],
+  [
+   122.1,
+   "be_oso"
+  ],
+  [
+   129.4,
+   "be_parque"
+  ],
+  [
+   138.2,
+   "be_calles"
+  ],
+  [
+   172.5,
+   "be_idioma"
+  ],
+  [
+   197.7,
+   "be_murales"
+  ],
+  [
+   208.3,
+   "be_musicos"
+  ],
+  [
+   216.7,
+   "be_reciclaje"
+  ],
+  [
+   256.1,
+   "be_bicis"
+  ],
+  [
+   260.8,
+   "be_ninos_frio"
+  ],
+  [
+   273.3,
+   "be_escuela_bici"
+  ],
+  [
+   288.1,
+   "be_comida"
+  ],
+  [
+   300.6,
+   "be_aula"
+  ],
+  [
+   324.7,
+   "be_pregunta"
+  ],
+  [
+   345.5,
+   "be_ropa"
+  ],
+  [
+   361.3,
+   "be_estilo"
+  ],
+  [
+   403.6,
+   "be_brandeburgo"
+  ],
+  [
+   419.0,
+   "be_carruaje"
+  ],
+  [
+   437.4,
+   "be_muro_puerta"
+  ],
+  [
+   449.0,
+   "be_celebracion"
+  ],
+  [
+   455.8,
+   "be_brandeburgo"
+  ],
+  [
+   471.1,
+   "be_muro"
+  ],
+  [
+   490.2,
+   "be_eastside"
+  ],
+  [
+   519.3,
+   "be_zoo"
+  ],
+  [
+   537.8,
+   "be_animales"
+  ],
+  [
+   551.2,
+   "be_zoo_casa"
+  ],
+  [
+   561.7,
+   "be_animales"
+  ],
+  [
+   571.9,
+   "be_museo_sala"
+  ],
+  [
+   580.9,
+   "be_museos"
+  ],
+  [
+   597.8,
+   "be_museo_sala"
+  ],
+  [
+   617.6,
+   "be_historia"
+  ],
+  [
+   627.1,
+   "be_abuela"
+  ],
+  [
+   667.9,
+   "be_dibujos"
+  ],
+  [
+   688.5,
+   "be_moraleja"
+  ],
+  [
+   708.4,
+   "be_atardecer"
+  ],
+  [
+   722.7,
+   "be_postales"
+  ],
+  [
+   746.5,
+   "ma_compartir"
+  ],
+  [
+   757.3,
+   "be_outro"
+  ]
+ ],
+ "stage": {
+  "be_intro": [
+   [
+    1710,
+    0.98
+   ],
+   [
+    240,
+    0.95
+   ]
+  ],
+  "be_oso": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "be_bicis": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "be_moraleja": [
+   [
+    300,
+    0.75
+   ]
+  ],
+  "vuelo": [
+   [
+    1660,
+    0.95
+   ]
+  ],
+  "be_spree": [
+   [
+    300,
+    0.9
+   ],
+   [
+    1620,
+    0.9
+   ]
+  ],
+  "be_brandeburgo": [
+   [
+    1780,
+    0.75
+   ]
+  ],
+  "be_ninos_frio": [
+   [
+    1650,
+    0.85
+   ]
+  ],
+  "be_eastside": [
+   [
+    1650,
+    0.85
+   ]
+  ],
+  "be_historia": [
+   [
+    1760,
+    0.75
+   ]
+  ],
+  "be_mapa": [
+   [
+    1600,
+    1.0
+   ]
+  ],
+  "be_lagos": [
+   [
+    1600,
+    0.85
+   ]
+  ],
+  "be_puente": [
+   [
+    1700,
+    0.8
+   ]
+  ],
+  "be_parque": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "be_calles": [
+   [
+    1760,
+    0.85
+   ]
+  ],
+  "be_idioma": [
+   [
+    960,
+    0.8
+   ]
+  ],
+  "be_murales": [
+   [
+    960,
+    0.85
+   ]
+  ],
+  "be_musicos": [
+   [
+    1600,
+    0.85
+   ]
+  ],
+  "be_reciclaje": [
+   [
+    1760,
+    0.75
+   ]
+  ],
+  "be_escuela_bici": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "be_comida": [
+   [
+    1800,
+    0.55
+   ]
+  ],
+  "be_aula": [
+   [
+    1780,
+    0.6
+   ]
+  ],
+  "be_pregunta": [
+   [
+    1700,
+    0.8
+   ]
+  ],
+  "be_ropa": [
+   [
+    960,
+    0.8
+   ]
+  ],
+  "be_estilo": [
+   [
+    1780,
+    0.7
+   ]
+  ],
+  "be_carruaje": [
+   [
+    1700,
+    0.8
+   ]
+  ],
+  "be_muro_puerta": [
+   [
+    1700,
+    0.8
+   ]
+  ],
+  "be_celebracion": [
+   [
+    1700,
+    0.8
+   ]
+  ],
+  "be_muro": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "be_zoo": [
+   [
+    1700,
+    0.8
+   ]
+  ],
+  "be_animales": [
+   [
+    1760,
+    0.7
+   ]
+  ],
+  "be_zoo_casa": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "be_museo_sala": [
+   [
+    960,
+    0.8
+   ]
+  ],
+  "be_museos": [
+   [
+    1700,
+    0.8
+   ]
+  ],
+  "be_abuela": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "be_dibujos": [
+   [
+    1200,
+    0.75
+   ]
+  ],
+  "be_atardecer": [
+   [
+    1500,
+    0.9
+   ]
+  ],
+  "be_postales": [
+   [
+    1780,
+    0.6
+   ]
+  ],
+  "ma_compartir": [
+   [
+    300,
+    0.9
+   ]
+  ],
+  "be_outro": [
+   [
+    290,
+    1.05
+   ],
+   [
+    1630,
+    1.0
+   ]
+  ]
+ }
+}

@@ -1,0 +1,11 @@
+Capítulo 3 - Roma — vídeo para YouTube (Mi Pequeño Atlas)
+
+Archivo: roma-para-ninos-mi-pequeno-atlas.mp4 (1920x1080, 30 fps, 24:31, sin subtítulos incrustados)
+El vídeo está partido en 49 trozos (7-Zip) porque Drive no permite subidas grandes desde aquí.
+
+Cómo unirlo:
+1. Descarga TODOS los archivos roma-para-ninos-mi-pequeno-atlas.7z.001 ... roma-para-ninos-mi-pequeno-atlas.7z.049 en la misma carpeta.
+2. Abre el primero (roma-para-ninos-mi-pequeno-atlas.7z.001) con 7-Zip (Windows), Keka o The Unarchiver (Mac).
+3. Se extrae el vídeo completo roma-para-ninos-mi-pequeno-atlas.mp4.
+
+Los subtítulos van aparte en el archivo .srt de esta carpeta (para subirlos a YouTube).

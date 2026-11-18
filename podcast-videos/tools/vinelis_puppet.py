@@ -338,6 +338,41 @@ def sd_head(img):
     cv2.circle(lay, (404, 356), 5, (60, 210, 250, 255), -1, cv2.LINE_AA)
     return over(img, lay)
 
+# ---------- Berlín: abrigo azul con botones, bufanda roja y gorro de lana amarillo con pompón ----------
+def berlin_body(img):
+    lay = np.zeros_like(img)
+    coat = np.array([(415, 626), (450, 610), (478, 640), (506, 610), (541, 626), (558, 700), (556, 760), (594, 962), (362, 962), (400, 760), (398, 700)], np.int32)
+    cv2.fillPoly(lay, [coat], (120, 70, 30, 255), cv2.LINE_AA)
+    cv2.polylines(lay, [coat], True, (80, 45, 20, 255), 3, cv2.LINE_AA)
+    cv2.line(lay, (478, 650), (478, 928), (80, 45, 20, 255), 3, cv2.LINE_AA)
+    for y in (690, 750, 810, 870):
+        cv2.circle(lay, (494, y), 7, (40, 190, 235, 255), -1, cv2.LINE_AA)
+    cv2.line(lay, (402, 770), (554, 770), (60, 35, 15, 255), 10, cv2.LINE_AA)
+    for x0 in (420, 520):
+        cv2.rectangle(lay, (x0, 800), (x0 + 36, 812), (80, 45, 20, 255), -1, cv2.LINE_AA)
+    return over(img, lay)
+
+def berlin_scarf(img):
+    lay = np.zeros_like(img)
+    cv2.ellipse(lay, (478, 628), (70, 26), 0, 0, 360, (40, 40, 200, 255), -1, cv2.LINE_AA)
+    cv2.ellipse(lay, (478, 628), (70, 26), 0, 0, 360, (25, 25, 150, 255), 3, cv2.LINE_AA)
+    end = np.array([(500, 640), (530, 640), (536, 730), (506, 732)], np.int32)
+    cv2.fillPoly(lay, [end], (40, 40, 200, 255), cv2.LINE_AA)
+    for k in range(5): cv2.line(lay, (508 + k * 6, 732), (508 + k * 6, 748), (40, 40, 200, 255), 3, cv2.LINE_AA)
+    for y in (660, 690, 715): cv2.line(lay, (502, y), (533, y), (230, 230, 240, 255), 4, cv2.LINE_AA)
+    return over(img, lay)
+
+def berlin_hat(img):
+    lay = np.zeros_like(img)
+    cx, cy = 482, 352
+    cv2.ellipse(lay, (cx, cy + 28), (160, 84), 0, 180, 360, (40, 190, 235, 255), -1, cv2.LINE_AA)
+    cv2.rectangle(lay, (cx - 152, cy + 22), (cx + 152, cy + 62), (30, 150, 205, 255), -1, cv2.LINE_AA)
+    for k in range(-6, 7): cv2.line(lay, (cx + k * 22, cy + 24), (cx + k * 22, cy + 60), (20, 120, 180, 255), 3, cv2.LINE_AA)
+    for k in range(-3, 4): cv2.line(lay, (cx + k * 36, cy - 30), (cx + k * 30, cy + 20), (30, 160, 215, 255), 3, cv2.LINE_AA)
+    cv2.circle(lay, (cx, cy - 46), 30, (230, 235, 245, 255), -1, cv2.LINE_AA)
+    cv2.circle(lay, (cx, cy - 46), 30, (180, 185, 200, 255), 2, cv2.LINE_AA)
+    return over(img, lay)
+
 # crop window (union of poses) and output scale
 CX0, CY0, CX1, CY1 = 60, 230, 900, 1030
 SCALE = 0.72
@@ -349,6 +384,10 @@ for pose, (la, ra) in POSES.items():
         body = kimono_body(body)
     if OUTFIT == 'roma':
         body = roma_body(body)
+    if OUTFIT == 'berlin':
+        gap = (yy > 930) & (yy < 990) & (xx > 360) & (xx < 600) & (((body[..., 2] > body[..., 0] + 25) & (body[..., 1] > 120)) | (body[..., :3].min(2) > 170))
+        body[..., 3] *= np.where(gap, 0, 1)
+        body = berlin_body(body)
     if OUTFIT == 'santodomingo':
         gap = (yy > 930) & (yy < 990) & (xx > 360) & (xx < 600) & (((body[..., 2] > body[..., 0] + 25) & (body[..., 1] > 120)) | (body[..., :3].min(2) > 170))
         body[..., 3] *= np.where(gap, 0, 1)
@@ -371,6 +410,8 @@ for pose, (la, ra) in POSES.items():
         body = madrid_head(body); body = madrid_shawl(body)
     if OUTFIT == 'santodomingo':
         body = sd_head(body)
+    if OUTFIT == 'berlin':
+        body = berlin_scarf(body); body = berlin_hat(body)
     if OUTFIT == 'paris':
         body = paris_sleeve(body, 'L', la); body = paris_sleeve(body, 'R', ra); body = paris_beret(body)
     for m in (0, 1, 2):
