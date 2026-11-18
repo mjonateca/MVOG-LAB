@@ -1,0 +1,504 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Fredoka;src:url(fredoka-700.ttf);font-weight:700}
+@font-face{font-family:Fredoka;src:url(fredoka-600.ttf);font-weight:600}
+html,body{margin:0;padding:0;background:transparent;overflow:hidden}
+svg{display:block}
+</style></head>
+<body>
+<svg id="c" xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080"></svg>
+<script>
+const W=1920,H=1080,L=8; // loop length seconds
+const TAU=Math.PI*2;
+const S=(t,k=1,ph=0)=>Math.sin(TAU*k*t/L+ph);
+const C=(t,k=1,ph=0)=>Math.cos(TAU*k*t/L+ph);
+const OL='#2b3a67'; // outline navy
+function rng(seed){let s=seed;return()=>{s=(s*16807)%2147483647;return (s-1)/2147483646}}
+const defs=`<defs>
+<linearGradient id="skyDay" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3aa0f0"/><stop offset="1" stop-color="#bfe6ff"/></linearGradient>
+<linearGradient id="skyDusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a8b"/><stop offset=".55" stop-color="#ffd3a5"/><stop offset="1" stop-color="#fff1d6"/></linearGradient>
+<linearGradient id="skyNight" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#141a46"/><stop offset="1" stop-color="#3b2d78"/></linearGradient>
+<linearGradient id="water" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4fb3f6"/><stop offset="1" stop-color="#2a7fd4"/></linearGradient>
+<linearGradient id="kitchen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9c7"/><stop offset="1" stop-color="#ffd59a"/></linearGradient>
+<radialGradient id="glow"><stop offset="0" stop-color="#fff7c2" stop-opacity=".9"/><stop offset="1" stop-color="#fff7c2" stop-opacity="0"/></radialGradient>
+<pattern id="dots" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="3" fill="#ffffff" opacity=".25"/></pattern>
+</defs>`;
+
+/* ---------- primitives ---------- */
+function cloud(x,y,s=1,o=1){return `<g transform="translate(${x},${y}) scale(${s})" opacity="${o}">
+<path d="M-90,30 Q-110,-10 -60,-15 Q-50,-60 0,-50 Q40,-75 70,-35 Q120,-35 110,10 Q125,35 90,40 L-80,40 Q-110,40 -90,30Z" fill="#fff" stroke="#d6ecff" stroke-width="4"/></g>`}
+function petal(x,y,r,rot,c='#ffb7d0'){return `<g transform="translate(${x},${y}) rotate(${rot})"><path d="M0,${-r} Q${r},0 0,${r} Q${-r*0.6},0 0,${-r}Z" fill="${c}"/></g>`}
+function blossom(x,y,r){let s='';for(let i=0;i<5;i++){const a=i*72;s+=`<ellipse cx="${x+Math.cos(a*Math.PI/180)*r*0.55}" cy="${y+Math.sin(a*Math.PI/180)*r*0.55}" rx="${r*0.5}" ry="${r*0.38}" transform="rotate(${a} ${x+Math.cos(a*Math.PI/180)*r*0.55} ${y+Math.sin(a*Math.PI/180)*r*0.55})" fill="#ffc6da"/>`}return s+`<circle cx="${x}" cy="${y}" r="${r*0.22}" fill="#ff7aa8"/>`}
+function sakuraTree(x,y,s=1,seed=3,t=0){const R=rng(seed);let blobs='';const cols=['#ffb3cf','#ffc6da','#ff9fc2','#ffd6e5'];
+for(let i=0;i<14;i++){const a=R()*TAU,d=R()*120;blobs+=`<circle cx="${Math.cos(a)*d*1.3}" cy="${-260+Math.sin(a)*d*0.7}" r="${60+R()*40}" fill="${cols[i%4]}"/>`}
+return `<g transform="translate(${x},${y}) scale(${s}) rotate(${S(t,1)*1.2} 0 0)">
+<path d="M-18,0 Q-10,-120 -30,-200 M10,0 Q20,-120 50,-210 M0,-120 Q-70,-170 -120,-220 M5,-140 Q80,-190 130,-240" stroke="#7a4b3a" stroke-width="22" fill="none" stroke-linecap="round"/>
+<path d="M-25,0 L25,0 L12,-140 L-12,-140Z" fill="#7a4b3a"/>${blobs}</g>`}
+function building(x,y,w,h,col,win='#fff6c9',seed=1,night=false){const R=rng(seed);let s=`<rect x="${x}" y="${y-h}" width="${w}" height="${h}" rx="6" fill="${col}" stroke="${OL}" stroke-width="4"/>`;
+for(let yy=y-h+20;yy<y-30;yy+=36)for(let xx=x+14;xx<x+w-24;xx+=30){const lit=night?R()>.35:R()>.6;s+=`<rect x="${xx}" y="${yy}" width="16" height="20" rx="3" fill="${lit?win:(night?'#2a2f5c':'#d8eefc')}" opacity="${night?1:.85}"/>`}return s}
+function tokyoTower(x,y,s=1){return `<g transform="translate(${x},${y}) scale(${s})" stroke="${OL}" stroke-width="5" stroke-linejoin="round">
+<path d="M-150,0 L-40,-330 L40,-330 L150,0 L110,0 L25,-300 L-25,-300 L-110,0Z" fill="#ff4d3d"/>
+<path d="M-122,-80 L122,-80 M-95,-160 L95,-160 M-70,-240 L70,-240" stroke="#fff" stroke-width="12"/>
+<path d="M-120,-80 L-70,-160 L-20,-80 L20,-160 L70,-80 L120,-160" fill="none" stroke="#c22d24" stroke-width="5"/>
+<rect x="-70" y="-360" width="140" height="40" rx="8" fill="#fff"/>
+<path d="M-40,-360 L-22,-560 L22,-560 L40,-360Z" fill="#ff4d3d"/>
+<rect x="-45" y="-470" width="90" height="28" rx="6" fill="#fff"/>
+<path d="M-22,-560 L-10,-680 L10,-680 L22,-560Z" fill="#fff"/><path d="M-8,-680 L0,-760 L8,-680Z" fill="#ff4d3d"/>
+<path d="M-60,0 Q0,-60 60,0" fill="#bfe6ff"/></g>`}
+function fuji(x,y,w,h){return `<g transform="translate(${x},${y})">
+<path d="M${-w/2},0 L${-w*0.08},${-h} Q0,${-h-12} ${w*0.08},${-h} L${w/2},0Z" fill="#5b7fd1" stroke="${OL}" stroke-width="5" stroke-linejoin="round"/>
+<path d="M${-w*0.08},${-h} Q0,${-h-12} ${w*0.08},${-h} L${w*0.2},${-h*0.62} L${w*0.12},${-h*0.68} L${w*0.05},${-h*0.58} L${-w*0.03},${-h*0.68} L${-w*0.1},${-h*0.6} L${-w*0.2},${-h*0.62}Z" fill="#fff"/></g>`}
+function lantern(x,y,s=1,t=0,txt='提灯'){return `<g transform="translate(${x},${y}) rotate(${S(t,1)*4} 0 -40) scale(${s})" stroke="${OL}" stroke-width="5">
+<line x1="0" y1="-70" x2="0" y2="-40"/><rect x="-36" y="-45" width="72" height="14" rx="4" fill="#222"/>
+<ellipse cx="0" cy="40" rx="62" ry="80" fill="#e8352a"/><path d="M-58,10 Q0,0 58,10 M-60,45 Q0,35 60,45 M-55,80 Q0,70 55,80" stroke="#b5231b" fill="none"/>
+<rect x="-36" y="112" width="72" height="14" rx="4" fill="#222"/>
+<text x="0" y="55" font-size="44" text-anchor="middle" fill="#fff" stroke="none" font-family="IPAGothic">${txt}</text></g>`}
+function templeGate(x,y,s=1,t=0){return `<g transform="translate(${x},${y}) scale(${s})" stroke="${OL}" stroke-width="5" stroke-linejoin="round">
+<rect x="-330" y="-40" width="660" height="40" fill="#9aa3b5"/>
+<rect x="-300" y="-330" width="40" height="290" fill="#d9362b"/><rect x="260" y="-330" width="40" height="290" fill="#d9362b"/>
+<rect x="-200" y="-330" width="30" height="290" fill="#d9362b"/><rect x="170" y="-330" width="30" height="290" fill="#d9362b"/>
+<rect x="-310" y="-360" width="620" height="40" fill="#b8261d"/>
+<path d="M-400,-360 Q-200,-400 0,-405 Q200,-400 400,-360 L360,-420 Q0,-470 -360,-420Z" fill="#5c6c8c"/>
+<path d="M-330,-430 Q0,-480 330,-430 L290,-490 Q0,-530 -290,-490Z" fill="#4b5a78"/>
+<rect x="-90" y="-470" width="180" height="40" rx="6" fill="#2b3a67"/><text x="0" y="-440" font-size="30" text-anchor="middle" fill="#ffd34d" stroke="none" font-family="IPAGothic">雷門</text>
+</g>${lantern(x,y-250*s,1.6*s,t,'雷門')}`}
+function shinkansen(x,y,s=1){return `<g transform="translate(${x},${y}) scale(${s})" stroke="${OL}" stroke-width="5" stroke-linejoin="round">
+<path d="M0,0 L900,0 L900,-110 L240,-110 Q60,-110 0,-20Z" fill="#fff"/>
+<path d="M30,-40 L900,-40 L900,-25 L20,-25Z" fill="#1f5fd6" stroke="none"/>
+<path d="M150,-95 Q90,-92 60,-60 L210,-60 L210,-95Z" fill="#2b3a67"/>
+${[300,400,500,600,700,800].map(v=>`<rect x="${v}" y="-92" width="60" height="32" rx="8" fill="#9fd3ff"/>`).join('')}
+<line x1="880" y1="-110" x2="880" y2="0" stroke-width="3"/>
+<circle cx="150" cy="5" r="16" fill="#555"/><circle cx="350" cy="5" r="16" fill="#555"/><circle cx="650" cy="5" r="16" fill="#555"/><circle cx="820" cy="5" r="16" fill="#555"/></g>`}
+function plane(x,y,s=1,rot=0){return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s})" stroke="${OL}" stroke-width="4" stroke-linejoin="round">
+<path d="M0,0 L-120,-50 L-80,0 L-120,40Z" fill="#fff"/><path d="M0,0 L-80,0 L-100,20Z" fill="#dce9f7"/></g>`}
+function sun(x,y,r,t){let rays='';for(let i=0;i<12;i++){const a=i*30+t*6;rays+=`<rect x="${-6}" y="${-r-45}" width="12" height="30" rx="6" fill="#ffd34d" transform="rotate(${a})"/>`}
+return `<g transform="translate(${x},${y})">${rays}<circle r="${r}" fill="#ffd34d" stroke="#f5a623" stroke-width="5"/><circle cx="-22" cy="-8" r="7" fill="#2b3a67"/><circle cx="22" cy="-8" r="7" fill="#2b3a67"/><path d="M-20,18 Q0,34 20,18" stroke="#2b3a67" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="-38" cy="14" r="9" fill="#ff9fb0" opacity=".7"/><circle cx="38" cy="14" r="9" fill="#ff9fb0" opacity=".7"/></g>`}
+function hills(y,col,amp,k,ph){let d=`M0,${H} L0,${y}`;for(let x=0;x<=W;x+=40){d+=` L${x},${y+Math.sin(x/W*TAU*k+ph)*amp}`}return `<path d="${d} L${W},${H}Z" fill="${col}"/>`}
+function fallingPetals(t,n=30,seed=7,c){const R=rng(seed);let s='';for(let i=0;i<n;i++){const x0=R()*W,y0=R()*H,k=1+Math.floor(R()*2),r=8+R()*8;const y=(y0+t/L*H*k)%(H+40)-20;const x=(x0+S(t,k,i)*60+t/L*W*0)%W;s+=petal(x,y,r,(t/L*360*k+i*40)%360,c)}return s}
+function driftClouds(t,list){return list.map(([x,y,s,k])=>cloud(((x+t/L*W*k)%(W+400))-200,y,s)).join('')}
+function birds(t){let s='';for(let i=0;i<3;i++){const x=((300+i*90)+t/L*W)%(W+200)-100,y=200+i*25+S(t,2,i)*10;const f=S(t,8,i)*12;s+=`<path d="M${x-20},${y-f} Q${x-10},${y-12} ${x},${y} Q${x+10},${y-12} ${x+20},${y-f}" stroke="${OL}" stroke-width="4" fill="none" stroke-linecap="round"/>`}return s}
+
+/* ---------- scenes ---------- */
+const scenes={
+intro(t){return `<rect width="${W}" height="${H}" fill="url(#skyDay)"/>
+${driftClouds(t,[[100,180,1.1,1],[900,120,0.8,1],[1500,260,1.2,1],[600,330,0.7,1]])}
+${fuji(1500,900,900,380)}${building(60,1000,170,420,'#7fc4ff','#fff6c9',2)}${building(250,1000,140,330,'#ffd27a','#fff',3)}${tokyoTower(1180,1000,1.1)}${building(1500,1000,160,300,'#b7a7ff','#fff6c9',4)}${building(1690,1000,190,460,'#ffb3c7','#fff6c9',6)}
+<rect x="0" y="990" width="${W}" height="90" fill="#7ccf6b"/>
+<g transform="translate(${W/2},${H/2-40}) scale(${1+S(t,1)*0.015})">
+<rect x="-560" y="-210" width="1120" height="420" rx="48" fill="#fff" stroke="${OL}" stroke-width="8"/>
+<rect x="-540" y="-190" width="1080" height="380" rx="36" fill="#fff8e7"/>
+<text x="0" y="-60" font-family="Fredoka" font-weight="700" font-size="120" text-anchor="middle" fill="#ffcc2e" stroke="${OL}" stroke-width="6" paint-order="stroke">Mi Pequeño Atlas</text>
+<rect x="-330" y="10" width="660" height="110" rx="22" fill="#e8352a" stroke="${OL}" stroke-width="6"/>
+<text x="0" y="88" font-family="Fredoka" font-weight="700" font-size="72" text-anchor="middle" fill="#fff">Capítulo 1: Tokio</text>
+<text x="0" y="175" font-family="Fredoka" font-weight="600" font-size="40" text-anchor="middle" fill="#2b3a67">Descubramos el mundo juntos</text></g>
+${plane(((t/L)*(W+600))-300, 200+S(t,1)*60, 1.1, S(t,1,1.5)*12)}
+${fallingPetals(t,18,11)}`},
+
+skyline(t){return `<rect width="${W}" height="${H}" fill="url(#skyDay)"/>
+${sun(1620,190,70,t)}${driftClouds(t,[[0,150,1,1],[700,240,0.8,1],[1300,110,0.9,1]])}${birds(t)}
+${hills(860,'#9ee08a',25,2,t/L*0)}
+${building(80,880,170,380,'#7fc4ff','#fff6c9',2)}${building(270,880,130,300,'#ffd27a','#fff',3)}${building(1300,880,160,420,'#b7a7ff','#fff6c9',4)}${building(1480,880,190,330,'#7fc4ff','#fff',5)}${building(1690,880,150,460,'#ffb3c7','#fff6c9',6)}
+${tokyoTower(820,880,1.05)}
+${building(420,880,150,240,'#9be3d0','#fff',7)}${building(1050,880,170,270,'#ffd27a','#fff6c9',8)}
+<rect x="0" y="870" width="${W}" height="${H-870}" fill="#7ccf6b"/><rect x="0" y="930" width="${W}" height="70" fill="#9aa3b5"/>
+${[0,1,2,3,4,5,6,7,8,9,10].map(i=>`<rect x="${(i*200-(t/L*400)%200)}" y="960" width="100" height="10" rx="5" fill="#fff"/>`).join('')}
+${carRow(t)}
+${fallingPetals(t,12,5)}`},
+
+fuji(t){return `<rect width="${W}" height="${H}" fill="url(#skyDay)"/>
+${driftClouds(t,[[200,160,1,1],[1100,120,1.1,1],[1600,280,0.7,1]])}
+${fuji(W/2,760,1300,520)}
+${cloud(W/2-250+S(t,1)*30,540,1.3,0.95)}${cloud(W/2+300-S(t,1)*30,600,1.1,0.95)}
+${hills(760,'#7ccf6b',20,3,1)}
+<rect x="0" y="790" width="${W}" height="${H-790}" fill="url(#water)"/>
+${[0,1,2,3,4,5].map(i=>`<path d="M${(i*380+t/L*380)%W-100},${850+i%3*60} q40,-14 80,0 q40,14 80,0" stroke="#bfe6ff" stroke-width="6" fill="none" stroke-linecap="round"/>`).join('')}
+${sakuraTree(170,900,1.1,4,t)}${sakuraTree(1760,920,1.2,9,t)}
+${boat(t)}
+${fallingPetals(t,26,3)}`},
+
+templo(t){return `<rect width="${W}" height="${H}" fill="url(#skyDusk)"/><circle cx="1500" cy="300" r="260" fill="url(#glow)"/>
+${driftClouds(t,[[100,150,0.9,1],[1200,200,0.8,1]])}
+${sakuraTree(220,860,1.2,6,t)}${sakuraTree(1720,860,1.25,8,t)}
+<rect x="0" y="840" width="${W}" height="${H-840}" fill="#e9d8b8"/>
+${[0,1,2,3,4,5,6,7].map(i=>`<rect x="${i*260+20}" y="${880+(i%2)*30}" width="200" height="16" rx="8" fill="#d8c39c"/>`).join('')}
+${templeGate(W/2,860,1.25,t)}
+${fallingPetals(t,30,13)}`},
+
+tren(t){const x=((t/L)*(W+1500))-1200;return `<rect width="${W}" height="${H}" fill="url(#skyDay)"/>
+${driftClouds(t,[[100,140,1,1],[1000,200,0.9,1]])}
+${fuji(1400,700,1000,420)}${hills(690,'#9ee08a',30,2,2)}${hills(760,'#7ccf6b',22,3,0.5)}
+${[0,1,2,3,4,5,6].map(i=>`<g>${sakuraTree(((i*330+80)-(t/L*330)%330),780,0.55,i+20,t)}</g>`).join('')}
+<rect x="0" y="830" width="${W}" height="${H-830}" fill="#8fd17e"/>
+<rect x="0" y="850" width="${W}" height="18" fill="#7a8193"/>
+${[...Array(25)].map((_,i)=>`<rect x="${i*80-(t/L*160*4)%80}" y="866" width="40" height="16" fill="#8d6e5c"/>`).join('')}
+${shinkansen(x,850,1)}
+<g opacity=".6">${[0,1,2].map(i=>`<line x1="${x-60-i*40}" y1="${790+i*20}" x2="${x-200-i*60}" y2="${790+i*20}" stroke="#fff" stroke-width="8" stroke-linecap="round"/>`).join('')}</g>`},
+
+comida(t){return `<rect width="${W}" height="${H}" fill="url(#kitchen)"/>
+<rect width="${W}" height="${H}" fill="url(#dots)"/>
+${noren()}
+<rect x="0" y="720" width="${W}" height="${H-720}" fill="#c98b5b"/><rect x="0" y="720" width="${W}" height="24" fill="#a86b40"/>
+${ramen(700,700,t)}${sushiPlate(1300,760,t)}
+<g transform="translate(980,560) rotate(${-20+S(t,1)*4})"><rect x="0" y="0" width="12" height="300" rx="5" fill="#d9a066" stroke="${OL}" stroke-width="3"/><rect x="24" y="0" width="12" height="300" rx="5" fill="#d9a066" stroke="${OL}" stroke-width="3"/></g>`},
+
+noche(t){return `<rect width="${W}" height="${H}" fill="url(#skyNight)"/>
+${stars(t)}<circle cx="1650" cy="160" r="70" fill="#fff4c2"/><circle cx="1680" cy="140" r="64" fill="#2a2462"/>
+${building(40,820,200,520,'#3c3f8f','#ffe066',11,true)}${building(260,820,160,400,'#4a3c8f','#7cf0ff',12,true)}${building(1340,820,180,480,'#3c3f8f','#ff9be0',13,true)}${building(1540,820,220,560,'#4a3c8f','#ffe066',14,true)}
+${neon(470,380,'#ff4fa3','ラーメン',t,0)}${neon(1080,330,'#3fe0ff','東京',t,1.5)}${neon(760,250,'#ffe14f','TOKYO',t,3)}
+${building(450,820,250,300,'#2f3378','#ffe066',15,true)}${building(1080,820,240,340,'#2f3378','#7cf0ff',16,true)}${building(740,820,320,260,'#353a85','#ff9be0',17,true)}
+<rect x="0" y="820" width="${W}" height="${H-820}" fill="#3a3a52"/>
+${[...Array(16)].map((_,i)=>`<rect x="${i*120+30}" y="860" width="70" height="130" fill="#fff" opacity=".85" transform="skewX(-20)"/>`).join('')}
+${crowd(t)}`},
+
+parque(t){return `<rect width="${W}" height="${H}" fill="url(#skyDay)"/>${sun(260,180,60,t)}
+${driftClouds(t,[[500,140,0.9,1],[1300,220,1,1]])}
+${hills(700,'#b6ec9f',35,1.5,0.3)}${hills(780,'#8fd17e',25,2.5,1.2)}
+${sakuraTree(420,860,1.4,30,t)}${sakuraTree(1000,820,1.0,31,t)}${sakuraTree(1550,870,1.5,32,t)}
+<rect x="0" y="860" width="${W}" height="${H-860}" fill="#7ccf6b"/>
+<g transform="translate(700,930)"><rect x="-160" y="-30" width="320" height="60" rx="10" fill="#5ab2ff" stroke="${OL}" stroke-width="4"/><rect x="-160" y="-30" width="80" height="60" fill="#fff" opacity=".6"/><rect x="0" y="-30" width="80" height="60" fill="#fff" opacity=".6"/></g>
+${[0,1,2,3].map(i=>`<circle cx="${1100+i*40}" cy="${930+S(t,2,i)*6}" r="10" fill="#ff7aa8"/>`).join('')}
+${fallingPetals(t,40,21)}`},
+
+mapa(t){const pulse=1+0.15*Math.max(0,S(t,4));return `<rect width="${W}" height="${H}" fill="#4fb3f6"/><rect width="${W}" height="${H}" fill="url(#dots)"/>
+${[...Array(8)].map((_,i)=>`<path d="M${(i*260+t/L*260)%(W+200)-100},${150+(i*137)%800} q30,-12 60,0 q30,12 60,0" stroke="#bfe6ff" stroke-width="6" fill="none" stroke-linecap="round"/>`).join('')}
+<path d="M-50,120 Q200,80 330,200 Q420,380 300,560 Q220,700 -50,760Z" fill="#bfe8a6" stroke="${OL}" stroke-width="6"/>
+<text x="120" y="420" font-family="Fredoka" font-weight="700" font-size="54" fill="${OL}" opacity=".55">ASIA</text>
+<g transform="translate(1000,560) rotate(12)" stroke="${OL}" stroke-width="6" stroke-linejoin="round">
+<path d="M-40,-330 Q30,-380 70,-310 Q60,-250 10,-230 Q-50,-260 -40,-330Z" fill="#9ee08a"/>
+<path d="M-10,-200 Q60,-210 90,-120 Q120,0 90,90 Q60,170 -20,190 Q-90,200 -150,230 Q-220,250 -230,200 Q-180,150 -120,130 Q-60,100 -50,20 Q-60,-100 -10,-200Z" fill="#9ee08a"/>
+<path d="M-260,230 Q-210,220 -200,260 Q-240,300 -280,280Z" fill="#9ee08a"/><path d="M-320,250 Q-280,250 -280,300 Q-330,340 -350,300Z" fill="#9ee08a"/></g>
+<g transform="translate(1040,560) scale(${pulse})"><circle r="26" fill="#e8352a" stroke="${OL}" stroke-width="6"/><circle r="9" fill="#fff"/></g>
+<g transform="translate(1080,460)"><rect x="0" y="-50" width="250" height="80" rx="20" fill="#fff" stroke="${OL}" stroke-width="5"/><text x="125" y="7" font-family="Fredoka" font-weight="700" font-size="50" text-anchor="middle" fill="#e8352a">Tokio</text></g>
+<g transform="translate(1500,860)"><rect x="-190" y="-60" width="380" height="100" rx="24" fill="#fff" stroke="${OL}" stroke-width="5"/><rect x="-165" y="-40" width="90" height="60" fill="#fff" stroke="#ccc" stroke-width="2"/><circle cx="-120" cy="-10" r="18" fill="#e8352a"/><text x="40" y="8" font-family="Fredoka" font-weight="700" font-size="54" text-anchor="middle" fill="${OL}">Japón</text></g>
+${plane(((t/L)*(W+600))-300, 300+S(t,1)*80, 0.9, S(t,1,1.5)*10)}`},
+
+kimono(t){const sw=S(t,1)*4;return `<rect width="${W}" height="${H}" fill="#ffe3ec"/>
+${[...Array(7)].map((_,i)=>`<circle cx="${i*320+60}" cy="${(i%2)*400+200}" r="150" fill="#ffd0de"/>`).join('')}
+${fallingPetals(t,24,41)}
+<rect x="0" y="880" width="${W}" height="200" fill="#c98b5b"/>
+${[0,1].map(k=>{const x=k?1300:620,c1=k?'#4f7fe0':'#e8352a',c2=k?'#ffd34d':'#ffb7d0',hair=k?'#3a2a2a':'#2b2020';return `<g transform="translate(${x},880) rotate(${k?-sw:sw} 0 0)" stroke="${OL}" stroke-width="6" stroke-linejoin="round">
+<path d="M-110,0 L-90,-380 Q0,-420 90,-380 L110,0Z" fill="${c1}"/>
+<path d="M-90,-380 L-200,-250 L-170,-180 L-80,-260Z M90,-380 L200,-250 L170,-180 L80,-260Z" fill="${c1}"/>
+${[0,1,2,3,4].map(i=>blossom(-50+i*25-(i%2)*40,-60-i*60,22)).join('')}
+<rect x="-98" y="-260" width="196" height="70" fill="${c2}"/><path d="M-40,-380 L0,-300 L40,-380" fill="#fff"/>
+<circle cx="0" cy="-470" r="80" fill="#ffd9b8"/><path d="M-82,-480 Q-70,-570 0,-560 Q70,-570 82,-480 Q60,-520 0,-515 Q-60,-520 -82,-480Z" fill="${hair}"/>
+${k?'':`<circle cx="0" cy="-580" r="38" fill="${hair}"/><circle cx="40" cy="-560" r="14" fill="#ff7aa8"/>`}
+<circle cx="-28" cy="-470" r="9" fill="${OL}" stroke="none"/><circle cx="28" cy="-470" r="9" fill="${OL}" stroke="none"/><path d="M-16,-440 Q0,-428 16,-440" fill="none"/><circle cx="-48" cy="-448" r="12" fill="#ff8fa3" stroke="none" opacity=".7"/><circle cx="48" cy="-448" r="12" fill="#ff8fa3" stroke="none" opacity=".7"/>
+${k?`<g transform="translate(-200,-220) rotate(${S(t,2)*15})"><path d="M0,0 L-90,-110 Q-20,-150 50,-120Z" fill="#ffd34d"/></g>`:''}</g>`}).join('')}
+<g transform="translate(${W/2},150)"><rect x="-200" y="-60" width="400" height="100" rx="24" fill="#fff" stroke="${OL}" stroke-width="5"/><text x="0" y="12" font-family="Fredoka" font-weight="700" font-size="60" text-anchor="middle" fill="#e8352a">Kimono 着物</text></g>`},
+
+akihabara(t){const cols=['#ff4fa3','#3fe0ff','#ffe14f','#7ed957','#b388ff'];return `<rect width="${W}" height="${H}" fill="url(#skyNight)"/>${stars(t)}
+${[0,1,2,3,4].map(i=>{const x=i*390+10,h=560+(i%2)*120,c=cols[i];return `<rect x="${x}" y="${880-h}" width="370" height="${h}" fill="#2f3378" stroke="${OL}" stroke-width="5"/>
+${[0,1,2,3].map(j=>`<rect x="${x+20}" y="${900-h+j*130}" width="330" height="100" rx="10" fill="${cols[(i+j)%5]}" opacity="${0.55+0.45*Math.max(0,S(t,4,i+j))}"/>`).join('')}`}).join('')}
+${neon(90,170,'#ff4fa3','GAME',t,0)}${neon(860,110,'#3fe0ff','ANIME',t,1)}${neon(1450,200,'#ffe14f','秋葉原',t,2)}
+<rect x="0" y="880" width="${W}" height="200" fill="#3a3a52"/>
+<g transform="translate(560,${760+S(t,2)*12})" stroke="${OL}" stroke-width="6"><rect x="-150" y="-70" width="300" height="140" rx="70" fill="#fff"/><path d="M-90,-20 v40 M-110,0 h40" stroke-width="12" stroke-linecap="round"/><circle cx="70" cy="-20" r="16" fill="#ff4fa3"/><circle cx="105" cy="10" r="16" fill="#3fe0ff"/></g>
+<g transform="translate(1340,${880+S(t,2,1)*10})" stroke="${OL}" stroke-width="6" stroke-linejoin="round">
+<rect x="-60" y="-110" width="120" height="110" rx="20" fill="#cfd8e3"/><rect x="-80" y="-250" width="160" height="140" rx="30" fill="#e6edf5"/><rect x="-55" y="-220" width="110" height="60" rx="20" fill="#2b3a67"/>
+<circle cx="-25" cy="-190" r="12" fill="#3fe0ff" stroke="none" opacity="${0.6+0.4*S(t,4)}"/><circle cx="25" cy="-190" r="12" fill="#3fe0ff" stroke="none" opacity="${0.6+0.4*S(t,4)}"/>
+<line x1="0" y1="-250" x2="0" y2="-300"/><circle cx="0" cy="-305" r="12" fill="#ff4fa3"/>
+<g transform="rotate(${S(t,2)*30} -60 -90)"><rect x="-120" y="-100" width="60" height="26" rx="13" fill="#cfd8e3"/></g><rect x="60" y="-100" width="60" height="26" rx="13" fill="#cfd8e3"/></g>`},
+
+edo(t){return `<rect width="${W}" height="${H}" fill="url(#skyDusk)"/>${driftClouds(t,[[200,160,1,1],[1300,120,0.8,1]])}
+${hills(640,'#a8d88f',40,1.5,0.4)}
+<g transform="translate(1450,620)" stroke="${OL}" stroke-width="5" stroke-linejoin="round"><rect x="-150" y="-60" width="300" height="80" fill="#9aa3b5"/>
+<rect x="-110" y="-160" width="220" height="100" fill="#fff"/><path d="M-160,-150 Q0,-200 160,-150 L130,-200 Q0,-240 -130,-200Z" fill="#3e4a6b"/>
+<rect x="-80" y="-260" width="160" height="70" fill="#fff"/><path d="M-120,-250 Q0,-300 120,-250 L90,-300 Q0,-330 -90,-300Z" fill="#3e4a6b"/></g>
+<rect x="0" y="760" width="${W}" height="${H-760}" fill="#e2c99a"/>
+${[0,1,2,3].map(i=>{const x=120+i*430;return `<g transform="translate(${x},800)" stroke="${OL}" stroke-width="5" stroke-linejoin="round"><rect x="0" y="-200" width="320" height="200" fill="#c98b5b"/>
+<path d="M-30,-190 L160,-310 L350,-190Z" fill="#6b4e3d"/><rect x="40" y="-150" width="90" height="90" fill="#fff3d6"/>${[1,2].map(k=>`<line x1="${40+k*30}" y1="-150" x2="${40+k*30}" y2="-60" stroke-width="3"/>`).join('')}
+<rect x="180" y="-130" width="90" height="130" fill="#8a5a3e"/><path d="M180,-130 h90 v50 q-45,12 -90,0Z" fill="${['#2b3a67','#e8352a','#2b3a67','#e8352a'][i]}"/></g>`}).join('')}
+${lantern(560+0,700,0.6,t,'江戸')}${lantern(1420,700,0.6,t+2,'江戸')}
+<g transform="translate(${W/2},140)"><rect x="-260" y="-60" width="520" height="100" rx="24" fill="#fff" stroke="${OL}" stroke-width="5"/><text x="0" y="12" font-family="Fredoka" font-weight="700" font-size="58" text-anchor="middle" fill="${OL}">Edo → Tokio</text></g>`},
+
+maquinas(t){const items=[['#e8352a','#ff8a65'],['#4fb3f6','#9fd3ff'],['#7ed957','#c9f2a8'],['#ffd34d','#ffe9a3'],['#ff9be0','#ffd0ee']];return `<rect width="${W}" height="${H}" fill="url(#skyDusk)"/>
+${building(0,820,1920,520,'#e9d8b8','#fff6c9',50)}
+<rect x="0" y="820" width="${W}" height="${H-820}" fill="#9aa3b5"/>
+${items.map(([c,l],i)=>{const x=150+i*340;return `<g transform="translate(${x},860)" stroke="${OL}" stroke-width="6" stroke-linejoin="round"><rect x="0" y="-560" width="280" height="560" rx="18" fill="${c}"/>
+<rect x="20" y="-530" width="240" height="320" rx="10" fill="#fff" opacity="${0.85+0.15*S(t,4,i)}"/>
+${[0,1,2].map(r=>[0,1,2,3].map(k=>i==4?`${blossom(50+k*60,-480+r*100,22)}`:`<rect x="${35+k*58}" y="${-500+r*100}" width="34" height="70" rx="10" fill="${[c,'#4fb3f6','#7ed957','#ffd34d'][(k+r)%4]}" stroke-width="3"/>`).join('')).join('')}
+<rect x="40" y="-180" width="200" height="30" rx="8" fill="${l}"/><rect x="60" y="-110" width="160" height="60" rx="10" fill="#2b3a67"/>
+<text x="140" y="-380" font-family="Fredoka" font-weight="700" font-size="0" text-anchor="middle" fill="#fff">.</text></g>`}).join('')}
+<g transform="translate(${1000+S(t,1)*20},${620+Math.abs(S(t,2))*-30})" stroke="${OL}" stroke-width="5"><rect x="-22" y="-60" width="44" height="90" rx="12" fill="#e8352a"/><rect x="-22" y="-20" width="44" height="22" fill="#fff"/></g>`},
+
+comida2(t){const b=S(t,2)*8;return `<rect width="${W}" height="${H}" fill="#fff3d6"/><rect width="${W}" height="${H}" fill="url(#dots)"/>
+${[0,1,2,3,4,5,6,7,8,9,10,11].map(i=>`<rect x="${i*170}" y="0" width="85" height="1080" fill="#ffe9b8" opacity=".6"/>`).join('')}
+<rect x="0" y="760" width="${W}" height="${H-760}" fill="#c98b5b"/><rect x="0" y="760" width="${W}" height="20" fill="#a86b40"/>
+<g transform="translate(380,${740+b})" stroke="${OL}" stroke-width="6" stroke-linejoin="round"><path d="M0,-260 Q30,-260 160,-30 Q170,0 140,0 L-140,0 Q-170,0 -160,-30 Q-30,-260 0,-260Z" fill="#fff"/>
+<rect x="-90" y="-110" width="180" height="110" fill="#2e3b2e"/><circle cx="-40" cy="-160" r="9" fill="${OL}" stroke="none"/><circle cx="40" cy="-160" r="9" fill="${OL}" stroke="none"/><path d="M-15,-135 Q0,-122 15,-135" fill="none"/><circle cx="-62" cy="-140" r="12" fill="#ff8fa3" stroke="none" opacity=".7"/><circle cx="62" cy="-140" r="12" fill="#ff8fa3" stroke="none" opacity=".7"/></g>
+<g transform="translate(960,${760-b}) rotate(-10)" stroke="${OL}" stroke-width="6"><line x1="0" y1="80" x2="0" y2="-420" stroke="#d9a066" stroke-width="14" stroke-linecap="round"/>
+<circle cx="0" cy="-360" r="55" fill="#ffb7d0"/><circle cx="0" cy="-250" r="55" fill="#fff"/><circle cx="0" cy="-140" r="55" fill="#9ee08a"/></g>
+<g transform="translate(1500,770)" stroke="${OL}" stroke-width="6" stroke-linejoin="round"><rect x="-260" y="-260" width="520" height="260" rx="20" fill="#e8352a"/><rect x="-235" y="-235" width="470" height="210" rx="12" fill="#2b2020"/>
+<rect x="-225" y="-225" width="220" height="190" rx="10" fill="#fff"/>${[0,1,2,3,4,5].map(i=>`<circle cx="${-190+(i%3)*70}" cy="${-180+Math.floor(i/3)*80}" r="10" fill="#f0f0f0" stroke-width="2"/>`).join('')}
+<circle cx="-115" cy="-130" r="40" fill="#ffd34d"/><circle cx="-128" cy="-138" r="7" fill="${OL}" stroke="none"/><circle cx="-102" cy="-138" r="7" fill="${OL}" stroke="none"/><path d="M-125,-118 Q-115,-108 -105,-118" fill="none" stroke-width="4"/>
+<rect x="5" y="-225" width="220" height="90" rx="10" fill="#9ee08a"/><ellipse cx="60" cy="-180" rx="40" ry="28" fill="#e98b6b"/><ellipse cx="160" cy="-180" rx="40" ry="28" fill="#ffd34d"/>
+<rect x="5" y="-125" width="220" height="90" rx="10" fill="#ffe08a"/><circle cx="70" cy="-80" r="28" fill="#fff"/><circle cx="70" cy="-80" r="13" fill="#ffb02e" stroke="none"/><path d="M130,-100 l60,0 l-10,40 l-40,0Z" fill="#ff7a8a"/></g>
+<g font-family="Fredoka" font-weight="700" font-size="54" text-anchor="middle" fill="${OL}"><text x="380" y="420">Onigiri</text><text x="1180" y="300">Dango</text><text x="1500" y="420">Bento</text></g>`},
+
+escuela(t){const wx=((t/L)*(W+400))-200,step=S(t,8)*14;return `<rect width="${W}" height="${H}" fill="url(#skyDay)"/>${sun(1700,170,60,t)}${driftClouds(t,[[100,150,1,1],[900,120,0.8,1]])}
+<g transform="translate(1250,760)" stroke="${OL}" stroke-width="6" stroke-linejoin="round"><rect x="-300" y="-380" width="600" height="380" fill="#fff3d6"/><rect x="-80" y="-470" width="160" height="100" fill="#fff3d6"/>
+<circle cx="0" cy="-420" r="36" fill="#fff"/><line x1="0" y1="-420" x2="0" y2="-445"/><line x1="0" y1="-420" x2="18" y2="-420"/>
+${[0,1].map(r=>[0,1,2,3,4].map(k=>`<rect x="${-270+k*112}" y="${-350+r*130}" width="80" height="80" rx="6" fill="#9fd3ff"/>`).join('')).join('')}<rect x="-60" y="-110" width="120" height="110" fill="#c98b5b"/>
+<rect x="-180" y="-430" width="0" height="0"/></g>
+${sakuraTree(300,800,0.9,51,t)}${sakuraTree(1700,800,0.8,52,t)}
+<rect x="0" y="760" width="${W}" height="${H-760}" fill="#7ccf6b"/><rect x="0" y="800" width="${W}" height="120" fill="#c4cad6"/>
+<g transform="translate(560,760)" stroke="${OL}" stroke-width="5"><rect x="-8" y="-200" width="16" height="200" fill="#555"/><rect x="-40" y="-290" width="80" height="110" rx="14" fill="#333"/><circle cx="0" cy="-260" r="18" fill="${(t%4)<2?'#ff5a5f':'#444'}"/><circle cx="0" cy="-210" r="18" fill="${(t%4)>=2?'#7ed957':'#444'}"/></g>
+<g transform="translate(${wx},${880})" stroke="${OL}" stroke-width="5" stroke-linejoin="round">
+<path d="M-12,-40 L${-14+step},20 M12,-40 L${14-step},20" stroke="#2b3a67" stroke-width="14" stroke-linecap="round"/>
+<rect x="-40" y="-140" width="80" height="110" rx="20" fill="#2b3a67"/><rect x="-60" y="-150" width="50" height="80" rx="12" fill="#e8352a"/>
+<circle cx="0" cy="-185" r="45" fill="#ffd9b8"/><path d="M-46,-195 Q0,-250 46,-195 Q20,-215 -46,-195Z" fill="#2b2020"/><path d="M-50,-205 Q0,-245 50,-205 L55,-200 L-55,-200Z" fill="#ffd34d"/>
+<circle cx="14" cy="-185" r="6" fill="${OL}" stroke="none"/><path d="M8,-165 Q18,-158 26,-166" fill="none"/></g>
+<g transform="translate(${W/2-200},130)"><rect x="-140" y="-60" width="280" height="100" rx="24" fill="#fff" stroke="${OL}" stroke-width="5"/><text x="0" y="12" font-family="Fredoka" font-weight="700" font-size="60" text-anchor="middle" fill="${OL}">Kenji</text></g>`},
+
+idioma(t){const cards=[['こんにちは','Konnichiwa','Hola','#ffb7d0'],['ありがとう','Arigato','Gracias','#9fd3ff'],['さようなら','Sayonara','Adiós','#c9f2a8']];
+return `<rect width="${W}" height="${H}" fill="#fff8e7"/><rect width="${W}" height="${H}" fill="url(#dots)"/>${fallingPetals(t,16,61)}
+${cards.map(([jp,ro,es,c],i)=>{const x=340+i*620,y=430+S(t,1,i*2)*14;return `<g transform="translate(${x},${y}) rotate(${(i-1)*3})" stroke="${OL}" stroke-width="6">
+<rect x="-260" y="-250" width="520" height="470" rx="36" fill="${c}"/><rect x="-230" y="-220" width="460" height="200" rx="24" fill="#fff"/>
+<text x="0" y="-90" font-family="IPAGothic" font-size="80" text-anchor="middle" fill="${OL}" stroke="none">${jp}</text>
+<text x="0" y="70" font-family="Fredoka" font-weight="700" font-size="76" text-anchor="middle" fill="${OL}" stroke="none">${ro}</text>
+<text x="0" y="160" font-family="Fredoka" font-weight="600" font-size="56" text-anchor="middle" fill="#e8352a" stroke="none">${es}</text></g>`}).join('')}
+<g transform="translate(${W/2},110)"><rect x="-300" y="-60" width="600" height="100" rx="24" fill="#fff" stroke="${OL}" stroke-width="5"/><text x="0" y="12" font-family="Fredoka" font-weight="700" font-size="56" text-anchor="middle" fill="${OL}">Hablemos japonés 日本語</text></g>`},
+
+outro(t){return `<rect width="${W}" height="${H}" fill="url(#skyDusk)"/><rect width="${W}" height="${H}" fill="url(#dots)"/>
+${driftClouds(t,[[100,200,1,1],[1300,150,0.9,1]])}
+<g transform="translate(${W/2},${H/2-60}) scale(${1+S(t,2)*0.02})">
+<text x="0" y="-40" font-family="Fredoka" font-weight="700" font-size="120" text-anchor="middle" fill="#fff" stroke="${OL}" stroke-width="8" paint-order="stroke">¡Sayonara, Tokio!</text>
+<text x="0" y="70" font-family="Fredoka" font-weight="700" font-size="64" text-anchor="middle" fill="#ffcc2e" stroke="${OL}" stroke-width="6" paint-order="stroke">Nos vemos en el próximo viaje ✈</text>
+<text x="0" y="170" font-family="Fredoka" font-weight="600" font-size="40" text-anchor="middle" fill="${OL}">Mi Pequeño Atlas · Descubramos el mundo juntos</text></g>
+${plane(((t/L)*(W+600))-300, 820+S(t,1)*40, 1.2, -8+S(t,1,1)*8)}
+${fallingPetals(t,25,17)}`}
+};
+
+function carRow(t){const cols=['#ff5a5f','#ffd34d','#4fb3f6','#7ed957'];let s='';for(let i=0;i<4;i++){const x=((i*520)+t/L*W*1)%(W+300)-150;s+=`<g transform="translate(${x},${985})" stroke="${OL}" stroke-width="4"><rect x="-70" y="-40" width="140" height="40" rx="14" fill="${cols[i]}"/><rect x="-40" y="-68" width="80" height="34" rx="10" fill="${cols[i]}"/><rect x="-30" y="-62" width="28" height="22" rx="4" fill="#bfe6ff"/><rect x="4" y="-62" width="28" height="22" rx="4" fill="#bfe6ff"/><circle cx="-40" cy="2" r="15" fill="#444"/><circle cx="40" cy="2" r="15" fill="#444"/></g>`}return s}
+function boat(t){const x=600+S(t,1)*120,y=900+S(t,2)*6;return `<g transform="translate(${x},${y}) rotate(${S(t,2)*3})" stroke="${OL}" stroke-width="4"><path d="M-90,0 L90,0 L60,35 L-60,35Z" fill="#ff5a5f"/><line x1="0" y1="0" x2="0" y2="-120"/><path d="M4,-115 L70,-20 L4,-20Z" fill="#fff"/></g>`}
+function noren(){const c=['#2b3a67','#e8352a','#2b3a67','#e8352a','#2b3a67'];return `<rect x="560" y="0" width="800" height="30" fill="#7a4b3a"/>`+c.map((col,i)=>`<path d="M${560+i*160},30 h150 v230 q-75,20 -150,0Z" fill="${col}" stroke="${OL}" stroke-width="4"/>`).join('')+`<text x="960" y="180" font-family="IPAGothic" font-size="90" fill="#fff" text-anchor="middle">いただきます</text>`}
+function ramen(x,y,t){let steam='';for(let i=0;i<3;i++){const o=((t/L*2+i/3)%1);steam+=`<path d="M${x-60+i*60},${y-150-o*160} q-25,-30 0,-60 q25,-30 0,-60" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round" opacity="${1-o}"/>`}
+return steam+`<g transform="translate(${x},${y})" stroke="${OL}" stroke-width="5"><ellipse cx="0" cy="-120" rx="230" ry="50" fill="#f6c25b"/>
+<path d="M-150,-120 q20,-30 40,0 q20,-30 40,0 q20,-30 40,0 q20,-30 40,0 q20,-30 40,0 q20,-30 40,0 q20,-30 40,0" fill="none" stroke="#ffe08a" stroke-width="8"/>
+<circle cx="-90" cy="-130" r="34" fill="#fff"/><circle cx="-90" cy="-130" r="16" fill="#ffb02e" stroke="none"/><rect x="40" y="-150" width="90" height="40" rx="8" fill="#e98b6b"/><path d="M-20,-150 l30,10 l-30,10" fill="#4caf50"/>
+<path d="M-230,-120 Q-220,40 0,40 Q220,40 230,-120Z" fill="#e8352a"/><path d="M-200,-60 Q0,-30 200,-60" fill="none" stroke="#fff" stroke-width="10"/></g>`}
+function sushiPlate(x,y,t){const b=S(t,2)*6;return `<g transform="translate(${x},${y})" stroke="${OL}" stroke-width="5"><ellipse cx="0" cy="0" rx="260" ry="60" fill="#fff"/>
+<g transform="translate(-140,${-40+b})"><rect x="-55" y="-30" width="110" height="50" rx="20" fill="#fff"/><path d="M-60,-30 Q0,-70 60,-30 L55,-15 Q0,-50 -55,-15Z" fill="#ff8a65"/><path d="M-30,-48 l0,10 M0,-55 l0,12 M30,-48 l0,10" stroke="#fff" stroke-width="5"/></g>
+<g transform="translate(0,${-40-b})"><rect x="-55" y="-30" width="110" height="50" rx="20" fill="#fff"/><path d="M-60,-30 Q0,-70 60,-30 L55,-15 Q0,-50 -55,-15Z" fill="#ffd34d"/><rect x="-8" y="-50" width="16" height="70" fill="#2e3b2e"/></g>
+<g transform="translate(140,${-40+b})"><circle r="48" fill="#2e3b2e"/><circle r="36" fill="#fff"/><circle r="16" fill="#ff5a5f"/></g></g>`}
+function stars(t){const R=rng(99);let s='';for(let i=0;i<60;i++){const x=R()*W,y=R()*450,o=0.5+0.5*S(t,2,i);s+=`<circle cx="${x}" cy="${y}" r="${2+R()*3}" fill="#fff" opacity="${o}"/>`}return s}
+function neon(x,y,col,txt,t,ph){const o=0.75+0.25*Math.max(0,S(t,4,ph));return `<g transform="translate(${x},${y})"><rect x="-10" y="-10" width="${txt.length*58+40}" height="110" rx="18" fill="#1b1f4a" stroke="${col}" stroke-width="8" opacity="${o}"/>
+<text x="${(txt.length*58+20)/2}" y="70" font-family="${/[A-Z]/.test(txt)?'Fredoka':'IPAGothic'}" font-weight="700" font-size="64" text-anchor="middle" fill="${col}" opacity="${o}">${txt}</text></g>`}
+function crowd(t){const R=rng(5);let s='';const cols=['#ff5a5f','#ffd34d','#4fb3f6','#7ed957','#ff9be0','#fff'];for(let i=0;i<22;i++){const dir=i%2?1:-1,y=900+R()*150,x0=R()*W;const x=((x0+dir*t/L*W*0.5)%W+W)%W;const c=cols[i%6];const step=S(t,8,i)*6;
+s+=`<g transform="translate(${x},${y})"><rect x="-14" y="-60" width="28" height="44" rx="12" fill="${c}"/><circle cx="0" cy="-74" r="15" fill="#ffd9b8"/><path d="M-6,-16 L${-8+step},6 M6,-16 L${8-step},6" stroke="#2b2b44" stroke-width="7" stroke-linecap="round"/>${i%4==0?`<path d="M-40,-90 Q0,-130 40,-90Z" fill="${cols[(i+2)%6]}"/><line x1="0" y1="-110" x2="0" y2="-60" stroke="#333" stroke-width="3"/>`:''}</g>`}return s}
+
+/* ---------- mascot: little globe explorer ---------- */
+function mascot(mouth=0,blink=false){ // mouth 0..2
+const eyes=blink?`<path d="M-48,-20 q16,10 32,0 M16,-20 q16,10 32,0" stroke="${OL}" stroke-width="7" fill="none" stroke-linecap="round"/>`
+:`<ellipse cx="-32" cy="-22" rx="20" ry="24" fill="#fff" stroke="${OL}" stroke-width="5"/><ellipse cx="32" cy="-22" rx="20" ry="24" fill="#fff" stroke="${OL}" stroke-width="5"/><circle cx="-28" cy="-18" r="11" fill="${OL}"/><circle cx="36" cy="-18" r="11" fill="${OL}"/><circle cx="-24" cy="-23" r="4" fill="#fff"/><circle cx="40" cy="-23" r="4" fill="#fff"/>`;
+const m=mouth==0?`<path d="M-22,28 Q0,46 22,28" stroke="${OL}" stroke-width="7" fill="none" stroke-linecap="round"/>`
+:mouth==1?`<path d="M-24,24 Q0,30 24,24 Q18,50 0,52 Q-18,50 -24,24Z" fill="#a8273a" stroke="${OL}" stroke-width="5"/><ellipse cx="0" cy="44" rx="10" ry="5" fill="#ff7a8a"/>`
+:`<path d="M-28,20 Q0,26 28,20 Q24,70 0,72 Q-24,70 -28,20Z" fill="#a8273a" stroke="${OL}" stroke-width="5"/><ellipse cx="0" cy="60" rx="14" ry="8" fill="#ff7a8a"/>`;
+return `<g transform="translate(160,170)">
+<ellipse cx="0" cy="145" rx="80" ry="12" fill="#000" opacity=".15"/>
+<path d="M-80,40 q-40,20 -30,60 M80,40 q40,-30 40,-80" stroke="${OL}" stroke-width="12" fill="none" stroke-linecap="round"/>
+<circle cx="-110" cy="100" r="16" fill="#ffd9b8" stroke="${OL}" stroke-width="5"/><circle cx="120" cy="-42" r="16" fill="#ffd9b8" stroke="${OL}" stroke-width="5"/>
+<path d="M-30,105 L-36,140 M30,105 L36,140" stroke="${OL}" stroke-width="12" stroke-linecap="round"/>
+<ellipse cx="-40" cy="142" rx="22" ry="10" fill="#e8352a" stroke="${OL}" stroke-width="4"/><ellipse cx="40" cy="142" rx="22" ry="10" fill="#e8352a" stroke="${OL}" stroke-width="4"/>
+<circle r="110" fill="#4fb3f6" stroke="${OL}" stroke-width="7"/>
+<path d="M-90,-50 q30,-30 60,-10 q10,30 -20,40 q-30,10 -45,-10Z M40,-90 q40,0 55,40 q-20,20 -45,0 q-20,-20 -10,-40Z M20,60 q30,-10 50,10 q-10,30 -40,25Z M-80,40 q20,0 25,25 q-20,15 -35,-5Z" fill="#7ed957" opacity=".95"/>
+${eyes}<circle cx="-62" cy="12" r="13" fill="#ff8fa3" opacity=".75"/><circle cx="62" cy="12" r="13" fill="#ff8fa3" opacity=".75"/>${m}
+<path d="M-95,-75 Q0,-120 95,-75 L85,-60 Q0,-95 -85,-60Z" fill="#c8a165" stroke="${OL}" stroke-width="5"/>
+<path d="M-60,-82 Q0,-190 60,-82Z" fill="#d8b277" stroke="${OL}" stroke-width="5"/><path d="M-58,-88 Q0,-108 58,-88" stroke="#e8352a" stroke-width="12" fill="none"/>
+</g>`}
+
+/* ---------- Vinelis (narradora) ---------- */
+const SKIN='#a8653f',SKIN_D='#8a4f30',HAIR='#2a1a14',HAIR_L='#4a2e22';
+function arm(sx,sy,ex,ey,hx,hy,point=false){
+ const pts=`M${sx},${sy} Q${ex},${ey} ${hx},${hy}`;
+ return `<path d="${pts}" stroke="${OL}" stroke-width="34" fill="none" stroke-linecap="round"/><path d="${pts}" stroke="${SKIN}" stroke-width="24" fill="none" stroke-linecap="round"/>
+ <circle cx="${hx}" cy="${hy}" r="21" fill="${SKIN}" stroke="${OL}" stroke-width="5"/>
+ ${point?`<path d="M${hx+10},${hy-6} L${hx+44},${hy-14}" stroke="${OL}" stroke-width="16" stroke-linecap="round"/><path d="M${hx+10},${hy-6} L${hx+44},${hy-14}" stroke="${SKIN}" stroke-width="8" stroke-linecap="round"/>`:''}`}
+function vinelis(pose='rest',mouth=0,blink=false){
+ const R=rng(77);const hp=[];
+ for(let i=0;i<46;i++){const a=i/46*TAU;if(Math.sin(a)>0.45&&Math.abs(Math.cos(a))<0.62)continue;const rr=1+R()*0.12;hp.push([220+Math.cos(a)*150*rr,175+Math.sin(a)*(Math.sin(a)>0?150:135)*rr,30+R()*14])}
+ const curls=`<ellipse cx="220" cy="185" rx="150" ry="140" fill="${HAIR}" stroke="${OL}" stroke-width="10"/>`+hp.map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r+5}" fill="${OL}"/>`).join('')+`<ellipse cx="220" cy="185" rx="150" ry="140" fill="${HAIR}"/>`+hp.map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${HAIR}"/>`).join('');
+ const curlsIn=hp.map(([x,y],i)=>i%2?`<path d="M${x-14},${y+4} q14,-18 28,0" stroke="${HAIR_L}" stroke-width="5" fill="none" stroke-linecap="round"/>`:'').join('');
+ // arms per pose  (shoulders: L 168,300  R 272,300)
+ const P={rest:[[168,300,130,370,150,440],[272,300,310,370,290,440]],
+  open:[[168,300,90,250,40,150],[272,300,350,250,400,150]],
+  point:[[168,300,130,370,150,440],[272,300,330,340,365,295,true]],
+  wave1:[[168,300,130,370,150,440],[272,300,350,280,350,160]],
+  wave2:[[168,300,130,370,150,440],[272,300,360,270,395,175]]}[pose];
+ const eyes=blink?`<path d="M168,180 q22,14 44,0 M228,180 q22,14 44,0" stroke="${OL}" stroke-width="6" fill="none" stroke-linecap="round"/>`
+ :`<ellipse cx="190" cy="178" rx="21" ry="25" fill="#fff" stroke="${OL}" stroke-width="4"/><ellipse cx="250" cy="178" rx="21" ry="25" fill="#fff" stroke="${OL}" stroke-width="4"/>
+ <circle cx="193" cy="182" r="14" fill="#5a2e1a"/><circle cx="247" cy="182" r="14" fill="#5a2e1a"/><circle cx="193" cy="182" r="7" fill="#1a0d08"/><circle cx="247" cy="182" r="7" fill="#1a0d08"/>
+ <circle cx="198" cy="176" r="5" fill="#fff"/><circle cx="252" cy="176" r="5" fill="#fff"/>
+ <path d="M168,160 l-8,-8 M174,154 l-4,-10 M266,154 l4,-10 M272,160 l8,-8" stroke="${OL}" stroke-width="4" stroke-linecap="round"/>`;
+ const m=mouth==0?`<path d="M196,232 Q220,252 244,232" stroke="${OL}" stroke-width="6" fill="#fff" stroke-linecap="round"/>`
+ :mouth==1?`<path d="M192,228 Q220,234 248,228 Q242,262 220,264 Q198,262 192,228Z" fill="#7a1f2b" stroke="${OL}" stroke-width="5"/><path d="M196,230 Q220,236 244,230 L242,240 Q220,244 198,240Z" fill="#fff"/><ellipse cx="220" cy="254" rx="11" ry="5" fill="#ff7a8a"/>`
+ :`<path d="M188,224 Q220,232 252,224 Q248,280 220,282 Q192,280 188,224Z" fill="#7a1f2b" stroke="${OL}" stroke-width="5"/><path d="M193,227 Q220,234 247,227 L245,240 Q220,245 195,240Z" fill="#fff"/><ellipse cx="220" cy="268" rx="14" ry="7" fill="#ff7a8a"/>`;
+ return `<g>
+ ${curls}
+ <rect x="203" y="245" width="34" height="50" fill="${SKIN_D}" stroke="${OL}" stroke-width="4"/>
+ <path d="M160,300 Q220,280 280,300 L310,540 L130,540Z" fill="#fff" stroke="${OL}" stroke-width="5" stroke-linejoin="round"/>
+ <path d="M168,300 L190,290 L260,380" stroke="#f08aa0" stroke-width="10" fill="none"/>
+ <path d="M150,390 Q220,410 292,390 L296,420 Q220,440 146,420Z" fill="#f4a3b4" stroke="${OL}" stroke-width="4"/>
+ <path d="M230,420 Q250,470 236,520 L256,520 Q268,470 250,418Z" fill="#f4a3b4" stroke="${OL}" stroke-width="4"/>
+ <path d="M150,470 Q200,500 230,480" stroke="#f08aa0" stroke-width="6" fill="none" opacity=".6"/>
+ ${arm(...P[0])}${arm(...P[1])}
+ <ellipse cx="220" cy="185" rx="80" ry="90" fill="${SKIN}" stroke="${OL}" stroke-width="5"/>
+ <ellipse cx="141" cy="190" rx="13" ry="20" fill="${SKIN}" stroke="${OL}" stroke-width="4"/><ellipse cx="299" cy="190" rx="13" ry="20" fill="${SKIN}" stroke="${OL}" stroke-width="4"/>
+ <circle cx="140" cy="225" r="16" fill="none" stroke="#ff8fb3" stroke-width="6"/><circle cx="300" cy="225" r="16" fill="none" stroke="#ff8fb3" stroke-width="6"/>
+ <path d="M140,140 Q170,70 220,95 Q270,70 300,140 Q290,110 262,108 Q240,96 220,112 Q200,96 178,108 Q150,110 140,140Z" fill="${HAIR}" stroke="${OL}" stroke-width="4"/>
+ ${[150,175,200,240,265,290].map((x,i)=>`<circle cx="${x}" cy="${108-(i%2)*8}" r="18" fill="${HAIR}"/>`).join('')}${curlsIn}
+ <path d="M170,146 Q190,136 210,146 M230,146 Q250,136 270,146" stroke="${HAIR}" stroke-width="8" fill="none" stroke-linecap="round"/>
+ ${eyes}
+ <path d="M216,200 Q220,214 228,206" stroke="${SKIN_D}" stroke-width="5" fill="none" stroke-linecap="round"/>
+ <circle cx="166" cy="214" r="13" fill="#e0707a" opacity=".45"/><circle cx="274" cy="214" r="13" fill="#e0707a" opacity=".45"/>
+ ${m}</g>`}
+
+/* ---------- generic cartoon kid ---------- */
+function kid(x,y,s,t,o={}){const sh=o.shirt||'#4fb3f6',hr=o.hair||'#2b2020',sk=o.skin||'#ffd9b8',ph=o.ph||0,walk=o.walk!==false,dir=o.dir||1;
+ const st=walk?S(t,8,ph)*16:0,bob=walk?Math.abs(S(t,8,ph))*-5:S(t,2,ph)*3;
+ return `<g transform="translate(${x},${y+bob}) scale(${s*dir},${s})" stroke="${OL}" stroke-width="5" stroke-linejoin="round">
+ <path d="M-12,-50 L${-12+st},0 M12,-50 L${12-st},0" stroke-width="16" stroke-linecap="round" stroke="${o.pants||'#2b3a67'}"/>
+ <path d="M-30,-130 Q0,-140 30,-130 L36,-50 L-36,-50Z" fill="${sh}"/>
+ <path d="M-28,-120 L${-48},${-80+(walk?-st:0)}" stroke-width="13" stroke-linecap="round" stroke="${sk}"/><path d="M28,-120 L48,${-80+(walk?st:0)}" stroke-width="13" stroke-linecap="round" stroke="${sk}"/>
+ ${o.bag?`<rect x="-52" y="-130" width="30" height="58" rx="8" fill="${o.bag}"/>`:''}
+ <circle cx="0" cy="-168" r="38" fill="${sk}"/>
+ <path d="M-40,-172 Q-40,-215 0,-212 Q40,-215 40,-172 Q25,-195 0,-192 Q-25,-195 -40,-172Z" fill="${hr}"/>
+ ${o.bun?`<circle cx="0" cy="-214" r="16" fill="${hr}"/>`:''}${o.hat?`<path d="M-42,-180 Q0,-230 42,-180Z" fill="${o.hat}"/>`:''}
+ <circle cx="-13" cy="-168" r="5" fill="${OL}" stroke="none"/><circle cx="13" cy="-168" r="5" fill="${OL}" stroke="none"/><path d="M-9,-152 Q0,-144 9,-152" fill="none" stroke-width="4"/>
+ <circle cx="-24" cy="-156" r="7" fill="#ff8fa3" stroke="none" opacity=".6"/><circle cx="24" cy="-156" r="7" fill="#ff8fa3" stroke="none" opacity=".6"/></g>`}
+function title(txt,x=W/2,y=120,col=OL,fs=58){const w=txt.length*fs*0.56+80;return `<g transform="translate(${x},${y})"><rect x="${-w/2}" y="-58" width="${w}" height="100" rx="26" fill="#fff" stroke="${OL}" stroke-width="6"/><text x="0" y="12" font-family="Fredoka" font-weight="700" font-size="${fs}" text-anchor="middle" fill="${col}">${txt}</text></g>`}
+function sparkle(x,y,s,t,ph=0){const k=0.6+0.4*Math.abs(S(t,4,ph));return `<path transform="translate(${x},${y}) scale(${s*k})" d="M0,-30 Q4,-4 30,0 Q4,4 0,30 Q-4,4 -30,0 Q-4,-4 0,-30Z" fill="#ffe14f" stroke="${OL}" stroke-width="3"/>`}
+const KC=[['#ff5a5f','#2b2020'],['#4fb3f6','#3a2a2a'],['#7ed957','#2b2020'],['#ffd34d','#5a3a2a'],['#b388ff','#2b2020'],['#ff9be0','#3a2a2a']];
+
+Object.assign(scenes,{
+vuelo(t){return `<rect width="${W}" height="${H}" fill="url(#skyDay)"/>${sun(1650,170,70,t)}
+${[...Array(9)].map((_,i)=>cloud(((i*260)-(t/L*W*2)%260*1)+(i%2)*60,760+(i%3)*90,1.6,1)).join('')}
+${driftClouds(t,[[100,240,0.7,2],[900,320,0.6,2],[1500,200,0.8,2]])}
+<g transform="translate(${900+S(t,1)*80},${440+S(t,2)*30}) rotate(${-6+S(t,1)*3})" stroke="${OL}" stroke-width="7" stroke-linejoin="round">
+<path d="M-420,0 Q-430,-80 -300,-80 L300,-80 Q440,-80 470,0 Q440,70 300,70 L-300,70 Q-430,70 -420,0Z" fill="#fff"/>
+<path d="M-380,-70 L-470,-230 L-380,-230 L-260,-80Z" fill="#e8352a"/><path d="M-60,30 L-230,220 L-120,220 L120,40Z" fill="#dfe8f5"/><path d="M-60,-60 L-200,-180 L-130,-180 L80,-60Z" fill="#dfe8f5"/>
+${[...Array(9)].map((_,i)=>`<circle cx="${-220+i*55}" cy="-20" r="17" fill="#9fd3ff"/>`).join('')}
+<path d="M360,-60 Q440,-50 455,-5 L380,-5Z" fill="#2b3a67"/><path d="M-420,20 L470,20" stroke="#e8352a" stroke-width="12"/></g>
+${[0,1,2].map(i=>`<line x1="${300-i*60}" y1="${420+i*40}" x2="${80-i*90}" y2="${420+i*40}" stroke="#fff" stroke-width="10" stroke-linecap="round" opacity=".8"/>`).join('')}
+${title('¡Despeguemos! ✈',W/2,110)}`},
+
+multitud(t){let s=`<rect width="${W}" height="${H}" fill="url(#skyDay)"/>${driftClouds(t,[[100,120,0.8,1],[1200,90,0.7,1]])}`;
+const R=rng(123);for(let i=0;i<22;i++){const w=90+R()*80,h=200+R()*380,x=i*92-30;s+=building(x,760,w,h,['#7fc4ff','#ffd27a','#b7a7ff','#9be3d0','#ffb3c7'][i%5],'#fff6c9',i+200)}
+s+=`<rect x="0" y="740" width="${W}" height="${H-740}" fill="#c4cad6"/>`;
+for(let r=0;r<4;r++)for(let i=0;i<14;i++){const k=KC[(i+r)%6];const dir=(i+r)%2?1:-1;const x=(((i*150+r*70)+dir*t/L*600)%(W+150)+W+150)%(W+150)-75;s+=kid(x,830+r*65,0.55+r*0.06,t,{shirt:k[0],hair:k[1],ph:i+r,dir,bun:i%3==0})}
+return s+`<g transform="translate(${W/2},140) scale(${1+0.04*S(t,2)})"><rect x="-430" y="-80" width="860" height="150" rx="34" fill="#ffcc2e" stroke="${OL}" stroke-width="7"/><text x="0" y="30" font-family="Fredoka" font-weight="700" font-size="92" text-anchor="middle" fill="${OL}">37.000.000 👫</text></g>`},
+
+calle(t){const throwP=(t%4)/4;return `<rect width="${W}" height="${H}" fill="url(#skyDay)"/>${sun(1700,150,55,t)}${driftClouds(t,[[200,140,0.8,1]])}
+${[0,1,2,3,4].map(i=>{const x=60+i*380,c=['#ffd27a','#9be3d0','#ffb3c7','#b7a7ff','#7fc4ff'][i];return `<g stroke="${OL}" stroke-width="5"><rect x="${x}" y="420" width="320" height="340" fill="${c}"/><path d="M${x-20},430 L${x+160},330 L${x+340},430Z" fill="#6b4e3d"/><rect x="${x+30}" y="480" width="100" height="90" rx="8" fill="#fff6c9"/><rect x="${x+190}" y="600" width="90" height="160" fill="#8a5a3e"/>
+<path d="M${x+30},700 h110" stroke="#7ed957" stroke-width="22" stroke-linecap="round"/>${blossom(x+60,690,14)}${blossom(x+110,690,14)}</g>`}).join('')}
+<rect x="0" y="760" width="${W}" height="${H-760}" fill="#e4e8ef"/><rect x="0" y="760" width="${W}" height="20" fill="#c4cad6"/>
+${[['#4fb3f6','♻'],['#7ed957','🍃'],['#ffd34d','🥫']].map(([c,e],i)=>`<g transform="translate(${1250+i*130},880)" stroke="${OL}" stroke-width="5"><rect x="-50" y="-110" width="100" height="120" rx="12" fill="${c}"/><rect x="-58" y="-125" width="116" height="24" rx="8" fill="${c}"/><text x="0" y="-30" font-size="44" text-anchor="middle" stroke="none">${e}</text></g>`).join('')}
+${kid(1050,960,0.9,t,{shirt:'#ff5a5f',walk:false,bag:'#e8352a'})}
+<g transform="translate(${1090+throwP*260},${820-Math.sin(throwP*Math.PI)*180+throwP*10})" stroke="${OL}" stroke-width="4"><rect x="-14" y="-24" width="28" height="44" rx="6" fill="#ff8a65"/></g>
+${kid(((t/L)*(W+300))-150,1000,0.8,t,{shirt:'#4fb3f6',bag:'#ffd34d'})}
+${sparkle(300,850,1.2,t,0)}${sparkle(700,900,1,t,1)}${sparkle(1600,830,1.1,t,2)}${sparkle(900,300,0.9,t,3)}
+${title('Limpia · Ordenada · Tranquila 🤫',W/2,120,OL,52)}`},
+
+robotemplo(t){return `<rect width="${W}" height="${H}" fill="url(#skyDay)"/>${driftClouds(t,[[100,120,0.9,1],[1300,160,0.8,1]])}
+<g transform="translate(470,760)" stroke="${OL}" stroke-width="5" stroke-linejoin="round">
+${[0,1,2,3].map(i=>`<rect x="${-110+i*15}" y="${-120-i*120}" width="${220-i*30}" height="90" fill="#d9362b"/><path d="M${-200+i*25},${-120-i*120} Q0,${-170-i*120} ${200-i*25},${-120-i*120} L${160-i*25},${-160-i*120} Q0,${-195-i*120} ${-160+i*25},${-160-i*120}Z" fill="#4b5a78"/>`).join('')}
+<line x1="0" y1="-640" x2="0" y2="-720" stroke-width="8"/><rect x="-40" y="-90" width="80" height="90" fill="#8a2a20"/></g>
+${lantern(260,600,0.7,t,'寺')}
+<g stroke="${OL}" stroke-width="5"><rect x="1150" y="300" width="560" height="460" fill="#3c3f8f"/><rect x="1190" y="340" width="480" height="230" rx="16" fill="#3fe0ff" opacity="${0.7+0.3*S(t,4)}"/>
+<text x="1430" y="490" font-family="Fredoka" font-weight="700" font-size="110" text-anchor="middle" fill="#fff" stroke="none">🤖 2050</text></g>
+<rect x="0" y="760" width="${W}" height="${H-760}" fill="#c4cad6"/>
+<g transform="translate(1450,${960+S(t,4)*6})" stroke="${OL}" stroke-width="6"><rect x="-60" y="-120" width="120" height="120" rx="20" fill="#cfd8e3"/><rect x="-80" y="-270" width="160" height="140" rx="30" fill="#e6edf5"/><rect x="-55" y="-240" width="110" height="60" rx="20" fill="#2b3a67"/><circle cx="-25" cy="-210" r="12" fill="#3fe0ff"/><circle cx="25" cy="-210" r="12" fill="#3fe0ff"/>
+<g transform="rotate(${-30+S(t,4)*30} 70 -110)"><rect x="60" y="-120" width="80" height="26" rx="13" fill="#cfd8e3"/></g><path d="M-30,0 v30 M30,0 v30" stroke-width="16"/></g>
+${kid(((t/L)*(W+300))-150,1000,0.85,t,{shirt:'#e8352a',bun:true,hair:'#2b2020'})}
+${kid(W-((t/L)*(W+300))+150,1020,0.8,t,{shirt:'#7ed957',dir:-1,hat:'#ffd34d'})}
+${title('Pasado + Futuro',W/2,120)}`},
+
+tres(t){const pan=(i,label,sub,col,body)=>`<g transform="translate(${80+i*600},200)"><rect x="0" y="0" width="560" height="620" rx="36" fill="${col}" stroke="${OL}" stroke-width="7"/>
+<clipPath id="cp${i}"><rect x="0" y="0" width="560" height="620" rx="36"/></clipPath><g clip-path="url(#cp${i})">${body}</g>
+<rect x="60" y="-50" width="440" height="96" rx="26" fill="#fff" stroke="${OL}" stroke-width="6"/><text x="280" y="16" font-family="Fredoka" font-weight="700" font-size="54" text-anchor="middle" fill="${OL}">${label}</text>
+<rect x="110" y="560" width="340" height="90" rx="26" fill="#ffcc2e" stroke="${OL}" stroke-width="6"/><text x="280" y="622" font-family="Fredoka" font-weight="700" font-size="52" text-anchor="middle" fill="${OL}">${sub}</text></g>`;
+return `<rect width="${W}" height="${H}" fill="#fff8e7"/><rect width="${W}" height="${H}" fill="url(#dots)"/>
+${pan(0,'Shibuya','Presente','#2a2462',`${[...Array(6)].map((_,i)=>`<rect x="${30+i*90}" y="430" width="50" height="160" fill="#fff" opacity=".85" transform="skewX(-15)"/>`).join('')}${neon(120,140,'#ff4fa3','渋谷',t,0)}${[0,1,2,3].map(i=>kid((i*160+t/L*560)%600-20,560,0.6,t,{shirt:KC[i][0],ph:i})).join('')}`)}
+${pan(1,'Asakusa','Pasado','#ffd3a5',`${templeGate(280,560,0.62,t)}`)}
+${pan(2,'Akihabara','Futuro','#3b2d78',`${neon(60,120,'#3fe0ff','GAME',t,1)}<g transform="translate(380,${560+S(t,4)*8})" stroke="${OL}" stroke-width="5"><rect x="-50" y="-100" width="100" height="100" rx="16" fill="#cfd8e3"/><rect x="-65" y="-220" width="130" height="115" rx="24" fill="#e6edf5"/><rect x="-45" y="-195" width="90" height="50" rx="16" fill="#2b3a67"/><circle cx="-20" cy="-170" r="10" fill="#3fe0ff"/><circle cx="20" cy="-170" r="10" fill="#3fe0ff"/></g>
+<g transform="translate(150,${470+S(t,2)*10})" stroke="${OL}" stroke-width="5"><rect x="-100" y="-50" width="200" height="100" rx="50" fill="#fff"/><path d="M-60,-15 v30 M-75,0 h30" stroke-width="10" stroke-linecap="round"/><circle cx="50" cy="-10" r="12" fill="#ff4fa3"/></g>`)}`},
+
+onigiri(t){const b=S(t,2)*10;return `<rect width="${W}" height="${H}" fill="#e8f6ff"/><rect width="${W}" height="${H}" fill="url(#dots)"/>
+<rect x="0" y="780" width="${W}" height="${H-780}" fill="#c98b5b"/>
+${[[560,1],[960,1.35],[1360,1]].map(([x,s],i)=>`<g transform="translate(${x},${780+(i==1?b:-b)}) scale(${s})" stroke="${OL}" stroke-width="6" stroke-linejoin="round"><path d="M0,-280 Q30,-280 170,-30 Q180,0 150,0 L-150,0 Q-180,0 -170,-30 Q-30,-280 0,-280Z" fill="#fff"/>
+<rect x="-90" y="-110" width="180" height="110" fill="#2e3b2e"/><circle cx="-40" cy="-165" r="10" fill="${OL}" stroke="none"/><circle cx="40" cy="-165" r="10" fill="${OL}" stroke="none"/><path d="M-16,-140 Q0,-126 16,-140" fill="none"/>
+<circle cx="-66" cy="-145" r="13" fill="#ff8fa3" stroke="none" opacity=".7"/><circle cx="66" cy="-145" r="13" fill="#ff8fa3" stroke="none" opacity=".7"/>${i==1?'<circle cx="0" cy="-60" r="20" fill="#ff8a65" stroke-width="4"/>':''}</g>`).join('')}
+${kid(250,1000,0.9,t,{shirt:'#ffd34d',walk:false,bag:'#e8352a'})}
+${sparkle(1700,300,1.2,t)}${sparkle(300,300,1,t,2)}${title('Onigiri おにぎり',W/2,140,'#e8352a')}`},
+
+dango(t){return `<rect width="${W}" height="${H}" fill="#fff0f5"/>${fallingPetals(t,20,71)}
+${lantern(220,280,0.9,t,'祭')}${lantern(1700,280,0.9,t+3,'祭')}
+<rect x="0" y="800" width="${W}" height="${H-800}" fill="#c98b5b"/>
+${[0,1,2].map(i=>`<g transform="translate(${660+i*300},${820+S(t,2,i)*14}) rotate(${-12+i*12})" stroke="${OL}" stroke-width="6"><line x1="0" y1="80" x2="0" y2="-520" stroke="#d9a066" stroke-width="16" stroke-linecap="round"/>
+<circle cx="0" cy="-440" r="70" fill="#ffb7d0"/><circle cx="0" cy="-300" r="70" fill="#fff"/><circle cx="0" cy="-160" r="70" fill="#9ee08a"/>
+<circle cx="-20" cy="-305" r="7" fill="${OL}" stroke="none"/><circle cx="20" cy="-305" r="7" fill="${OL}" stroke="none"/><path d="M-10,-285 Q0,-277 10,-285" fill="none" stroke-width="4"/></g>`).join('')}
+${title('Dango 団子',W/2,130,'#e8352a')}`},
+
+bento(t){return `<rect width="${W}" height="${H}" fill="#fff3d6"/><rect width="${W}" height="${H}" fill="url(#dots)"/>
+<rect x="0" y="820" width="${W}" height="${H-820}" fill="#c98b5b"/>
+<g transform="translate(${W/2},${820+S(t,2)*6}) scale(1.6)" stroke="${OL}" stroke-width="5" stroke-linejoin="round"><rect x="-260" y="-280" width="520" height="280" rx="22" fill="#e8352a"/><rect x="-235" y="-255" width="470" height="230" rx="12" fill="#2b2020"/>
+<rect x="-225" y="-245" width="220" height="210" rx="10" fill="#fff"/>${[0,1,2,3,4,5].map(i=>`<circle cx="${-190+(i%3)*70}" cy="${-200+Math.floor(i/3)*110}" r="9" fill="#f0f0f0" stroke-width="2"/>`).join('')}
+<circle cx="-115" cy="-140" r="48" fill="#ffd34d"/><circle cx="-130" cy="-150" r="8" fill="${OL}" stroke="none"/><circle cx="-100" cy="-150" r="8" fill="${OL}" stroke="none"/><path d="M-128,-125 Q-115,-112 -102,-125" fill="none" stroke-width="4"/><path d="M-160,-185 l-14,-26 l26,10Z M-70,-185 l14,-26 l-26,10Z" fill="#ffd34d"/>
+<rect x="5" y="-245" width="220" height="100" rx="10" fill="#9ee08a"/><ellipse cx="60" cy="-195" rx="40" ry="30" fill="#e98b6b"/><ellipse cx="160" cy="-195" rx="40" ry="30" fill="#ff8a65"/>
+<rect x="5" y="-135" width="220" height="100" rx="10" fill="#ffe08a"/><circle cx="70" cy="-85" r="30" fill="#fff"/><circle cx="70" cy="-85" r="14" fill="#ffb02e" stroke="none"/><path d="M130,-110 l60,0 l-10,45 l-40,0Z" fill="#7ed957"/></g>
+${sparkle(300,400,1.3,t)}${sparkle(1620,420,1.1,t,2)}${title('Bento 弁当',W/2,130,'#e8352a')}`},
+
+aula(t){const sw=S(t,4)*18;return `<rect width="${W}" height="${H}" fill="#fff6e0"/>
+<rect x="0" y="0" width="${W}" height="80" fill="#e9d8b8"/><rect x="0" y="760" width="${W}" height="${H-760}" fill="#d9a066"/>
+${[...Array(12)].map((_,i)=>`<line x1="${i*170}" y1="760" x2="${i*170-80}" y2="${H}" stroke="#c98b5b" stroke-width="5"/>`).join('')}
+<rect x="560" y="140" width="800" height="380" rx="14" fill="#2e5e4e" stroke="#8a5a3e" stroke-width="18"/>
+<text x="960" y="300" font-family="Fredoka" font-weight="700" font-size="80" text-anchor="middle" fill="#fff">¡Limpiamos juntos!</text><text x="960" y="420" font-family="IPAGothic" font-size="70" text-anchor="middle" fill="#ffe14f">そうじ</text>
+<g stroke="${OL}" stroke-width="5">${[0,1,2,3,4].map(i=>`<rect x="${80+i*70}" y="${480}" width="60" height="70" fill="#fff"/><rect x="${80+i*70}" y="${560}" width="60" height="70" fill="#fff"/><rect x="${92+i*70}" y="525" width="36" height="16" rx="6" fill="${KC[i][0]}"/>`).join('')}</g>
+<text x="250" y="460" font-family="Fredoka" font-weight="700" font-size="36" text-anchor="middle" fill="${OL}">👟 Zapatos</text>
+${[0,1,2].map(i=>`<g transform="translate(${700+i*420},880)"><g transform="rotate(${(i%2?-sw:sw)} 0 -100)"><line x1="40" y1="-160" x2="${60}" y2="20" stroke="#8a5a3e" stroke-width="12" stroke-linecap="round"/><path d="M30,10 l70,0 l-10,40 l-60,0Z" fill="#ffd34d" stroke="${OL}" stroke-width="4"/></g>${kid(0,40,0.95,t,{shirt:'#fff',pants:'#2b3a67',walk:false,ph:i,hair:KC[i][1],bun:i==1})}</g>`).join('')}
+${[0,1,2].map(i=>`<circle cx="${780+i*420+((t*30+i*20)%60)}" cy="${930-((t*20+i*10)%40)}" r="8" fill="#e9d8b8" opacity=".7"/>`).join('')}`},
+
+reverencia(t){const bow=Math.max(0,S(t,2))*28,bow2=Math.max(0,S(t,2,Math.PI))*28;
+const person=(x,dir,c,ang,hair)=>`<g transform="translate(${x},900) scale(${dir},1)" stroke="${OL}" stroke-width="6" stroke-linejoin="round"><path d="M-20,-120 L-20,0 M20,-120 L20,0" stroke="#2b3a67" stroke-width="22" stroke-linecap="round"/>
+<g transform="rotate(${ang} 0 -120)"><path d="M-50,-320 Q0,-340 50,-320 L60,-120 L-60,-120Z" fill="${c}"/><circle cx="0" cy="-385" r="62" fill="#ffd9b8"/><path d="M-64,-390 Q-60,-460 0,-455 Q60,-460 64,-390 Q40,-420 0,-418 Q-40,-420 -64,-390Z" fill="${hair}"/>
+<path d="M-24,-385 q8,6 16,0 M12,-385 q8,6 16,0" fill="none" stroke-width="5"/><path d="M-12,-358 Q0,-348 12,-358" fill="none" stroke-width="5"/><path d="M-50,-300 L-40,-150 M50,-300 L40,-150" stroke="#ffd9b8" stroke-width="18" stroke-linecap="round"/></g></g>`;
+return `<rect width="${W}" height="${H}" fill="url(#skyDay)"/>${driftClouds(t,[[200,150,0.9,1],[1300,120,0.8,1]])}${sakuraTree(200,820,1,81,t)}${sakuraTree(1720,820,1,82,t)}
+<rect x="0" y="820" width="${W}" height="${H-820}" fill="#e9d8b8"/>
+${person(720,1,'#4f7fe0',bow,'#2b2020')}${person(1200,-1,'#ff5a5f',bow2,'#3a2a2a')}
+<g transform="translate(700,330)"><rect x="-200" y="-60" width="400" height="100" rx="30" fill="#fff" stroke="${OL}" stroke-width="5"/><text x="0" y="12" font-family="Fredoka" font-weight="700" font-size="54" text-anchor="middle" fill="${OL}">Konnichiwa</text></g>
+${title('Saludo con reverencia 🙇',W/2,120,OL,52)}${fallingPetals(t,14,83)}`},
+
+matsuri(t){return `<rect width="${W}" height="${H}" fill="url(#skyNight)"/>${stars(t)}
+<path d="M0,180 Q480,260 960,180 Q1440,260 1920,180" stroke="#222" stroke-width="5" fill="none"/>
+${[...Array(9)].map((_,i)=>lantern(80+i*220,220+Math.sin(i/8*Math.PI)*60,0.55,t+i,'祭')).join('')}
+${[0,1,2].map(i=>`<g transform="translate(${120+i*620},520)" stroke="${OL}" stroke-width="5"><rect x="0" y="0" width="460" height="300" fill="#c98b5b"/><path d="M-20,0 h500 l-30,-80 h-440Z" fill="${['#e8352a','#4f7fe0','#e8352a'][i]}"/>
+${[0,1,2,3,4].map(k=>`<path d="M${k*92},0 h92 v50 q-46,20 -92,0Z" fill="${k%2?'#fff':['#e8352a','#4f7fe0','#e8352a'][i]}"/>`).join('')}<text x="230" y="170" font-family="IPAGothic" font-size="70" text-anchor="middle" fill="#fff" stroke="none">${['たこ焼き','金魚','お面'][i]}</text></g>`).join('')}
+<rect x="0" y="820" width="${W}" height="${H-820}" fill="#5a4a6a"/>
+<g transform="translate(${W/2},900)" stroke="${OL}" stroke-width="6"><ellipse cx="0" cy="-80" rx="110" ry="40" fill="#f5e6c8"/><rect x="-110" y="-80" width="220" height="130" fill="#b5442c"/><ellipse cx="0" cy="50" rx="110" ry="30" fill="#8a3020"/>
+<g transform="rotate(${S(t,8)*25} -150 -160)"><line x1="-150" y1="-160" x2="-40" y2="-90" stroke="#d9a066" stroke-width="14" stroke-linecap="round"/></g><g transform="rotate(${-S(t,8)*25} 150 -160)"><line x1="150" y1="-160" x2="40" y2="-90" stroke="#d9a066" stroke-width="14" stroke-linecap="round"/></g></g>
+${[0,1,2,3].map(i=>kid(300+i*140+(i>1?900:0),1020,0.75,t,{shirt:['#ff9be0','#4fb3f6','#ffd34d','#7ed957'][i],walk:false,ph:i*1.5,bun:i%2==0})).join('')}
+${title('Matsuri 祭り',W/2,90,'#e8352a')}`},
+
+escritura(t){const c=[['ひらがな','あ','Hiragana','#ffb7d0'],['カタカナ','ア','Katakana','#9fd3ff'],['漢字','山','Kanji','#c9f2a8']];
+return `<rect width="${W}" height="${H}" fill="#fff8e7"/><rect width="${W}" height="${H}" fill="url(#dots)"/>
+${c.map(([jp,ch,ro,col],i)=>{const x=340+i*620,y=470+S(t,1,i*2)*12;const p=Math.min(1,((t+i*1.2)%L)/3);return `<g transform="translate(${x},${y})" stroke="${OL}" stroke-width="6"><rect x="-250" y="-280" width="500" height="520" rx="36" fill="${col}"/><rect x="-200" y="-240" width="400" height="300" rx="20" fill="#fff"/>
+<text x="0" y="0" font-family="IPAGothic" font-size="240" text-anchor="middle" fill="${OL}" stroke="none" opacity="${p}">${ch}</text>
+<text x="0" y="135" font-family="Fredoka" font-weight="700" font-size="70" text-anchor="middle" fill="${OL}" stroke="none">${ro}</text>
+<text x="0" y="205" font-family="IPAGothic" font-size="48" text-anchor="middle" fill="#e8352a" stroke="none">${jp}</text></g>`}).join('')}
+${title('3 formas de escribir ✍️',W/2,110)}`},
+
+hanami(t){return `<rect width="${W}" height="${H}" fill="url(#skyDay)"/>${sun(260,170,60,t)}${driftClouds(t,[[600,140,0.9,1],[1400,200,1,1]])}
+${hills(700,'#b6ec9f',35,1.5,0.3)}${sakuraTree(380,830,1.5,90,t)}${sakuraTree(1560,840,1.6,91,t)}${sakuraTree(980,780,1.0,92,t)}
+<rect x="0" y="830" width="${W}" height="${H-830}" fill="#7ccf6b"/>
+<g transform="translate(900,960)"><path d="M-330,-60 L330,-60 L380,60 L-380,60Z" fill="#5ab2ff" stroke="${OL}" stroke-width="5"/>${[0,1,2,3].map(i=>`<path d="M${-330+i*180},-60 h90 l25,120 h-90Z" fill="#fff" opacity=".6"/>`).join('')}</g>
+${kid(700,960,0.9,t,{shirt:'#ff5a5f',walk:false,ph:0,bun:true})}${kid(900,950,1.05,t,{shirt:'#4f7fe0',walk:false,ph:2})}${kid(1100,960,0.85,t,{shirt:'#ffd34d',walk:false,ph:4,hat:'#ff9be0'})}
+<g transform="translate(1000,900)" stroke="${OL}" stroke-width="4"><rect x="0" y="0" width="90" height="50" rx="8" fill="#e8352a"/><circle cx="25" cy="-6" r="14" fill="#fff"/><circle cx="60" cy="-6" r="14" fill="#fff"/></g>
+${fallingPetals(t,45,93)}${title('Hanami 花見',W/2,120,'#e8352a')}`},
+});
+
+window.renderChar=(pose,m,b)=>{const c=document.getElementById('c');c.setAttribute('width',440);c.setAttribute('height',600);c.setAttribute('viewBox','0 0 440 600');c.innerHTML=`<g transform="translate(0,40)">${vinelis(pose,m,b)}</g>`};
+window.renderScene=(name,t)=>{document.getElementById('c').innerHTML=defs+scenes[name](t)};
+window.renderMascot=(m,b)=>{const c=document.getElementById('c');c.setAttribute('width',340);c.setAttribute('height',340);c.setAttribute('viewBox','0 0 340 340');document.body.style.width='340px';c.innerHTML=mascot(m,b)};
+window.sceneNames=Object.keys(scenes);
+</script></body></html>

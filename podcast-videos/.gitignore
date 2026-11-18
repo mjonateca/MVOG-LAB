@@ -1,0 +1,6 @@
+# generados al montar (se recrean con tools/build.sh)
+episodios/*/loops/
+episodios/*/char/
+episodios/*/*.mp3
+episodios/*/*.mp4
+episodios/*/transcript.json

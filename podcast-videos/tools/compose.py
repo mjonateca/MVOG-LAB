@@ -1,0 +1,221 @@
+"""Compose the cartoon podcast video.
+usage: python3 compose.py config.json [--preview START DUR]
+config: {audio, transcript, workdir, out, chip, schedule:[[t, scene],...]}
+"""
+import sys, json, os, subprocess, math, re
+import numpy as np, cv2
+from PIL import Image, ImageDraw, ImageFont
+
+FPS = 30; LOOPN = 240; W, H = 1920, 1080
+TOOLS = os.path.dirname(os.path.abspath(__file__))
+cfg = json.load(open(sys.argv[1]))
+wd = cfg['workdir']
+start, dur = 0.0, None
+if '--preview' in sys.argv:
+    i = sys.argv.index('--preview'); start = float(sys.argv[i+1]); dur = float(sys.argv[i+2])
+
+# ---------- audio envelope ----------
+pcm = subprocess.run(['ffmpeg', '-v', 'error', '-i', cfg['audio'], '-ac', '1', '-ar', '24000', '-f', 's16le', '-'], capture_output=True).stdout
+a = np.frombuffer(pcm, np.int16).astype(np.float32) / 32768
+total = len(a) / 24000
+spf = 24000 // FPS
+nfr = len(a) // spf
+rms = np.sqrt((a[:nfr*spf].reshape(nfr, spf) ** 2).mean(1))
+ref = np.percentile(rms[rms > 1e-4], 90)
+lvl = rms / (ref + 1e-9)
+
+# speech mask from transcript words (mouth only moves while words are spoken)
+tr = json.load(open(cfg['transcript']))
+words = [w for s in tr for w in s['words']]
+speak = np.zeros(nfr, bool)
+for w in words:
+    speak[int(w['s']*FPS):int(w['e']*FPS)+1] = True
+mouth = np.where(~speak[:nfr], 0, np.where(lvl > 0.55, 2, np.where(lvl > 0.2, 1, 0)))
+
+# ---------- subtitles ----------
+def build_cues(words, maxc=58):
+    cues, cur = [], []
+    def flush():
+        if cur:
+            cues.append((cur[0]['s'], cur[-1]['e'], ''.join(x['w'] for x in cur).strip()))
+            cur.clear()
+    for w in words:
+        txt = ''.join(x['w'] for x in cur) + w['w']
+        if cur and (len(txt.strip()) > maxc or w['s'] - cur[-1]['e'] > 0.7):
+            flush()
+        cur.append(w)
+        if re.search(r'[.!?…]$', w['w'].strip()) and len(''.join(x['w'] for x in cur)) > 18:
+            flush()
+    flush()
+    # keep on screen until next cue (max +0.8s)
+    out = []
+    for i, (s, e, t) in enumerate(cues):
+        nxt = cues[i+1][0] if i+1 < len(cues) else e + 1
+        out.append((s, min(max(e + 0.3, s + 1.0), nxt, e + 0.8), t))
+    return out
+cues = build_cues(words)
+font = ImageFont.truetype(os.path.join(TOOLS, 'fredoka-600.ttf'), 50)
+font_chip = ImageFont.truetype(os.path.join(TOOLS, 'fredoka-600.ttf'), 34)
+NAVY = (43, 58, 103)
+
+def wrap(text, maxw):
+    ws = text.split()
+    if font.getlength(text) <= maxw: return [text]
+    best = None
+    for i in range(1, len(ws)):
+        a, b = ' '.join(ws[:i]), ' '.join(ws[i:])
+        m = max(font.getlength(a), font.getlength(b))
+        if best is None or m < best[0]: best = (m, [a, b])
+    return best[1]
+
+def render_sub(text):
+    lines = wrap(text, 1240)
+    lh = 64; tw = int(max(font.getlength(l) for l in lines)); bw, bh = tw + 80, lh*len(lines) + 40
+    im = Image.new('RGBA', (bw + 12, bh + 12), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+    d.rounded_rectangle((6, 10, bw + 6, bh + 10), 30, fill=(0, 0, 0, 50))
+    d.rounded_rectangle((0, 0, bw, bh), 30, fill=(255, 255, 255, 240), outline=NAVY, width=5)
+    for i, l in enumerate(lines):
+        d.text((bw/2, 20 + i*lh + lh/2), l, font=font, fill=NAVY, anchor='mm')
+    return np.array(im)
+
+def render_chip(text):
+    tw = int(font_chip.getlength(text)); im = Image.new('RGBA', (tw + 60, 70), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+    d.rounded_rectangle((0, 0, tw + 56, 64), 32, fill=(255, 255, 255, 235), outline=NAVY, width=4)
+    d.text((28 + tw/2, 32), text, font=font_chip, fill=NAVY, anchor='mm')
+    return np.array(im)
+chip = render_chip(cfg['chip'])
+
+def blend(dst, src, x, y):
+    h, w = src.shape[:2]
+    x0, y0 = max(x, 0), max(y, 0); x1, y1 = min(x + w, W), min(y + h, H)
+    if x1 <= x0 or y1 <= y0: return
+    s = src[y0-y:y1-y, x0-x:x1-x]
+    al = s[..., 3:4].astype(np.uint16)
+    reg = dst[y0:y1, x0:x1].astype(np.uint16)
+    dst[y0:y1, x0:x1] = ((s[..., :3].astype(np.uint16) * al + reg * (255 - al)) // 255).astype(np.uint8)
+
+# ---------- scenes ----------
+sched = sorted(cfg['schedule'])
+def scene_at(t):
+    cur = sched[0]
+    for s in sched:
+        if s[0] <= t: cur = s
+    return cur
+_cache = {}
+def loop_frame(scene, i):
+    key = (scene, i % LOOPN)
+    if key not in _cache:
+        if len(_cache) > 600: _cache.clear()
+        _cache[key] = cv2.cvtColor(cv2.imread(os.path.join(wd, 'loops', scene, f'{i % LOOPN}.jpg')), cv2.COLOR_BGR2RGB)
+    return _cache[key]
+POSES = ['rest', 'open', 'mid', 'talkA', 'talkB', 'point', 'wave1', 'wave2']
+CS = 1.0
+chars = {}
+for po in POSES:
+    for m in (0, 1, 2):
+        for b in (0, 1):
+            im = Image.open(os.path.join(wd, 'char', f'{po}_m{m}_b{b}.png')).convert('RGBA')
+            chars[(po, m, b)] = np.array(im.resize((int(im.width*CS), int(im.height*CS)), Image.LANCZOS))
+# pose per transcript segment
+seg_pose = []
+CYCLE = ['talkA', 'rest', 'point', 'mid', 'talkB', 'rest']
+for i, sg in enumerate(tr):
+    txt = sg['text']
+    edge = sg['start'] < 25 or sg['start'] > total - 30
+    if re.search(r'\b(Hola|hola|Gracias|Sayonara|Nos escuchamos|bienvenid)', txt): p_ = 'wave'
+    elif edge and ('¡' in txt or '!' in txt): p_ = 'open'
+    elif '¿' in txt or '!' in txt or 'wow' in txt.lower(): p_ = 'mid'
+    else: p_ = None
+    seg_pose.append((sg['start'], sg['end'] + 0.4, p_, i))
+def pose_at(t, f):
+    for s0, s1, p_, i in seg_pose:
+        if s0 - 0.2 <= t <= s1:
+            if p_ == 'wave': return 'wave1' if (f // 8) % 2 == 0 else 'wave2'
+            if p_: return p_
+            return CYCLE[(i * 2 + int((t - s0) / 2.6)) % len(CYCLE)]
+    return 'rest'
+
+# ---------- stage: where Vinelis stands (keyframes) ----------
+stage = cfg.get('stage', {})
+DEFAULT = [[200, 0.86]]
+kf = []  # (t, cx, scale)
+total_end = total
+for i, (st_, sc_) in enumerate(sched):
+    en_ = sched[i+1][0] if i+1 < len(sched) else total_end
+    places = stage.get(sc_, DEFAULT)
+    n = max(1, min(len(places), int((en_ - st_) // 18) + 1))
+    for k in range(n):
+        kf.append((st_ + k * (en_ - st_) / n, places[k % len(places)][0], places[k % len(places)][1]))
+MOVE = 1.0
+def ease(x): return 0.5 - 0.5 * math.cos(math.pi * max(0, min(1, x)))
+def place_at(t):
+    prev = kf[0]; cur = kf[0]
+    for i, k in enumerate(kf):
+        if k[0] <= t: cur = k; prev = kf[i-1] if i > 0 else k
+    k_ = (t - cur[0]) / MOVE
+    if k_ >= 1 or prev is cur: return cur[1], cur[2], 0.0
+    e = ease(k_)
+    return prev[1] + (cur[1] - prev[1]) * e, prev[2] + (cur[2] - prev[2]) * e, math.sin(math.pi * k_)
+
+XF = 0.6  # crossfade seconds
+f0 = int(start * FPS); f1 = nfr if dur is None else min(nfr, int((start + dur) * FPS))
+out = cfg['out'] if dur is None else cfg['out'].replace('.mp4', '_preview.mp4')
+ff = subprocess.Popen(['ffmpeg', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-',
+                       '-ss', str(start), '-i', cfg['audio'], '-map', '0:v', '-map', '1:a', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '21',
+                       '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '160k', '-shortest', '-movflags', '+faststart', out], stdin=subprocess.PIPE)
+sub_cache = {}
+ci = 0
+for f in range(f0, f1):
+    t = f / FPS
+    st, scene = scene_at(t)
+    # zoom: gentle Ken Burns within each segment
+    fr = loop_frame(scene, f).copy()
+    seg_t = t - st
+    z = 1.0 + 0.04 * (0.5 - 0.5 * math.cos(min(seg_t / 30, 1) * math.pi))
+    if z > 1.001:
+        cw, chh = int(W / z), int(H / z); ox, oy = (W - cw)//2, (H - chh)//3
+        fr = cv2.resize(fr[oy:oy+chh, ox:ox+cw], (W, H), interpolation=cv2.INTER_LINEAR)
+    if seg_t < XF and st > 0:
+        prev = [s for s in sched if s[0] < st]
+        if prev:
+            pf = loop_frame(prev[-1][1], f)
+            k = seg_t / XF
+            fr = cv2.addWeighted(fr, k, pf, 1 - k, 0)
+    is_card = scene in ('intro', 'outro')
+    if not is_card:
+        blend(fr, chip, 30, 26)
+    # narrator (moves & scales per scene)
+    blink = 1 if (f % 120) in (0, 1, 2, 3) else 0
+    m = int(mouth[f]) if f < len(mouth) else 0
+    cx, sc, hop = place_at(t)
+    sc *= cfg.get('char_scale', 1.0)
+    cx += 18 * math.sin(t * 0.5)
+    sc *= 1 + 0.07 * hop
+    spr = chars[(pose_at(t, f), m, blink)]
+    if cx > W * 0.55: spr = spr[:, ::-1]
+    sw_, sh_ = int(spr.shape[1] * sc), int(spr.shape[0] * sc)
+    spr = cv2.resize(spr, (sw_, sh_), interpolation=cv2.INTER_AREA if sc < 1 else cv2.INTER_LINEAR)
+    bob = 5 * math.sin(t * 2.2) - 60 * hop
+    blend(fr, spr, int(cx - sw_ / 2), int(H - sh_ - 12 + bob))
+    # subtitle (opposite side of Vinelis)
+    while ci < len(cues) and cues[ci][1] < t: ci += 1
+    if ci > 0 and cues[ci-1][1] >= t: ci -= 1
+    if ci < len(cues) and cues[ci][0] <= t <= cues[ci][1]:
+        txt = cues[ci][2]
+        if txt not in sub_cache:
+            if len(sub_cache) > 50: sub_cache.clear()
+            sub_cache[txt] = render_sub(txt)
+        sb = sub_cache[txt]
+        half = sw_ / 2
+        if cx < W * 0.4: sx = max((W - sb.shape[1]) // 2, int(cx + half * 0.55))
+        elif cx > W * 0.6: sx = min((W - sb.shape[1]) // 2, int(cx - half * 0.55) - sb.shape[1])
+        else: sx = (W - sb.shape[1]) // 2
+        sx = max(20, min(W - sb.shape[1] - 20, sx))
+        blend(fr, sb, sx, H - sb.shape[0] - 40)
+    # progress bar
+    p = t / total
+    fr[H-10:H, :int(W*p)] = (255, 204, 46)
+    ff.stdin.write(fr.tobytes())
+    if f % (FPS*30) == 0: print(f'{t/60:.1f} min', flush=True)
+ff.stdin.close(); ff.wait()
+print('OK', out)
