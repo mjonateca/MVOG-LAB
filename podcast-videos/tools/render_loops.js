@@ -9,8 +9,4 @@ for(const n of names){const d=path.join(out,'loops',n);fs.mkdirSync(d,{recursive
  for(let i=0;i<FPS*L;i++){await p.evaluate(([n,t])=>window.renderScene(n,t),[n,i/FPS]);
   await p.screenshot({path:path.join(d,`${i}.jpg`),type:'jpeg',quality:93});}
  console.log('scene',n);}
-const md=path.join(out,'char');fs.mkdirSync(md,{recursive:true});
-await p.setViewportSize({width:440,height:600});
-for(const pose of ['rest','open','point','wave1','wave2'])for(const m of [0,1,2])for(const bl of [0,1]){await p.evaluate(([a,m,bl])=>window.renderChar(a,m,!!bl),[pose,m,bl]);
- await p.screenshot({path:path.join(md,`${pose}_m${m}_b${bl}.png`),omitBackground:true});}
 await b.close();})();

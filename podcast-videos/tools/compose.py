@@ -95,7 +95,7 @@ def blend(dst, src, x, y):
     dst[y0:y1, x0:x1] = ((s[..., :3].astype(np.uint16) * al + reg * (255 - al)) // 255).astype(np.uint8)
 
 # ---------- scenes ----------
-sched = sorted(cfg['schedule'])
+sched = sorted(cfg['schedule'], key=lambda e: e[0])
 def scene_at(t):
     cur = sched[0]
     for s in sched:
@@ -138,14 +138,23 @@ def pose_at(t, f):
 # ---------- stage: where Vinelis stands (keyframes) ----------
 stage = cfg.get('stage', {})
 DEFAULT = [[200, 0.86]]
-kf = []  # (t, cx, scale)
+kf = []  # (t, cx, scale, yoff)
 total_end = total
-for i, (st_, sc_) in enumerate(sched):
+for i, ent in enumerate(sched):
+    st_, sc_ = ent[0], ent[1]
     en_ = sched[i+1][0] if i+1 < len(sched) else total_end
-    places = stage.get(sc_, DEFAULT)
+    places = ent[2] if len(ent) > 2 else stage.get(sc_, DEFAULT)
     n = max(1, min(len(places), int((en_ - st_) // 18) + 1))
     for k in range(n):
-        kf.append((st_ + k * (en_ - st_) / n, places[k % len(places)][0], places[k % len(places)][1]))
+        pl = places[k % len(places)]
+        kf.append((st_ + k * (en_ - st_) / n, pl[0], pl[1], pl[2] if len(pl) > 2 else 0))
+HIDE = cfg.get('hide', [])   # [[t0, t1], ...] Vinelis sale de escena
+def visible(t, ramp=0.45):
+    v = 1.0
+    for a, b in HIDE:
+        if a - ramp < t < b + ramp:
+            v = min(v, max(0.0, min(1.0, (a - t) / ramp, (t - b) / ramp)) if not (a <= t <= b) else 0.0)
+    return v
 MOVE = 1.0
 def ease(x): return 0.5 - 0.5 * math.cos(math.pi * max(0, min(1, x)))
 def place_at(t):
@@ -153,9 +162,10 @@ def place_at(t):
     for i, k in enumerate(kf):
         if k[0] <= t: cur = k; prev = kf[i-1] if i > 0 else k
     k_ = (t - cur[0]) / MOVE
-    if k_ >= 1 or prev is cur: return cur[1], cur[2], 0.0
+    if k_ >= 1 or prev is cur: return cur[1], cur[2], 0.0, cur[3]
     e = ease(k_)
-    return prev[1] + (cur[1] - prev[1]) * e, prev[2] + (cur[2] - prev[2]) * e, math.sin(math.pi * k_)
+    return (prev[1] + (cur[1] - prev[1]) * e, prev[2] + (cur[2] - prev[2]) * e, math.sin(math.pi * k_),
+            prev[3] + (cur[3] - prev[3]) * e)
 
 XF = 0.6  # crossfade seconds
 f0 = int(start * FPS); f1 = nfr if dur is None else min(nfr, int((start + dur) * FPS))
@@ -167,7 +177,7 @@ sub_cache = {}
 ci = 0
 for f in range(f0, f1):
     t = f / FPS
-    st, scene = scene_at(t)
+    st, scene = scene_at(t)[:2]
     # zoom: gentle Ken Burns within each segment
     fr = loop_frame(scene, f).copy()
     seg_t = t - st
@@ -187,16 +197,22 @@ for f in range(f0, f1):
     # narrator (moves & scales per scene)
     blink = 1 if (f % 120) in (0, 1, 2, 3) else 0
     m = int(mouth[f]) if f < len(mouth) else 0
-    cx, sc, hop = place_at(t)
+    cx, sc, hop, yoff = place_at(t)
+    vis = visible(t)
     sc *= cfg.get('char_scale', 1.0)
     cx += 18 * math.sin(t * 0.5)
     sc *= 1 + 0.07 * hop
     spr = chars[(pose_at(t, f), m, blink)]
     if cx > W * 0.55: spr = spr[:, ::-1]
     sw_, sh_ = int(spr.shape[1] * sc), int(spr.shape[0] * sc)
-    spr = cv2.resize(spr, (sw_, sh_), interpolation=cv2.INTER_AREA if sc < 1 else cv2.INTER_LINEAR)
-    bob = 5 * math.sin(t * 2.2) - 60 * hop
-    blend(fr, spr, int(cx - sw_ / 2), int(H - sh_ - 12 + bob))
+    if vis > 0.01:
+        spr = cv2.resize(spr, (sw_, sh_), interpolation=cv2.INTER_AREA if sc < 1 else cv2.INTER_LINEAR)
+        if vis < 0.999:
+            spr = spr.copy(); spr[..., 3] = (spr[..., 3] * vis).astype(np.uint8)
+        bob = 5 * math.sin(t * 2.2) - 60 * hop + (1 - vis) * 80
+        blend(fr, spr, int(cx - sw_ / 2), int(H - sh_ - 12 + bob + yoff))
+    else:
+        sw_ = 0; cx = W / 2
     # subtitle (opposite side of Vinelis)
     while ci < len(cues) and cues[ci][1] < t: ci += 1
     if ci > 0 and cues[ci-1][1] >= t: ci -= 1
