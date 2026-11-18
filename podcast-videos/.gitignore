@@ -4,3 +4,6 @@ episodios/*/char/
 episodios/*/*.mp3
 episodios/*/*.mp4
 episodios/*/transcript.json
+episodios/*/*.log
+episodios/*/*_[0-9]*.jpg
+episodios/*/*grid.jpg
