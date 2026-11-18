@@ -181,6 +181,57 @@ def draw_face(img, mouth, blink):
     img[y0:y1, x0:x1] = cv2.resize(big, (x1 - x0, y1 - y0), interpolation=cv2.INTER_AREA)
     return img
 
+
+# ---------- París: boina, marinera de rayas, pañuelo y falda ----------
+PARIS = dict(navy=(70, 40, 30, 255), white=(245, 245, 248, 255), red=(40, 40, 200, 255), red_d=(30, 30, 150, 255))
+
+def paris_body(img):
+    K = PARIS
+    lay = np.zeros_like(img)
+    skirt = np.array([(402, 752), (556, 752), (592, 958), (362, 958)], np.int32)
+    cv2.fillPoly(lay, [skirt], K['navy'], cv2.LINE_AA)
+    for i in range(1, 6):
+        x = 402 + i * 26; cv2.line(lay, (x, 756), (x - 36 + i * 12, 955), (50, 28, 20, 255), 2, cv2.LINE_AA)
+    shirt = np.array([(415, 628), (450, 612), (478, 640), (506, 612), (541, 628), (556, 700), (560, 760), (398, 760), (400, 700)], np.int32)
+    mask = np.zeros(img.shape[:2], np.uint8); cv2.fillPoly(mask, [shirt], 255)
+    st = np.zeros_like(img); st[..., :] = K['white']
+    for y in range(600, 780, 22): cv2.rectangle(st, (380, y), (580, y + 10), K['navy'], -1)
+    st[..., 3] = mask.astype(np.float32)
+    lay = over(lay, st)
+    cv2.polylines(lay, [shirt], True, (30, 25, 50, 255), 3, cv2.LINE_AA)
+    cv2.polylines(lay, [skirt], True, (30, 25, 50, 255), 3, cv2.LINE_AA)
+    # pañuelo rojo
+    cv2.ellipse(lay, (478, 622), (34, 14), 0, 0, 360, K['red'], -1, cv2.LINE_AA)
+    cv2.fillPoly(lay, [np.array([(470, 628), (500, 628), (512, 676), (486, 668)], np.int32)], K['red_d'], cv2.LINE_AA)
+    return over(img, lay)
+
+def paris_sleeve(img, side, deg):
+    K = PARIS
+    S_ = ARMS[side]['pivot']; Wr = rot_pt(WRIST[side], S_, deg)
+    E = (S_[0] + (Wr[0] - S_[0]) * 0.33, S_[1] + (Wr[1] - S_[1]) * 0.33)
+    dx, dy = E[0] - S_[0], E[1] - S_[1]; L_ = math.hypot(dx, dy); nx, ny = -dy / L_, dx / L_
+    w = 22
+    pts = np.array([(S_[0] + nx * w, S_[1] + ny * w), (E[0] + nx * w * .9, E[1] + ny * w * .9), (E[0] - nx * w * .9, E[1] - ny * w * .9), (S_[0] - nx * w, S_[1] - ny * w)], np.int32)
+    mask = np.zeros(img.shape[:2], np.uint8); cv2.fillPoly(mask, [pts], 255)
+    st = np.zeros_like(img); st[..., :] = K['white']
+    ux, uy = dx / L_, dy / L_
+    for k in range(0, int(L_) + 30, 22):
+        c = (S_[0] + ux * (k - 10), S_[1] + uy * (k - 10))
+        a = (c[0] + nx * 40, c[1] + ny * 40); b = (c[0] - nx * 40, c[1] - ny * 40)
+        cv2.line(st, (int(a[0]), int(a[1])), (int(b[0]), int(b[1])), K['navy'], 10, cv2.LINE_AA)
+    st[..., 3] = mask.astype(np.float32)
+    lay = over(np.zeros_like(img), st)
+    cv2.polylines(lay, [pts], True, (30, 25, 50, 255), 3, cv2.LINE_AA)
+    return over(img, lay)
+
+def paris_beret(img):
+    lay = np.zeros_like(img)
+    cv2.ellipse(lay, (505, 345), (138, 52), -8, 0, 360, PARIS['red'], -1, cv2.LINE_AA)
+    cv2.ellipse(lay, (505, 358), (130, 34), -8, 0, 180, PARIS['red_d'], -1, cv2.LINE_AA)
+    cv2.ellipse(lay, (505, 345), (138, 52), -8, 0, 360, (30, 25, 50, 255), 3, cv2.LINE_AA)
+    cv2.line(lay, (503, 296), (509, 276), (30, 25, 50, 255), 6, cv2.LINE_AA)
+    return over(img, lay)
+
 # crop window (union of poses) and output scale
 CX0, CY0, CX1, CY1 = 60, 230, 900, 1030
 SCALE = 0.72
@@ -190,10 +241,16 @@ for pose, (la, ra) in POSES.items():
         gap = (yy > 966) & (yy < 1000) & (xx > 440) & (xx < 530) & (body[..., :3].min(2) > 170)
         body[..., 3] *= np.where(gap, 0, 1)
         body = kimono_body(body)
+    if OUTFIT == 'paris':
+        gap = (yy > 930) & (yy < 990) & (xx > 360) & (xx < 600) & (((body[..., 2] > body[..., 0] + 25) & (body[..., 1] > 120)) | (body[..., :3].min(2) > 170))
+        body[..., 3] *= np.where(gap, 0, 1)
+        body = paris_body(body)
     body = over(body, rot_layer(arm_layers['L'], ARMS['L']['pivot'], la))
     body = over(body, rot_layer(arm_layers['R'], ARMS['R']['pivot'], ra))
     if OUTFIT == 'kimono':
         body = kimono_sleeve(body, 'L', la); body = kimono_sleeve(body, 'R', ra)
+    if OUTFIT == 'paris':
+        body = paris_sleeve(body, 'L', la); body = paris_sleeve(body, 'R', ra); body = paris_beret(body)
     for m in (0, 1, 2):
         for b in (0, 1):
             img = draw_face(body.copy(), m, b)
