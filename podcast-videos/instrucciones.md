@@ -173,3 +173,9 @@ El código está en el zip **`mi-pequeno-atlas-videos-v5.zip`**, en la carpeta d
 ---
 
 **Resumen en una frase:** el audio del pódcast tal cual, con una ilustración animada y realista que muestra cada cosa que se menciona, con Vinelis (vestida según el destino) presentando, y el vídeo se entrega en Drive para revisión antes de publicarse.
+
+## Personajes invitados (desde el cap. 7, Ottawa)
+- Se detecta quién habla en cada frase por el tono de voz y se anota en `others` del config (`[[t0, t1, "Nombre"], ...]`).
+- Mientras habla el invitado, Vinelis escucha (boca cerrada, brazos abajo) y aparece un rótulo con micrófono y su nombre.
+- Si no hay ilustración oficial del invitado, se diseña un personaje sencillo con el estilo de los libros.
+- **Todo personaje nuevo debe validarlo Vivi antes de usarse en un vídeo**: se deja la hoja de validación en Drive ("Videos YouTube Completos/Validación de personajes") y se le escribe por correo.
