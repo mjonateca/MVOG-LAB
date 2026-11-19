@@ -176,6 +176,6 @@ El código está en el zip **`mi-pequeno-atlas-videos-v5.zip`**, en la carpeta d
 
 ## Personajes invitados (desde el cap. 7, Ottawa)
 - Se detecta quién habla en cada frase por el tono de voz y se anota en `others` del config (`[[t0, t1, "Nombre"], ...]`).
-- Mientras habla el invitado, Vinelis escucha (boca cerrada, brazos abajo) y aparece un rótulo con micrófono y su nombre.
-- Si no hay ilustración oficial del invitado, se diseña un personaje sencillo con el estilo de los libros.
-- **Todo personaje nuevo debe validarlo Vivi antes de usarse en un vídeo**: se deja la hoja de validación en Drive ("Videos YouTube Completos/Validación de personajes") y se le escribe por correo.
+- Mientras habla el invitado, Vinelis escucha (boca cerrada, brazos abajo) y el invitado aparece en el lado contrario, con la boca sincronizada con su voz, parpadeo y saludo al entrar (`guest` en el config). Si no hay ilustración del invitado, se muestra un rótulo con micrófono y su nombre.
+- La ilustración oficial del invitado viene en una hoja 3x2 (boca abierta, cerrada, entreabierta / escucha, parpadeo, saludo) que se recorta con `tools/guest_sprites.py`. Carlos (Ottawa): `personaje/carlos-validado.png`.
+- **Todo personaje nuevo debe validarlo Vivi antes de usarse en un vídeo**: se deja la hoja de validación en Drive ("Videos YouTube Completos/Validación de personajes") y se le escribe por correo a mipequenoatlas@gmail.com (dirección confirmada por el usuario).

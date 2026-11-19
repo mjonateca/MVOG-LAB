@@ -33,8 +33,11 @@ for w in words:
 mouth = np.where(~speak[:nfr], 0, np.where(lvl > 0.55, 2, np.where(lvl > 0.2, 1, 0)))
 # otros hablantes (invitados): Vinelis escucha con la boca cerrada y se muestra el nombre de quien habla
 OTHERS = cfg.get('others', [])   # [[t0, t1, 'Nombre'], ...]
+gmouth = np.zeros_like(mouth)
 for o0, o1, _n in OTHERS:
-    mouth[int(o0*FPS):int(o1*FPS)+1] = 0
+    sl = slice(int(o0*FPS), int(o1*FPS)+1)
+    gmouth[sl] = mouth[sl]
+    mouth[sl] = 0
 def other_at(t):
     for o0, o1, n in OTHERS:
         if o0 - 0.2 <= t <= o1 + 0.3: return n, min(1, (t - o0 + 0.2) / 0.4, (o1 + 0.3 - t) / 0.4)
@@ -102,6 +105,15 @@ def render_speaker(name):
     d.text((80 + tw/2, 42), name, font=f2, fill=NAVY, anchor='mm')
     return np.array(im)
 spk_cache = {}
+GUEST = cfg.get('guest')   # {"dir": "guest", "scale": 1.35, "wave_at": [t0,...]}
+gsprites = {}
+GUEST_WAVE = {}
+if GUEST:
+    for k in ('m0', 'm1', 'm2', 'listen', 'blink', 'wave'):
+        im = Image.open(os.path.join(wd, GUEST['dir'], k + '.png')).convert('RGBA')
+        gsc = GUEST.get('scale', 1.35)
+        gsprites[k] = np.array(im.resize((int(im.width * gsc), int(im.height * gsc)), Image.LANCZOS))
+    for w0 in GUEST.get('wave_at', []): GUEST_WAVE[round(w0, 1)] = True
 
 def blend(dst, src, x, y):
     h, w = src.shape[:2]
@@ -253,7 +265,21 @@ for f in range(f0, f1):
         sx = max(20, min(W - sb.shape[1] - 20, sx))
         blend(fr, sb, sx, H - sb.shape[0] - 40)
     on, ov = other_at(t)
-    if on and ov > 0.01:
+    # invitado ilustrado (validado): aparece en el lado contrario a Vinelis solo mientras habla
+    if on and GUEST and ov > 0.01:
+        gv = ov * visible(t)
+        if gv > 0.01:
+            t0 = next(o0 for o0, o1, n in OTHERS if o0 - 0.2 <= t <= o1 + 0.3)
+            gm = int(gmouth[f]) if f < len(gmouth) else 0
+            if t - t0 < 1.6 and GUEST_WAVE.get(round(t0, 1)): key = 'wave'
+            elif gm == 0 and (f % 110) in (0, 1, 2, 3): key = 'blink'
+            else: key = 'm%d' % gm
+            gs = gsprites[key]
+            gx = W - 330 if cx < W * 0.5 else 330
+            gy = int(H - gs.shape[0] - 18 + 4 * math.sin(t * 2.0) + (1 - gv) * 60)
+            if gv < 0.999: gs = gs.copy(); gs[..., 3] = (gs[..., 3] * gv).astype(np.uint8)
+            blend(fr, gs, int(gx - gs.shape[1] / 2), gy)
+    if on and ov > 0.01 and not GUEST:
         if on not in spk_cache: spk_cache[on] = render_speaker(on)
         sp = spk_cache[on]
         if ov < 0.999: sp = sp.copy(); sp[..., 3] = (sp[..., 3] * ov).astype(np.uint8)
