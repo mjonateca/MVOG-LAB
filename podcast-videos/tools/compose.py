@@ -136,7 +136,7 @@ _cache = {}
 def loop_frame(scene, i):
     key = (scene, i % LOOPN)
     if key not in _cache:
-        if len(_cache) > 600: _cache.clear()
+        if len(_cache) > 150: _cache.clear()   # ~0,9 GB máx. (600 provocaba falta de memoria con varios montajes)
         _cache[key] = cv2.cvtColor(cv2.imread(os.path.join(wd, 'loops', scene, f'{i % LOOPN}.jpg')), cv2.COLOR_BGR2RGB)
     return _cache[key]
 POSES = ['rest', 'open', 'mid', 'talkA', 'talkB', 'point', 'wave1', 'wave2']
