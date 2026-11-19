@@ -1,0 +1,424 @@
+{
+ "audio": "sao-paulo.mp3",
+ "transcript": "transcript_fixed.json",
+ "workdir": ".",
+ "out": "sao-paulo-para-ninos-mi-pequeno-atlas.mp4",
+ "chip": "Mi Pequeño Atlas  ·  Capítulo 8: São Paulo",
+ "spreaker_episode_id": 76244759,
+ "outfit": "saopaulo",
+ "char_scale": 1.25,
+ "hide_silence": 3.0,
+ "subtitles": false,
+ "others": [
+  [
+   39.9,
+   82.3,
+   "Antonio"
+  ],
+  [
+   94.8,
+   181.5,
+   "Antonio"
+  ],
+  [
+   193.2,
+   264.6,
+   "Antonio"
+  ],
+  [
+   279.5,
+   359.5,
+   "Antonio"
+  ],
+  [
+   374.3,
+   451.6,
+   "Antonio"
+  ],
+  [
+   464.2,
+   555.6,
+   "Antonio"
+  ]
+ ],
+ "hide": [
+  [
+   138.8,
+   161.6
+  ],
+  [
+   234.70000000000002,
+   247.3
+  ],
+  [
+   510.0,
+   518.9
+  ]
+ ],
+ "schedule": [
+  [
+   0,
+   "sp_intro"
+  ],
+  [
+   13.1,
+   "sp_mar"
+  ],
+  [
+   18.8,
+   "sp_mapa"
+  ],
+  [
+   26.6,
+   "sp_invitado"
+  ],
+  [
+   40.0,
+   "sp_ola"
+  ],
+  [
+   63.0,
+   "sp_mar"
+  ],
+  [
+   70.2,
+   "sp_paulista"
+  ],
+  [
+   79.9,
+   "sp_mapa"
+  ],
+  [
+   96.7,
+   "sp_mar"
+  ],
+  [
+   108.6,
+   "sp_mapa"
+  ],
+  [
+   112.7,
+   "sp_sampa"
+  ],
+  [
+   119.6,
+   "sp_paulista"
+  ],
+  [
+   137.8,
+   "sp_masp"
+  ],
+  [
+   161.6,
+   "sp_catedral"
+  ],
+  [
+   175.2,
+   "sp_km0"
+  ],
+  [
+   183.6,
+   "sp_ibirapuera"
+  ],
+  [
+   222.7,
+   "sp_niemeyer"
+  ],
+  [
+   233.9,
+   "sp_bandeiras"
+  ],
+  [
+   247.3,
+   "sp_atardecer"
+  ],
+  [
+   265.0,
+   "sp_beco"
+  ],
+  [
+   326.8,
+   "sp_pintor"
+  ],
+  [
+   340.6,
+   "sp_beco"
+  ],
+  [
+   360.0,
+   "sp_liberdade"
+  ],
+  [
+   380.4,
+   "sp_barcos"
+  ],
+  [
+   401.4,
+   "sp_liberdade"
+  ],
+  [
+   429.3,
+   "sp_feria"
+  ],
+  [
+   436.5,
+   "sp_konnichiwa"
+  ],
+  [
+   447.4,
+   "sp_mundos"
+  ],
+  [
+   452.0,
+   "sp_tesoros"
+  ],
+  [
+   468.3,
+   "sp_futbol"
+  ],
+  [
+   491.3,
+   "sp_catavento"
+  ],
+  [
+   509.2,
+   "sp_noria"
+  ],
+  [
+   518.9,
+   "sp_vista"
+  ],
+  [
+   529.9,
+   "sp_pregunta"
+  ],
+  [
+   547.9,
+   "sp_obrigado"
+  ],
+  [
+   556.1,
+   "sp_masp"
+  ],
+  [
+   570.1,
+   "sp_beco"
+  ],
+  [
+   575.0,
+   "sp_cuaderno"
+  ],
+  [
+   588.1,
+   "sp_outro"
+  ],
+  [
+   596.0,
+   "ot_libros"
+  ]
+ ],
+ "stage": {
+  "sp_intro": [
+   [
+    1710,
+    0.98
+   ],
+   [
+    240,
+    0.95
+   ]
+  ],
+  "sp_mar": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "sp_mapa": [
+   [
+    300,
+    1.0
+   ]
+  ],
+  "sp_invitado": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "sp_ola": [
+   [
+    960,
+    0.8
+   ]
+  ],
+  "sp_paulista": [
+   [
+    1700,
+    0.85
+   ],
+   [
+    300,
+    0.85
+   ]
+  ],
+  "sp_sampa": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "sp_masp": [
+   [
+    1760,
+    0.8
+   ]
+  ],
+  "sp_catedral": [
+   [
+    1760,
+    0.8
+   ]
+  ],
+  "sp_km0": [
+   [
+    300,
+    0.95
+   ]
+  ],
+  "sp_ibirapuera": [
+   [
+    1760,
+    0.8
+   ]
+  ],
+  "sp_niemeyer": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "sp_bandeiras": [
+   [
+    1760,
+    0.75
+   ]
+  ],
+  "sp_atardecer": [
+   [
+    1600,
+    0.9
+   ]
+  ],
+  "sp_beco": [
+   [
+    300,
+    0.85
+   ],
+   [
+    1650,
+    0.85
+   ]
+  ],
+  "sp_pintor": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "sp_liberdade": [
+   [
+    1760,
+    0.8
+   ]
+  ],
+  "sp_barcos": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "sp_feria": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "sp_konnichiwa": [
+   [
+    960,
+    0.8
+   ]
+  ],
+  "sp_mundos": [
+   [
+    1760,
+    0.8
+   ]
+  ],
+  "sp_tesoros": [
+   [
+    1780,
+    0.6
+   ]
+  ],
+  "sp_futbol": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "sp_catavento": [
+   [
+    1760,
+    0.75
+   ]
+  ],
+  "sp_noria": [
+   [
+    1760,
+    0.75
+   ]
+  ],
+  "sp_vista": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "sp_pregunta": [
+   [
+    1780,
+    0.55
+   ]
+  ],
+  "sp_obrigado": [
+   [
+    1700,
+    0.85
+   ]
+  ],
+  "sp_cuaderno": [
+   [
+    1760,
+    0.75
+   ]
+  ],
+  "sp_outro": [
+   [
+    290,
+    1.05
+   ],
+   [
+    1630,
+    1.0
+   ]
+  ],
+  "ot_libros": [
+   [
+    1780,
+    0.6
+   ]
+  ]
+ }
+}

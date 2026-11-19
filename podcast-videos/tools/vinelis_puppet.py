@@ -376,6 +376,26 @@ def berlin_hat(img, main=(40, 190, 235, 255), band=(30, 150, 205, 255), rib=(20,
     cv2.circle(lay, (cx, cy - 46), 30, (180, 185, 200, 255), 2, cv2.LINE_AA)
     return over(img, lay)
 
+# ---------- São Paulo: vestido amarillo con ribetes verdes, cinturón azul y flor de ipê en el pelo ----------
+def sp_body(img):
+    lay = np.zeros_like(img)
+    dress = np.array([(415, 628), (450, 612), (478, 640), (506, 612), (541, 628), (556, 700), (552, 760), (596, 960), (360, 960), (404, 760), (400, 700)], np.int32)
+    cv2.fillPoly(lay, [dress], (40, 205, 250, 255), cv2.LINE_AA)
+    cv2.polylines(lay, [np.array([(415, 628), (450, 612), (478, 640), (506, 612), (541, 628)], np.int32)], False, (60, 150, 30, 255), 9, cv2.LINE_AA)
+    cv2.line(lay, (366, 938), (590, 938), (60, 150, 30, 255), 14, cv2.LINE_AA)
+    cv2.line(lay, (402, 764), (554, 764), (140, 60, 20, 255), 14, cv2.LINE_AA)
+    for x in range(414, 550, 22): cv2.circle(lay, (x, 764), 3, (250, 250, 250, 255), -1, cv2.LINE_AA)
+    cv2.polylines(lay, [dress], True, (20, 150, 200, 255), 3, cv2.LINE_AA)
+    return over(img, lay)
+
+def sp_head(img):
+    lay = np.zeros_like(img)
+    cv2.ellipse(lay, (352, 418), (24, 9), -35, 0, 360, (60, 140, 60, 255), -1, cv2.LINE_AA)
+    flower(lay, 378, 388, 30, (40, 215, 255, 255), (20, 170, 230, 255), 5)
+    cv2.circle(lay, (378, 388), 8, (30, 110, 180, 255), -1, cv2.LINE_AA)
+    flower(lay, 404, 358, 18, (60, 225, 255, 255), (20, 170, 230, 255), 5)
+    return over(img, lay)
+
 # crop window (union of poses) and output scale
 CX0, CY0, CX1, CY1 = 60, 230, 900, 1030
 SCALE = 0.72
@@ -391,6 +411,10 @@ for pose, (la, ra) in POSES.items():
         gap = (yy > 930) & (yy < 990) & (xx > 360) & (xx < 600) & (((body[..., 2] > body[..., 0] + 25) & (body[..., 1] > 120)) | (body[..., :3].min(2) > 170))
         body[..., 3] *= np.where(gap, 0, 1)
         body = berlin_body(body, (40, 40, 190, 255), (25, 25, 130, 255), (240, 240, 245, 255))
+    if OUTFIT == 'saopaulo':
+        gap = (yy > 930) & (yy < 990) & (xx > 360) & (xx < 600) & (((body[..., 2] > body[..., 0] + 25) & (body[..., 1] > 120)) | (body[..., :3].min(2) > 170))
+        body[..., 3] *= np.where(gap, 0, 1)
+        body = sp_body(body)
     if OUTFIT == 'berlin':
         gap = (yy > 930) & (yy < 990) & (xx > 360) & (xx < 600) & (((body[..., 2] > body[..., 0] + 25) & (body[..., 1] > 120)) | (body[..., :3].min(2) > 170))
         body[..., 3] *= np.where(gap, 0, 1)
@@ -419,6 +443,8 @@ for pose, (la, ra) in POSES.items():
         body = sd_head(body)
     if OUTFIT == 'berlin':
         body = berlin_scarf(body); body = berlin_hat(body)
+    if OUTFIT == 'saopaulo':
+        body = sp_head(body)
     if OUTFIT == 'ottawa':
         body = berlin_hat(body, (40, 40, 200, 255), (240, 240, 245, 255), (200, 200, 210, 255), leaf=True)
     if OUTFIT == 'paris':
