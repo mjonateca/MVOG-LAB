@@ -1,5 +1,5 @@
 """Compose the cartoon podcast video.
-usage: python3 compose.py config.json [--preview START DUR]
+usage: python3 compose.py config.json [--preview START DUR | --segment OUT.mp4 START DUR]
 config: {audio, transcript, workdir, out, chip, schedule:[[t, scene],...]}
 """
 import sys, json, os, subprocess, math, re
@@ -11,8 +11,9 @@ TOOLS = os.path.dirname(os.path.abspath(__file__))
 cfg = json.load(open(sys.argv[1]))
 wd = cfg['workdir']
 start, dur = 0.0, None
-if '--preview' in sys.argv:
-    i = sys.argv.index('--preview'); start = float(sys.argv[i+1]); dur = float(sys.argv[i+2])
+for _flag in ('--preview', '--segment'):
+  if _flag in sys.argv:
+    i = sys.argv.index(_flag); i = i + 1 if _flag == '--segment' else i; start = float(sys.argv[i+1]); dur = float(sys.argv[i+2])
 
 # ---------- audio envelope ----------
 pcm = subprocess.run(['ffmpeg', '-v', 'error', '-i', cfg['audio'], '-ac', '1', '-ar', '24000', '-f', 's16le', '-'], capture_output=True).stdout
@@ -206,9 +207,14 @@ def place_at(t):
 XF = 0.6  # crossfade seconds
 f0 = int(start * FPS); f1 = nfr if dur is None else min(nfr, int((start + dur) * FPS))
 out = cfg['out'] if dur is None else cfg['out'].replace('.mp4', '_preview.mp4')
-ff = subprocess.Popen(['ffmpeg', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-',
-                       '-ss', str(start), '-i', cfg['audio'], '-map', '0:v', '-map', '1:a', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '21',
-                       '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '160k', '-shortest', '-movflags', '+faststart', out], stdin=subprocess.PIPE)
+SEGOUT = sys.argv[sys.argv.index('--segment') + 1] if '--segment' in sys.argv else None
+if SEGOUT:   # tramo solo de vídeo (para montaje reanudable), se escribe en .tmp y se renombra al terminar
+    ff = subprocess.Popen(['ffmpeg', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-',
+                           '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '21', '-pix_fmt', 'yuv420p', '-f', 'mp4', SEGOUT + '.tmp'], stdin=subprocess.PIPE)
+else:
+  ff = subprocess.Popen(['ffmpeg', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-',
+                         '-ss', str(start), '-i', cfg['audio'], '-map', '0:v', '-map', '1:a', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '21',
+                         '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '160k', '-shortest', '-movflags', '+faststart', out], stdin=subprocess.PIPE)
 sub_cache = {}
 ci = 0
 for f in range(f0, f1):
@@ -290,4 +296,6 @@ for f in range(f0, f1):
     ff.stdin.write(fr.tobytes())
     if f % (FPS*30) == 0: print(f'{t/60:.1f} min', flush=True)
 ff.stdin.close(); ff.wait()
+if SEGOUT:
+    os.replace(SEGOUT + '.tmp', SEGOUT); out = SEGOUT
 print('OK', out)

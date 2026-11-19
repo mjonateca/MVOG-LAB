@@ -12,3 +12,4 @@ render_all.sh
 render_all.out
 render.log
 drive/
+seg/
