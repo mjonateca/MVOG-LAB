@@ -272,7 +272,7 @@ for f in range(f0, f1):
             t0 = next(o0 for o0, o1, n in OTHERS if o0 - 0.2 <= t <= o1 + 0.3)
             gm = int(gmouth[f]) if f < len(gmouth) else 0
             if t - t0 < 1.6 and GUEST_WAVE.get(round(t0, 1)): key = 'wave'
-            elif gm == 0 and (f % 110) in (0, 1, 2, 3): key = 'blink'
+            elif gm == 0 and GUEST.get('blink', True) and (f % 110) in (0, 1, 2, 3): key = 'blink'
             else: key = 'm%d' % gm
             gs = gsprites[key]
             gx = W - 330 if cx < W * 0.5 else 330

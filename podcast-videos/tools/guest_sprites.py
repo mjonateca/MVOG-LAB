@@ -1,10 +1,12 @@
 """Recorta la hoja validada de un invitado (rejilla 3x2 con rótulos debajo) en sprites RGBA.
-usage: python3 guest_sprites.py hoja.png outdir
+usage: python3 guest_sprites.py hoja.png outdir [px_titulo_arriba]
 Orden de la hoja: [boca abierta, boca cerrada, boca entreabierta] / [escucha, parpadeo, saludo]
 Salida: m0.png (cerrada), m1.png (entreabierta), m2.png (abierta), listen.png, blink.png, wave.png"""
 import sys, os, cv2, numpy as np
 src, out = sys.argv[1], sys.argv[2]; os.makedirs(out, exist_ok=True)
 im = cv2.imread(src)
+SKIP_TOP = int(sys.argv[3]) if len(sys.argv) > 3 else 0   # px de título a blanquear arriba
+if SKIP_TOP: im[:SKIP_TOP] = 255
 H, W = im.shape[:2]; cw, ch = W // 3, H // 2
 names = [['m2', 'm0', 'm1'], ['listen', 'blink', 'wave']]
 crops = {}
@@ -38,6 +40,20 @@ for r in range(2):
         rgba = np.dstack([cell, alpha])
         ys, xs = np.where(alpha > 10)
         crops[names[r][c]] = (rgba, xs.min(), xs.max(), ys.min(), ys.max())
+# igualar la altura de la figura en todas las poses (la hoja puede dibujarlas a escalas distintas)
+def body_h(rgba, y1):
+    al = rgba[..., 3] > 10
+    fx = int(np.where(al[y1-40:y1].any(0))[0].mean())
+    col = al[:, max(0, fx-50):fx+50]
+    return y1 - np.where(col.any(1))[0].min()
+hs = {n: body_h(v[0], v[4]) for n, v in crops.items()}
+href = max(hs.values())
+for n, (rgba, x0, x1, y0, y1) in list(crops.items()):
+    k = href / float(hs[n])
+    if abs(k - 1) > 0.01:
+        rgba = cv2.resize(rgba, None, fx=k, fy=k, interpolation=cv2.INTER_CUBIC)
+        ys, xs = np.where(rgba[..., 3] > 10)
+        crops[n] = (rgba, xs.min(), xs.max(), ys.min(), ys.max())
 # alinear todos por los pies (bbox común en altura) para que no salten
 hmax = max(v[4] - v[3] for v in crops.values()) + 20
 wmax = 420

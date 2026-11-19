@@ -179,3 +179,10 @@ El código está en el zip **`mi-pequeno-atlas-videos-v5.zip`**, en la carpeta d
 - Mientras habla el invitado, Vinelis escucha (boca cerrada, brazos abajo) y el invitado aparece en el lado contrario, con la boca sincronizada con su voz, parpadeo y saludo al entrar (`guest` en el config). Si no hay ilustración del invitado, se muestra un rótulo con micrófono y su nombre.
 - La ilustración oficial del invitado viene en una hoja 3x2 (boca abierta, cerrada, entreabierta / escucha, parpadeo, saludo) que se recorta con `tools/guest_sprites.py`. Carlos (Ottawa): `personaje/carlos-validado.png`.
 - **Todo personaje nuevo debe validarlo Vivi antes de usarse en un vídeo**: se deja la hoja de validación en Drive ("Videos YouTube Completos/Validación de personajes") y se le escribe por correo a mipequenoatlass@gmail.com (con dos "s", confirmada por el usuario).
+
+## Correcciones pedidas por Vivi/Bibi (19-nov-2026)
+- **Subtítulos:** Tokio y París se quedan con subtítulos quemados. Todos los demás capítulos van SIN subtítulos quemados y con el .srt aparte.
+- **Rótulos:** ningún rótulo puede quedar detrás del encabezado fijo «Mi Pequeño Atlas · Capítulo N». `rLabel` fuerza ahora una posición mínima (y ≥ 118 + 0,95·tamaño).
+- **Libros:** solo los capítulos 1-6 tienen libro. No mostrar libros de capítulos 7-12 (Ottawa, São Paulo…).
+- Las versiones corregidas se suben a carpetas nuevas «Capítulo N - Ciudad (video en partes) v2», sin borrar las anteriores.
+- Carpeta de entrega: «Videos YouTube Completos» (dentro de «Videos YouTube - Mi Pequeño Atlas»).

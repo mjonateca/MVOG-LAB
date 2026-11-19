@@ -420,5 +420,13 @@
     0.6
    ]
   ]
+ },
+ "guest": {
+  "dir": "guest",
+  "scale": 1.4,
+  "wave_at": [
+   39.9
+  ],
+  "blink": false
  }
 }

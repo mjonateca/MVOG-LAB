@@ -240,9 +240,9 @@ scenes.ot_cuaderno = function (t) {
 scenes.ot_libros = function (t) {
   let s = OTALL() + `<rect width="${W}" height="${H}" fill="#fdf3dc"/><rect x="0" y="780" width="${W}" height="300" fill="url(#rWood)"/>`;
   const book = (x, col, title, r) => `<g transform="translate(${x},780) rotate(${r})">${rShadow(0, 0, 150, .3)}<rect x="-140" y="-380" width="280" height="380" rx="10" fill="${col}"/><rect x="-140" y="-380" width="24" height="380" fill="#000" opacity=".2"/><rect x="-100" y="-330" width="200" height="140" rx="10" fill="#fff" opacity=".9"/><text x="0" y="-270" font-family="Fredoka" font-weight="700" font-size="30" text-anchor="middle" fill="${col}">Mi Pequeño</text><text x="0" y="-230" font-family="Fredoka" font-weight="700" font-size="30" text-anchor="middle" fill="${col}">Atlas</text><text x="0" y="-100" font-family="Fredoka" font-weight="700" font-size="38" text-anchor="middle" fill="#fff">${title}</text></g>`;
-  s += book(360, '#d52b1e', 'Ottawa', -4) + book(700, '#2b3a67', 'Tokio', 2) + book(1040, '#2f9a4a', 'Roma', -2) + book(1380, '#c60b1e', 'Madrid', 3);
+  s += book(360, '#2b3a67', 'Tokio', -4) + book(700, '#1f4fa0', 'París', 2) + book(1040, '#2f9a4a', 'Roma', -2) + book(1380, '#c60b1e', 'Madrid', 3);
   s += `<g transform="translate(1680,760) rotate(6)"><rect x="-120" y="-320" width="240" height="320" fill="#fff" stroke="#ccc" stroke-width="3"/><g stroke="#2b3a67" stroke-width="5" fill="none">${tulip(0, -60, 1.6, 'none')}<rect x="-80" y="-280" width="160" height="80"/></g></g>`;
-  return s + rLabel('Cada capítulo tiene su libro ilustrado · Libros para colorear', W / 2, 100, 38);
+  return s + rLabel('Los libros de Mi Pequeño Atlas · Libros para colorear', W / 2, 100, 38);
 };
 scenes.ot_outro = function (t) {
   let s = OTALL() + rSky('dusk') + rSun(1500, 420, 80) + `<path d="M0,760 Q960,660 1920,760 L1920,1080 L0,1080Z" fill="#5a7a4a"/>` + parliament(960, 840, .72, t) + `<rect x="0" y="860" width="${W}" height="220" fill="#b8ab90"/>` + maCrowd(t, 73, 12, 880, 1060);
