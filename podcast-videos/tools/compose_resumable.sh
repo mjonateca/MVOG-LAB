@@ -14,6 +14,6 @@ for i in $(seq 0 $((N-1))); do
   nice python3 ../../tools/compose.py config.json --segment "$f" $((i*60)) 60 > /dev/null
   echo "tramo $((i+1))/$N"
 done
-ls seg/s*.mp4 | sort | sed "s/^/file '/; s/$/'/" > seg/list.txt
+(cd seg && ls s*.mp4 | sort | sed "s/^/file '/; s/$/'/") > seg/list.txt
 ffmpeg -v error -y -f concat -safe 0 -i seg/list.txt -i "$AUD" -map 0:v -map 1:a -c:v copy -c:a aac -b:a 160k -shortest -movflags +faststart "$OUT"
 echo "OK $OUT"
