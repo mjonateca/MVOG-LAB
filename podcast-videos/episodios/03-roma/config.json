@@ -1,5 +1,5 @@
 {
- "audio": "roma.mp3",
+ "audio": "roma_v3.mp3",
  "transcript": "transcript_fixed.json",
  "workdir": ".",
  "out": "roma-para-ninos-mi-pequeno-atlas.mp4",
@@ -297,7 +297,7 @@
   ],
   [
    1456.7,
-   "ro_outro"
+   "cierre"
   ]
  ],
  "stage": {
@@ -603,6 +603,12 @@
    [
     1820,
     0.55
+   ]
+  ],
+  "cierre": [
+   [
+    1730,
+    0.62
    ]
   ]
  }
