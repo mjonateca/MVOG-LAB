@@ -1,5 +1,5 @@
 {
- "audio": "berlin_v3.mp3",
+ "audio": "berlin.mp3",
  "transcript": "transcript_fixed.json",
  "workdir": ".",
  "out": "berlin-para-ninos-mi-pequeno-atlas.mp4",
@@ -13,6 +13,10 @@
   [
    28.599999999999998,
    53.3
+  ],
+  [
+   288.1,
+   300.6
   ],
   [
    404.6,
@@ -351,7 +355,7 @@
   ],
   "be_murales": [
    [
-    960,
+    1680,
     0.85
    ]
   ],
