@@ -305,3 +305,125 @@ scenes.be_outro = function (t) {
   <text x="0" y="-20" font-family="Fredoka" font-weight="700" font-size="100" text-anchor="middle" fill="#1a1a1a" stroke="#2b3a67" stroke-width="2" paint-order="stroke">Tschüss, Berlín!</text>
   <text x="0" y="90" font-family="Fredoka" font-weight="600" font-size="52" text-anchor="middle" fill="#dd2a2a">Nos vemos en el próximo viaje ✈</text></g>`;
 };
+
+/* =====================================================================
+   v3 (21-nov) — correcciones de Vinelis: personas con tamaños coherentes
+   con la perspectiva, murales variados al estilo East Side Gallery,
+   objetos que se distinguen del fondo y bocadillos que no tapan caras.
+   (Estas definiciones sustituyen a las anteriores del mismo nombre.)
+   ===================================================================== */
+// perspectiva: quien está junto a los edificios (y0) se ve pequeño; quien está delante (y=1010) mide como los personajes principales (≈2,2)
+function bePeople(t, seed, n, y0, y1) {
+  const base = y0 - 40, yb = Math.min(y1, base + (1010 - base) * .5);
+  return rCrowd(t, seed, n, y0, yb, { tops: ['#2b3a67', '#ffce00', '#dd2a2a', '#5a7a5a', '#e8e2d4', '#333', '#4fb3f6', '#b86ad0'], scale: y => 0.35 + (y - base) / (1010 - base) * 1.9 });
+}
+// murales originales inspirados en el espíritu del East Side Gallery (paz, libertad, unión), cada panel distinto
+function beMural(k, x, y, w, h, t) {
+  const cx = x + w / 2, cy = y + h / 2, u = Math.min(w, h) / 200;
+  const bgs = ['#4fb3f6', '#ffd34d', '#ff8a5a', '#7ad06a', '#2b3a67', '#f4f0e6', '#b86ad0', '#ff5a5f', '#5ad0c0', '#1a1a2a'];
+  let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${bgs[k % 10]}"/>`;
+  switch (k % 10) {
+    case 0: // palomas sobre arcoíris
+      s += [...Array(5)].map((_, i) => `<path d="M${x},${y + h} A${w * .6 - i * 18 * u},${h * .7 - i * 18 * u} 0 0 1 ${x + w},${y + h}" stroke="${['#ff5a5f', '#ff9a3a', '#ffd34d', '#7ad06a', '#2f7ad0'][i]}" stroke-width="${16 * u}" fill="none"/>`).join('')
+        + [[-.25, -.25, 1], [.18, -.32, .8], [0, -.05, .9]].map(([dx, dy, sc]) => `<g transform="translate(${cx + dx * w},${cy + dy * h + S(t, 2, dx * 9) * 6}) scale(${u * sc})"><path d="M-40,0 Q-10,-10 10,0 Q30,-30 60,-40 Q40,-10 30,6 Q10,20 -20,14 L-46,22 Z" fill="#fff" stroke="#1a1a2a" stroke-width="3"/><circle cx="16" cy="-2" r="3" fill="#1a1a2a"/></g>`).join('');
+      break;
+    case 1: // caras grandes de colores
+      s += [[-.25, '#ff5a5f'], [.25, '#2f7ad0']].map(([dx, c]) => `<g transform="translate(${cx + dx * w},${cy + 8 * u})"><ellipse rx="${w * .22}" ry="${h * .32}" fill="${c}" stroke="#1a1a2a" stroke-width="5"/><circle cx="${-w * .07}" cy="${-h * .08}" r="${10 * u}" fill="#fff" stroke="#1a1a2a" stroke-width="4"/><circle cx="${w * .07}" cy="${-h * .08}" r="${10 * u}" fill="#fff" stroke="#1a1a2a" stroke-width="4"/><path d="M${-w * .1},${h * .1} Q0,${h * .2} ${w * .1},${h * .1}" stroke="#1a1a2a" stroke-width="5" fill="none"/></g>`).join('');
+      break;
+    case 2: // manos que se dan a través de una grieta
+      s += `<path d="M${cx},${y} l-14,${h * .2} l20,${h * .2} l-18,${h * .2} l16,${h * .2} l-8,${h * .2}" stroke="#1a1a2a" stroke-width="6" fill="none"/>`
+        + `<g transform="translate(${cx},${cy}) scale(${u})"><path d="M-90,10 L-20,10 Q0,10 0,-6 Q0,-20 -20,-20 L-90,-20Z" fill="#e3b48e" stroke="#1a1a2a" stroke-width="4"/><path d="M90,-10 L20,-10 Q0,-10 0,6 Q0,20 20,20 L90,20Z" fill="#8a5a3a" stroke="#1a1a2a" stroke-width="4"/></g>`;
+      break;
+    case 3: // la Tierra con corazones
+      s += `<circle cx="${cx}" cy="${cy}" r="${h * .32}" fill="#2f7ad0" stroke="#1a1a2a" stroke-width="5"/><path d="M${cx - h * .2},${cy - h * .1} q${h * .1},-${h * .12} ${h * .2},-${h * .04} q-${h * .02},${h * .14} -${h * .14},${h * .2}Z M${cx + h * .05},${cy + h * .05} q${h * .12},-${h * .06} ${h * .18},${h * .06} q-${h * .1},${h * .12} -${h * .18},-${h * .06}Z" fill="#7ad06a"/>`
+        + [[-.35, -.3], [.35, -.25], [-.32, .3], [.3, .32]].map(([dx, dy]) => `<path d="M0,10 C-30,-14 -12,-34 0,-18 C12,-34 30,-14 0,10Z" fill="#ff5a5f" transform="translate(${cx + dx * w},${cy + dy * h}) scale(${u * 1.1 * (1 + .08 * S(t, 4, dx * 7))})"/>`).join('');
+      break;
+    case 4: // puerta abierta hacia un cielo luminoso
+      s += `<rect x="${cx - w * .2}" y="${y + h * .18}" width="${w * .4}" height="${h * .72}" fill="#bfe6ff" stroke="#ffd34d" stroke-width="8"/><circle cx="${cx}" cy="${y + h * .5}" r="${h * .12}" fill="#ffd34d"/><path d="M${cx - w * .2},${y + h * .18} L${cx - w * .36},${y + h * .26} L${cx - w * .36},${y + h * .98} L${cx - w * .2},${y + h * .9}Z" fill="#c8323a" stroke="#1a1a2a" stroke-width="4"/>`
+        + [...Array(8)].map((_, i) => `<line x1="${cx}" y1="${y + h * .5}" x2="${cx + Math.cos(i * .785) * w * .45}" y2="${y + h * .5 + Math.sin(i * .785) * h * .45}" stroke="#ffd34d" stroke-width="4" opacity=".6"/>`).join('');
+      break;
+    case 5: // flores que crecen por las grietas
+      s += `<path d="M${x},${y + h * .6} l${w * .3},-10 l${w * .2},16 l${w * .5},-12" stroke="#8a8478" stroke-width="5" fill="none"/>`
+        + [...Array(6)].map((_, i) => { const fx = x + w * (.12 + i * .15), fh = h * (.3 + (i % 3) * .12); return `<path d="M${fx},${y + h} Q${fx + 10},${y + h - fh / 2} ${fx},${y + h - fh}" stroke="#3a8a3a" stroke-width="6" fill="none"/>${[...Array(6)].map((_, p) => `<circle cx="${fx + Math.cos(p * 1.05) * 14 * u}" cy="${y + h - fh + Math.sin(p * 1.05) * 14 * u}" r="${9 * u}" fill="${['#ff5a5f', '#ffd34d', '#b86ad0', '#ff9a3a'][i % 4]}"/>`).join('')}<circle cx="${fx}" cy="${y + h - fh}" r="${7 * u}" fill="#fff"/>`; }).join('');
+      break;
+    case 6: // palabra FRIEDEN (paz) con letras de grafiti
+      s += `<text x="${cx}" y="${cy + 20 * u}" font-family="Fredoka" font-weight="700" font-size="${Math.min(70 * u, w / 4.2)}" text-anchor="middle" fill="#ffd34d" stroke="#1a1a2a" stroke-width="${6 * u}" paint-order="stroke" transform="rotate(-6 ${cx} ${cy})">FRIEDEN</text>`
+        + [...Array(10)].map((_, i) => `<circle cx="${x + (i * 53) % w}" cy="${y + 20 + (i * 37) % (h - 40)}" r="${4 + i % 4}" fill="#fff" opacity=".7"/>`).join('');
+      break;
+    case 7: // figuras geométricas de colores
+      s += [...Array(7)].map((_, i) => `<path d="M${x + (i * 61) % w},${y + h} L${x + ((i * 61) % w) + w * .2},${y + h * (.2 + (i % 3) * .15)} L${x + ((i * 61) % w) + w * .4},${y + h}Z" fill="${['#ffd34d', '#2f7ad0', '#fff', '#1a1a2a', '#7ad06a', '#ff9a3a', '#b86ad0'][i]}" opacity=".9"/>`).join('');
+      break;
+    case 8: // cadena de niños de papel cogidos de la mano
+      s += [...Array(5)].map((_, i) => `<g transform="translate(${x + w * (.12 + i * .19)},${cy + 30 * u}) scale(${u * .9})" fill="${['#ff5a5f', '#ffd34d', '#fff', '#2f7ad0', '#b86ad0'][i]}" stroke="#1a1a2a" stroke-width="3"><circle cx="0" cy="-70" r="18"/><path d="M-16,-50 L16,-50 L20,10 L8,10 L4,50 L-4,50 L-8,10 L-20,10Z"/><path d="M-16,-44 L-44,-30 M16,-44 L44,-30" stroke-width="10" stroke="${['#ff5a5f', '#ffd34d', '#fff', '#2f7ad0', '#b86ad0'][i]}"/></g>`).join('');
+      break;
+    case 9: // FREIHEIT (libertad) con estrellas
+      s += [...Array(20)].map((_, i) => `<circle cx="${x + (i * 47) % w}" cy="${y + (i * 31) % h}" r="${2 + i % 3}" fill="#fff" opacity="${.4 + .6 * Math.abs(S(t, 2, i))}"/>`).join('')
+        + `<text x="${cx}" y="${cy + 16 * u}" font-family="Fredoka" font-weight="700" font-size="${Math.min(60 * u, w / 4.6)}" text-anchor="middle" fill="#5ad0c0" stroke="#fff" stroke-width="${3 * u}" paint-order="stroke">FREIHEIT</text>`;
+      break;
+  }
+  return s;
+}
+function berlinWall(x0, x1, base, h = 300, painted = false, t = 0) {
+  let s = `<rect x="${x0}" y="${base - h}" width="${x1 - x0}" height="${h}" fill="#c9c6bc"/>`;
+  if (painted) { let x = x0, k = 0; const ws = [300, 240, 280, 220, 320, 260, 300, 240, 280, 260];
+    while (x < x1) { const w = ws[k % ws.length]; s += beMural(k + Math.round(x0 / 97), x, base - h, w, h, t); x += w; k++; } }
+  s += `<rect x="${x0}" y="${base - h - 30}" width="${x1 - x0}" height="40" rx="20" fill="#d9d6cc"/><rect x="${x0}" y="${base - h - 30}" width="${x1 - x0}" height="12" rx="6" fill="#fff" opacity=".35"/>`;
+  for (let x = x0; x < x1; x += 120) s += `<line x1="${x}" y1="${base - h}" x2="${x}" y2="${base}" stroke="#8a867c" stroke-width="2" opacity=".6"/>`;
+  return s;
+}
+scenes.be_idioma = function (t) {
+  let s = BEALL() + rSky('day') + madridBlock(-20, 720, 980, 520, '#e8e2d4', '#5a6470') + madridBlock(960, 720, 980, 500, '#d9d1c4', '#5a6470') + street(720);
+  s += rP(600, 1010, 2.3, t, ESC({ ph: 1, top: '#2b3a67', wave: true })) + rP(1300, 1010, 2.2, t, ESC({ ph: 3, child: true, top: '#ffce00', dir: -1 }));
+  s += bubble(560, 470, 'Hallo!', 60, '#dd2a2a', 1) + bubble(1330, 560, 'Guten Tag!', 54, '#2b3a67', -1);
+  return s + rLabel('En Berlín se habla alemán', W / 2, 90, 46) + `<g transform="translate(960,260)"><rect x="-260" y="-60" width="520" height="120" rx="24" fill="#fff" stroke="#2b3a67" stroke-width="5"/>${deFlag(-220, -40, .6).replace('<line x1="0" y1="0" x2="0" y2="130" stroke="#555" stroke-width="4"/>', '')}<text x="40" y="22" font-family="Fredoka" font-weight="700" font-size="58" text-anchor="middle" fill="#2b3a67">Deutsch</text></g>`;
+};
+scenes.be_abuela = function (t) {
+  let s = BEALL() + rSky('day') + rSun(300, 150) + grass(700) + `<g>${[0, 1, 2].map(k => `<rect x="${1100 + k * 140}" y="420" width="120" height="300" fill="#c9c6bc"/><rect x="${1096 + k * 140}" y="404" width="128" height="30" rx="14" fill="#d9d6cc"/>`).join('')}</g>` + `<path d="M0,820 L${W},800 L${W},900 L0,920Z" fill="#c9bea4"/>`;
+  s += rP(500, 960, 2.6, t, ESC({ ph: 1, top: '#7a5a8a', skirt: '#5a4a6a', longhair: true, hair: '#d9d6d0' })) + rP(700, 970, 1.9, t, ESC({ ph: 2, child: true, top: '#ffce00', wave: true })) + rP(880, 960, 2.6, t, ESC({ ph: 3, top: '#2f7ad0', longhair: true }));
+  s += bubble(760, 380, '¿Por qué hay un muro?', 44, '#2b3a67', -1);
+  return s;
+};
+scenes.be_ninos_frio = function (t) {
+  let s = BEALL() + `<rect width="${W}" height="${H}" fill="#9fb4ca"/>` + [...Array(6)].map((_, i) => `<g transform="translate(${140 + i * 340},640)"><path d="M-10,0 L-6,-200 L6,-200 L10,0Z" fill="#5a3a26"/>${[...Array(5)].map((_, k) => `<path d="M0,${-200 + k * 30} l${(k % 2 ? 1 : -1) * 80},-50" stroke="#5a3a26" stroke-width="6"/>`).join('')}</g>`).join('') + `<rect x="0" y="640" width="${W}" height="440" fill="#dde6ef"/>`;
+  s += [...Array(40)].map((_, i) => `<circle cx="${(i * 131) % W}" cy="${((i * 97) + t / L * 500) % H}" r="5" fill="#fff"/>`).join('');
+  const bx = 960 + S(t, 1) * 300;
+  s += `<g transform="translate(400,960)"><ellipse cx="0" cy="8" rx="60" ry="10" fill="#7a8ea4" opacity=".4"/><circle cx="0" cy="-40" r="50" fill="#fff" stroke="#7a8ea4" stroke-width="4"/><circle cx="0" cy="-120" r="36" fill="#fff" stroke="#7a8ea4" stroke-width="4"/><path d="M0,-118 l26,6 l-26,6Z" fill="#f29a3a"/><circle cx="-10" cy="-130" r="4" fill="#222"/><circle cx="10" cy="-130" r="4" fill="#222"/><path d="M-30,-88 Q0,-76 30,-88 L28,-78 Q0,-66 -28,-78Z" fill="#dd2a2a"/><path d="M-26,-150 L26,-150 L20,-186 L-20,-186Z M-34,-150 h68" stroke="#1a1a2a" stroke-width="6" fill="#1a1a2a"/></g>`;
+  s += rP(bx - 300, 980, 2.2, t, { ph: 1, child: true, top: '#dd2a2a', cap: '#2f7ad0' }) + rP(bx + 300, 1000, 2.2, t, { ph: 3, child: true, top: '#2f7ad0', cap: '#ffce00', dir: -1 }) + ball(bx, 1000 - Math.abs(S(t, 4)) * 60, 24);
+  return s + rLabel('Juegan al aire libre… ¡incluso con frío!', W / 2, 80, 44);
+};
+scenes.be_comida = function (t) {
+  let s = BEALL() + `<rect width="${W}" height="${H}" fill="#f2e6cc"/><rect x="0" y="600" width="${W}" height="480" fill="url(#rWood)"/>`;
+  s += `<path d="M60,610 L1860,610 L1920,1080 L0,1080Z" fill="#fff"/>${[...Array(16)].map((_, i) => `<path d="M${60 + i * 112},610 L${60 + i * 112 + 56},610 L${i * 120 + 60},1080 L${i * 120},1080Z" fill="#dd2a2a" opacity=".22"/>`).join('')}${[...Array(6)].map((_, j) => `<rect x="0" y="${640 + j * 80}" width="${W}" height="36" fill="#dd2a2a" opacity=".12"/>`).join('')}`;
+  s += `<g transform="translate(300,720)">${rShadow(0, 50, 150, .25)}<ellipse cx="0" cy="40" rx="160" ry="40" fill="#c98a4a"/>${[0, 1, 2].map(k => `<ellipse cx="${-60 + k * 60}" cy="${(k % 2) * 16}" rx="70" ry="44" fill="${['#a8622a', '#c98a4a', '#8a4a1a'][k]}" stroke="#5a2a10" stroke-width="3"/>`).join('')}</g>` + pretzel(720, 720, 1.2);
+  s += plate(1150, 760, 200, `<rect x="-130" y="-30" width="260" height="40" rx="20" fill="#c8603a"/><rect x="-120" y="10" width="240" height="36" rx="18" fill="#b8503a"/><path d="M-100,-20 q100,-20 200,0" stroke="#ffce00" stroke-width="6" fill="none"/>`);
+  s += plate(1560, 760, 170, `<path d="M-100,10 L100,10 L90,-30 Q0,-60 -90,-30Z" fill="#d9a04a"/>${[...Array(5)].map((_, i) => `<path d="M${-80 + i * 40},-30 l20,-10" stroke="#a8702a" stroke-width="5"/>`).join('')}`) + `<g transform="translate(1600,560)">${chocoCup(0, 0, .8)}${steam(0, -80, t, 2)}</g>`;
+  return s + rLabel('Panes', 300, 860, 32) + rLabel('Pretzel', 720, 860, 32) + rLabel('Salchichas', 1150, 900, 32) + rLabel('Pastel de manzana', 1560, 900, 32) + rLabel('Chocolate caliente en invierno', 1600, 460, 30) + rLabel('Lo que comen los niños en Berlín', W / 2, 90, 44);
+};
+scenes.be_aula = function (t) {
+  let s = BEALL() + `<rect width="${W}" height="${H}" fill="#f4ead4"/><rect x="480" y="120" width="960" height="380" fill="#2f5a3a" stroke="#8a6a46" stroke-width="18"/><text x="960" y="300" font-family="Fredoka" font-weight="600" font-size="80" text-anchor="middle" fill="#fff">Hallo! Hello! ¡Hola!</text><rect x="0" y="720" width="${W}" height="360" fill="#c9a07a"/>`;
+  // los niños, sentados detrás de sus mesas (la mesa tapa las piernas)
+  s += rP(460, 900, 2.3, t, ESC({ ph: 1, child: true, top: '#2f7ad0' })) + rP(960, 900, 2.3, t, ESC({ ph: 2, child: true, top: '#ffce00', longhair: true })) + rP(1460, 900, 2.3, t, ESC({ ph: 3, child: true, top: '#dd2a2a' }));
+  s += [0, 1, 2].map(i => `<g transform="translate(${460 + i * 500},860)"><rect x="-160" y="-20" width="320" height="24" fill="#a8774a"/><rect x="-160" y="4" width="320" height="70" fill="#8a5a32"/><rect x="-150" y="0" width="14" height="140" fill="#7a5232"/><rect x="136" y="0" width="14" height="140" fill="#7a5232"/>${[...Array(5)].map((_, k) => `<rect x="${-120 + k * 50}" y="-40" width="30" height="20" fill="${['#dd2a2a', '#ffce00', '#2f7ad0', '#3aa65a', '#b86ad0'][k]}"/>`).join('')}</g>`).join('');
+  return s + rLabel('Idiomas, manualidades, deportes y trabajo en equipo', W / 2, 1010, 38);
+};
+scenes.be_brandeburgo = function (t) {
+  let s = BEALL() + rSky('day') + rSun(1650, 140) + rClouds(t, [[300, 110, .8]]) + brandenburg(960, 820, 1.25) + `<rect x="0" y="820" width="${W}" height="260" fill="#9e9a92"/>${[...Array(14)].map((_, i) => `<line x1="${i * 150}" y1="820" x2="${i * 150 - 100}" y2="${H}" stroke="#8a867e" stroke-width="3"/>`).join('')}`;
+  return s + bePeople(t, 63, 14, 860, 1070) + rLabel('Puerta de Brandeburgo · Brandenburger Tor', W / 2, 1010, 38);
+};
+scenes.be_carruaje = function (t) {
+  let s = BEALL() + `<rect width="${W}" height="${H}" fill="#e8dcc0"/>` + `<g opacity=".95">` + rSky('day') + `</g><rect width="${W}" height="${H}" fill="#c9a77a" opacity=".3"/>` + brandenburg(960, 800, 1.1) + `<rect x="0" y="800" width="${W}" height="280" fill="#8e8a80"/>${[...Array(14)].map((_, i) => `<line x1="${i * 150}" y1="800" x2="${i * 150 - 100}" y2="${H}" stroke="#7a766c" stroke-width="3"/>`).join('')}`;
+  const x = ((t / L) * 2600) % 2800 - 400;
+  s += `<g transform="translate(${x},1010) scale(1.7)">${rShadow(0, 0, 200)}<path d="M-180,-60 L-40,-60 L-40,-180 L-180,-180Z" fill="#3a2a22"/><rect x="-170" y="-160" width="50" height="50" fill="#e8d8a8"/><path d="M-190,-60 L-30,-60 L-40,-30 L-180,-30Z" fill="#5a3a22"/>${[-150, -60].map(cx => `<circle cx="${cx}" cy="-30" r="30" fill="#e8c860" stroke="#3a2a22" stroke-width="6"/><circle cx="${cx}" cy="-30" r="6" fill="#3a2a22"/>`).join('')}
+  <g transform="translate(80,0)"><path d="M-50,-60 L-46,-110 Q-10,-130 30,-120 Q50,-150 70,-140 L74,-120 L50,-110 L46,-60 L36,-60 L32,-90 L-20,-90 L-30,-60 L-40,-60 L-38,-90Z" fill="#6b4a2a"/><path d="M${-40 + S(t, 8) * 6},-60 L${-40 + S(t, 8) * 6},0 M${30 - S(t, 8) * 6},-60 L${30 - S(t, 8) * 6},0" stroke="#6b4a2a" stroke-width="10"/></g></g>`;
+  return s + rLabel('Hace más de 200 años: carruajes, sin carros ni aviones', W / 2, 80, 36);
+};
+scenes.be_moraleja = function (t) {
+  let s = BEALL() + rSky('day') + rSun(1650, 140) + brandenburg(960, 760, .8) + `<rect x="0" y="760" width="${W}" height="320" fill="#9e9a92"/>`;
+  const kids = [['#4fb3f6', '#9c6a48'], ['#dd2a2a', '#f1cfae'], ['#ffce00', '#c99470'], ['#7a5a8a', '#e3b48e'], ['#3aa65a', '#5a3a2a'], ['#ff8a5a', '#f5d8bd']];
+  s += kids.map(([c, sk], i) => rP(560 + i * 160, 990, 2.1, t, ESC({ ph: i, child: true, top: c, skin: sk, longhair: i % 2 == 1 }))).join('') + `<path d="M${560 + 18},${990 - 150} ${[...Array(5)].map((_, i) => `L${560 + i * 160 + 142},${990 - 150}`).join(' ')}" stroke="#c99470" stroke-width="8" fill="none"/>`;
+  return s + rLabel('Moraleja: nuestras acciones pueden unir, no separar', W / 2, 1040, 34);
+};
+scenes.be_atardecer = function (t) {
+  let s = BEALL() + rSky('dusk') + rSun(1500, 420, 80) + tvTower(1700, 760, .7) + brandenburg(860, 800, .95) + `<rect x="0" y="800" width="${W}" height="280" fill="#6a5a62"/><rect x="0" y="800" width="${W}" height="280" fill="#e8908a" opacity=".15"/>`;
+  return s + bePeople(t, 113, 10, 840, 1060);
+};

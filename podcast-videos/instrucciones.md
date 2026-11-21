@@ -186,3 +186,18 @@ El código está en el zip **`mi-pequeno-atlas-videos-v5.zip`**, en la carpeta d
 - **Libros:** solo los capítulos 1-6 tienen libro. No mostrar libros de capítulos 7-12 (Ottawa, São Paulo…).
 - Las versiones corregidas se suben a carpetas nuevas «Capítulo N - Ciudad (video en partes) v2», sin borrar las anteriores.
 - Carpeta de entrega: «Videos YouTube Completos» (dentro de «Videos YouTube - Mi Pequeño Atlas»).
+
+## Correcciones pedidas por Vivi/Bibi (21-nov-2026)
+- **Música con derechos (Content ID):** Roma, Madrid, Santo Domingo y Berlín llevan de fondo la misma canción, que YouTube reclama. Se sustituye en todo el capítulo:
+  1. Separar la voz con Demucs: `python3 -m demucs --repo models/htdemucs_ft -n htdemucs_ft --two-stems vocals -d cpu -o sep audio.wav` (los pesos están en `models/htdemucs_ft`, descargados del espejo de Hugging Face `dokodesuka/htdemucs_ft`).
+  2. Crear música original: `tools/music_bed.py bed.wav SEGUNDOS`.
+  3. Mezclar: `tools/replace_bed.py vocals.wav no_vocals.wav bed.wav salida.wav` (la música nueva sigue la envolvente de volumen de la original; la voz no se toca).
+  4. El config apunta a `<ciudad>_v3.mp3`. Tokio, París, Ottawa y São Paulo usan otra música: pendiente de que Vivi confirme su origen.
+- **Nuevo cierre común** (`scenes.cierre`, `tools/scenes_cierre.js`): logo de Mi Pequeño Atlas, «¡Escucha el podcast!» y las portadas reales de los libros publicados (Tokio, Roma, París y Santo Domingo, en `assets/libros/`). Sustituye a la escena de despedida y Vinelis queda abajo a la derecha (`stage: cierre [[1730, .62]]`). No nombrar Spotify ni otras marcas salvo que Vivi lo pida.
+- **Cuentos en modo libro** (`book: {start, end}` en el config): libro abierto con la ilustración en la hoja izquierda y el texto del cuento en la derecha (la frase que se oye, resaltada), pasando página. Vinelis no sale mientras tanto.
+- **Personas:** siempre con los dos ojos (de frente). Tamaños coherentes con la perspectiva: quien está junto a los edificios se ve pequeño y quien está delante mide como los personajes principales (`bePeople`).
+- **Vinelis lleva zapatos** (`shoes()` en `vinelis_puppet.py`): rojos en Madrid y botas marrones en Berlín.
+- Vinelis no se pone delante de los platos ni de sus rótulos: en las escenas de comida se oculta (`hide`).
+- Los bocadillos de diálogo nunca tapan caras. Los objetos no pueden tener el mismo color que el fondo.
+- Murales del Muro: cada panel es distinto (palomas, caras, manos, la Tierra, una puerta abierta, flores, FRIEDEN, FREIHEIT…), en el espíritu del East Side Gallery pero originales.
+- Las entregas corregidas van a carpetas nuevas «… v3».

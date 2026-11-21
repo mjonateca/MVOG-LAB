@@ -402,3 +402,134 @@ scenes.ma_outro = function (t) {
   <text x="0" y="-20" font-family="Fredoka" font-weight="700" font-size="100" text-anchor="middle" fill="#c60b1e" stroke="#2b3a67" stroke-width="3" paint-order="stroke">¡Adiós, Madrid!</text>
   <text x="0" y="90" font-family="Fredoka" font-weight="600" font-size="52" text-anchor="middle" fill="#2b3a67">Nos vemos en el próximo viaje ✈</text></g>`;
 };
+
+/* =====================================================================
+   v3 (21-nov) — correcciones de Vinelis: más detalle en los lugares,
+   coches en el sentido correcto, zapatos en tarjeta y Bernabéu detallado.
+   (Estas definiciones sustituyen a las anteriores del mismo nombre.)
+   ===================================================================== */
+function farola(x, base, s = 1) { // farola fernandina madrileña
+  return `<g transform="translate(${x},${base}) scale(${s})">${rShadow(0, 0, 30, .2)}<path d="M-14,0 L14,0 L10,-30 L-10,-30Z" fill="#23272e"/><rect x="-5" y="-250" width="10" height="222" fill="#2b3038"/><path d="M-12,-60 h24 M-10,-140 h20" stroke="#2b3038" stroke-width="6"/>
+  <path d="M0,-250 Q-50,-260 -60,-290 M0,-250 Q50,-260 60,-290" stroke="#2b3038" stroke-width="6" fill="none"/>${[-60, 60].map(dx => `<g transform="translate(${dx},-300)"><path d="M-16,-30 L16,-30 L12,10 L-12,10Z" fill="#fff4c2" stroke="#2b3038" stroke-width="4"/><path d="M-20,-30 L20,-30 L0,-46Z" fill="#2b3038"/></g>`).join('')}</g>`;
+}
+function geranio(x, y, s = 1) { return `<g transform="translate(${x},${y}) scale(${s})"><rect x="-16" y="-10" width="32" height="14" fill="#b85a3a"/>${[[-10, -16], [0, -22], [10, -16], [-4, -12], [6, -12]].map(([a, b], k) => `<circle cx="${a}" cy="${b}" r="6" fill="${k % 2 ? '#e8343a' : '#3f7a3a'}"/>`).join('')}</g>`; }
+function madridBlock(x, base, w, h, col = '#e9dcc4', roof = '#6a7484') {
+  let s = `<rect x="${x}" y="${base - h}" width="${w}" height="${h}" fill="${col}"/><rect x="${x + w - 14}" y="${base - h}" width="14" height="${h}" fill="#000" opacity=".07"/>
+  <rect x="${x - 6}" y="${base - h - 12}" width="${w + 12}" height="14" fill="#cfc4ae"/>${[...Array(Math.floor(w / 18))].map((_, i) => `<rect x="${x + 4 + i * 18}" y="${base - h + 2}" width="9" height="9" fill="#cfc4ae"/>`).join('')}
+  <path d="M${x},${base - h - 12} L${x + 20},${base - h - 50} L${x + w - 20},${base - h - 50} L${x + w},${base - h - 12}Z" fill="${roof}"/>${[...Array(Math.max(1, Math.floor(w / 160)))].map((_, i) => `<g transform="translate(${x + 60 + i * 160},${base - h - 50})"><rect x="-16" y="-34" width="32" height="34" fill="#efe6d2"/><path d="M-20,-34 L0,-52 L20,-34Z" fill="${roof}"/><rect x="-9" y="-26" width="18" height="22" fill="#3a3f4a"/></g>`).join('')}
+  <rect x="${x + 10}" y="${base - h + 18}" width="${w - 20}" height="4" fill="#d6c9ae"/>`;
+  const cols = Math.max(2, Math.floor(w / 70)), rows = Math.floor((h - 100) / 80);
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) { const wx = x + 16 + c * (w - 32) / cols, wy = base - h + 26 + r * 80, ww = (w - 32) / cols - 22;
+    s += `<rect x="${wx - 5}" y="${wy - 8}" width="${ww + 10}" height="8" fill="#d8ccb2"/><rect x="${wx}" y="${wy}" width="${ww}" height="50" fill="#3a3f4a"/><rect x="${wx + ww / 2 - 1}" y="${wy}" width="2" height="34" fill="#6a7484"/><rect x="${wx + 2}" y="${wy + 2}" width="${ww / 2 - 4}" height="14" fill="#fff" opacity=".18"/>
+    <rect x="${wx - 4}" y="${wy + 46}" width="${ww + 8}" height="6" fill="#2a2a2a"/>${[...Array(5)].map((_, k) => `<line x1="${wx - 2 + k * (ww + 4) / 4}" y1="${wy + 34}" x2="${wx - 2 + k * (ww + 4) / 4}" y2="${wy + 50}" stroke="#2a2a2a" stroke-width="2"/>`).join('')}<line x1="${wx - 4}" y1="${wy + 34}" x2="${wx + ww + 4}" y2="${wy + 34}" stroke="#2a2a2a" stroke-width="2"/>${(r + c) % 3 == 0 ? geranio(wx + ww / 2, wy + 34, .9) : ''}`; }
+  // planta baja: comercios con toldos de rayas
+  const shops = Math.max(1, Math.floor(w / 160)), sw = w / shops, aw = ['#c8323a', '#2f6a4a', '#2b5a9a', '#d98a2a'];
+  s += `<rect x="${x}" y="${base - 90}" width="${w}" height="90" fill="#8a7a64"/>`;
+  for (let i = 0; i < shops; i++) { const sx = x + i * sw;
+    s += `<rect x="${sx + 12}" y="${base - 70}" width="${sw - 24}" height="66" fill="#4a5a6a"/><rect x="${sx + 12}" y="${base - 70}" width="${sw - 24}" height="66" fill="#fff" opacity=".14"/><rect x="${sx + sw / 2 - 14}" y="${base - 66}" width="28" height="62" fill="#2a3440"/>
+    <path d="M${sx + 6},${base - 88} L${sx + sw - 6},${base - 88} L${sx + sw - 16},${base - 62} L${sx + 16},${base - 62}Z" fill="${aw[(i + Math.round(x)) % 4]}"/>${[...Array(Math.floor((sw - 20) / 24))].map((_, k) => `<path d="M${sx + 16 + k * 24},${base - 88} l12,0 l-2,26 l-12,0Z" fill="#fff" opacity=".85"/>`).join('')}`; }
+  return s;
+}
+function maCarMove(t, lane) { // coches que circulan por la derecha: carril cercano → derecha, carril lejano → izquierda
+  const cars = lane == 'near' ? [['#c8323a', 0], ['#2b5a9a', .5]] : [['#f2f2f2', .78]];
+  return cars.map(([col, ph]) => { const p = ((t / L) + ph) % 1, x = lane == 'near' ? -220 + p * 2360 : 2140 - p * 2360, y = lane == 'near' ? 975 : 905, sc = lane == 'near' ? 1.05 : .88;
+    const spin = t / L * 360 * 8 * (lane == 'near' ? 1 : -1);
+    return rCar(x, y, sc, col, lane == 'near' ? 1 : -1) + [-55, 58].map(wx => `<g transform="translate(${x + wx * sc * (lane == 'near' ? 1 : -1)},${y - 10 * sc}) rotate(${spin})"><path d="M-7,0 H7 M0,-7 V7" stroke="#666" stroke-width="3"/></g>`).join(''); }).join('');
+}
+function maBus(t) { const p = ((t / L) + .28) % 1, x = 2140 - p * 2360;
+  return `<g transform="translate(${x},905) scale(.9)">${rShadow(160, 4, 200)}<rect x="0" y="-150" width="340" height="140" rx="16" fill="#d8262e"/><rect x="0" y="-58" width="340" height="14" fill="#fff" opacity=".9"/>${[...Array(5)].map((_, i) => `<rect x="${40 + i * 58}" y="-132" width="48" height="58" rx="6" fill="#9fc0dc"/>`).join('')}<path d="M0,-150 L-14,-130 L-14,-30 L0,-10Z" fill="#b81e26"/><rect x="-10" y="-128" width="30" height="80" rx="4" fill="#9fc0dc"/><rect x="8" y="-146" width="70" height="18" rx="3" fill="#222"/><text x="43" y="-132" font-family="Fredoka" font-weight="700" font-size="14" text-anchor="middle" fill="#ffb42a">SOL</text>
+  ${[60, 270].map(wx => `<circle cx="${wx}" cy="-10" r="22" fill="#222"/><circle cx="${wx}" cy="-10" r="9" fill="#999"/>`).join('')}</g>`; }
+scenes.ma_granvia = function (t) {
+  let s = MAALL() + sky(t) + madridBlock(-20, 800, 380, 560, '#efe2c6') + madridBlock(360, 800, 300, 480, '#e2cfb2') + madridBlock(1300, 800, 320, 500, '#e9dcc4') + madridBlock(1620, 800, 320, 600, '#f0e4cc');
+  s += metropolis(960, 800, .9) + rRoadScene(t, 800, { move: 0, front: false });
+  s += farola(140, 860, .9) + farola(700, 860, .9) + farola(1240, 860, .9) + farola(1780, 860, .9);
+  s += maBus(t) + maCarMove(t, 'far') + maCarMove(t, 'near');
+  s += esFlag(560, 220, .8) + `<rect x="0" y="1030" width="${W}" height="50" fill="url(#rWalk)"/>`;
+  return s + rLabel('Madrid · Gran Vía', W / 2, 1000, 38);
+};
+scenes.ma_retiro_ninos = function (t) {
+  let s = MAALL() + retiro(t, false);
+  const bx = 960 + S(t, 1) * 380;
+  s += rP(bx - 260, 1000, 1.7, t, { ph: 1, child: true, top: '#4fb3f6', skin: '#9c6a48' }) + rP(bx + 300, 1040, 1.7, t, { ph: 3, child: true, top: '#f2c14e', skin: '#c99470', dir: -1 }) + rP(bx + 40, 980, 1.6, t, { ph: 5, child: true, top: '#fff', bot: '#2b3a67', dir: -1 });
+  s += rP(1680, 1060, 1.7, t, ESC({ ph: 2, child: true, top: '#c8323a', longhair: true, dir: -1 })) + ball(bx, 1040 - Math.abs(S(t, 4)) * 60, 22);
+  s += farola(90, 1000, .7) + farola(1830, 1000, .7);
+  return s + rLabel('Parque del Retiro', 330, 80, 40);
+};
+scenes.ma_palacio = function (t) {
+  let s = MAALL() + sky(t, 'day', [300, 150]) + palacioReal(960, 820, 1.08) + `<rect x="0" y="820" width="${W}" height="260" fill="#d9ccb0"/>${[...Array(14)].map((_, i) => `<line x1="0" y1="${840 + i * 18}" x2="${W}" y2="${840 + i * 18}" stroke="#c9bc9e" stroke-width="2"/>`).join('')}`;
+  // verja de la Plaza de la Armería con pilares y jarrones
+  s += `<rect x="0" y="846" width="${W}" height="6" fill="#2b3038"/>${[...Array(97)].map((_, i) => `<line x1="${i * 20}" y1="852" x2="${i * 20}" y2="${806}" stroke="#2b3038" stroke-width="3"/><circle cx="${i * 20}" cy="804" r="3" fill="url(#maGold)"/>`).join('')}<rect x="0" y="812" width="${W}" height="4" fill="#2b3038"/>`;
+  s += [100, 560, 1360, 1820].map(x => `<g transform="translate(${x},852)"><rect x="-24" y="-90" width="48" height="90" fill="#e2dccd"/><rect x="-30" y="-98" width="60" height="12" fill="#cfc6b4"/><path d="M-14,-98 Q-22,-130 0,-140 Q22,-130 14,-98Z" fill="#cfc6b4"/></g>`).join('');
+  s += farola(330, 1000, .85) + farola(1590, 1000, .85) + `<g>${[...Array(8)].map((_, i) => `<ellipse cx="${200 + i * 220}" cy="1060" rx="70" ry="22" fill="#4f8a3a"/>`).join('')}</g>`;
+  return s + maCrowd(t, 101, 12, 880, 1050) + rLabel('Palacio Real · más de 3.000 habitaciones', W / 2, 1010, 36);
+};
+scenes.ma_prado = function (t) {
+  let s = MAALL() + sky(t) + `<rect x="0" y="520" width="${W}" height="120" fill="#5f8a48"/>` + [...Array(6)].map((_, i) => rTree(80 + i * 360, 560, .5, 'green', t, 800 + i)).join('') + prado(960, 820, 1) + `<rect x="0" y="820" width="${W}" height="260" fill="#cfc4ae"/>`;
+  // lonas del museo entre las columnas y parterres con flores
+  s += [-560, 560].map(dx => `<g transform="translate(${960 + dx},560)"><rect x="-60" y="0" width="120" height="200" fill="#7a1a24"/><rect x="-60" y="0" width="120" height="200" fill="#fff" opacity=".06"/><text x="0" y="90" font-family="Fredoka" font-weight="700" font-size="26" text-anchor="middle" fill="#f4e4c4">MUSEO</text><text x="0" y="124" font-family="Fredoka" font-weight="700" font-size="26" text-anchor="middle" fill="#f4e4c4">DEL PRADO</text><rect x="-64" y="-6" width="128" height="8" fill="#5a5048"/></g>`).join('');
+  s += [180, 520, 1400, 1740].map(x => `<g transform="translate(${x},880)"><ellipse rx="130" ry="26" fill="#4f8a3a"/>${[...Array(12)].map((_, k) => `<circle cx="${-100 + k * 18}" cy="${-6 - (k % 3) * 6}" r="7" fill="${['#e8343a', '#f2c14e', '#ff9ad5'][k % 3]}"/>`).join('')}</g>`).join('');
+  s += statueMan(960, 980, 1.1) + farola(700, 1000, .8) + farola(1220, 1000, .8) + maCrowd(t, 121, 12, 900, 1070);
+  return s + rLabel('Museo del Prado', W / 2, 80, 44);
+};
+scenes.ma_churros = function (t) {
+  let s = MAALL() + `<rect width="${W}" height="${H}" fill="#f4e4c4"/>`;
+  // pared de azulejos y mostrador de la churrería
+  s += `${[...Array(13)].map((_, i) => [...Array(5)].map((_, j) => `<g transform="translate(${i * 150 + 75},${190 + j * 90})"><rect x="-72" y="-42" width="144" height="84" fill="#fbf6ea" stroke="#d9c9a6" stroke-width="3"/><path d="M0,-30 L22,0 L0,30 L-22,0Z" fill="#2b6aa8" opacity=".75"/><circle r="8" fill="#f2c14e"/></g>`).join('')).join('')}`;
+  s += `<rect x="0" y="0" width="${W}" height="140" fill="#2f6a4a"/><text x="960" y="96" font-family="Fredoka" font-weight="700" font-size="64" text-anchor="middle" fill="#f4e4c4" letter-spacing="8">CHURRERÍA</text>${[...Array(20)].map((_, i) => `<path d="M${i * 100},140 l50,0 l-6,30 l-38,0Z" fill="${i % 2 ? '#fff' : '#2f6a4a'}"/>`).join('')}`;
+  s += `<rect x="0" y="600" width="${W}" height="480" fill="#fbfbf7"/>${[...Array(24)].map((_, i) => `<rect x="${i * 80}" y="600" width="40" height="480" fill="#c8323a" opacity=".12"/>`).join('')}`;
+  s += plate(700, 780, 380, '') + churro(640, 720, -6) + churro(660, 770, 3) + churro(700, 820, -2);
+  s += `<g transform="translate(260,700)"><path d="M-50,0 L50,0 L40,-110 L-40,-110Z" fill="#fff" stroke="#d6d6d6" stroke-width="3"/><path d="M-40,-110 Q0,-140 40,-110" fill="#f4f4f4"/><text x="0" y="-46" font-family="Fredoka" font-weight="700" font-size="22" text-anchor="middle" fill="#9a9a9a">AZÚCAR</text></g>`;
+  s += `<g transform="translate(1660,700)"><rect x="-70" y="-120" width="140" height="120" rx="10" fill="#b8bec4"/><rect x="-50" y="-100" width="100" height="60" fill="#fff"/>${[...Array(4)].map((_, k) => `<path d="M${-40 + k * 26},-100 l10,-26 l10,26" fill="#fff" stroke="#ddd"/>`).join('')}</g>`;
+  s += steam(1300, 620, t, 2);
+  const dip = Math.max(0, S(t, 1)) * 120;
+  s += `<g transform="translate(1330,${600 + dip * .25}) rotate(70)">${churro(0, 0, 0, .8)}</g>` + chocoCup(1300, 760, 1.1);
+  return s + rLabel('Churros con chocolate caliente', W / 2, 990, 44) + rArrowLabel('Crujientes por fuera, suaves por dentro', 560, 440, 640, 700, 30);
+};
+function zapatilla(x, y, s = 1, col = '#4f7fe0', flip = 1) { // zapatilla deportiva de perfil, con cordones y suela
+  return `<g transform="translate(${x},${y}) scale(${s * flip},${s})">${rShadow(0, 52, 200, .25)}
+  <path d="M-190,40 L-190,-20 Q-188,-70 -140,-80 L-40,-90 Q-10,-150 60,-150 Q120,-150 130,-100 L140,-60 Q200,-50 210,0 L212,40Z" fill="${col}" stroke="#1d2a5a" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M-196,40 L218,40 Q222,62 200,66 L-180,66 Q-200,62 -196,40Z" fill="#fff" stroke="#1d2a5a" stroke-width="6"/><path d="M-190,52 H210" stroke="#d6d6d6" stroke-width="4"/>
+  <path d="M-190,-20 Q-150,-30 -120,-10 L-100,40" fill="none" stroke="#fff" stroke-width="10" opacity=".9"/><path d="M130,-100 Q150,-110 160,-150 L100,-160" fill="#fff" stroke="#1d2a5a" stroke-width="5"/>
+  <path d="M-20,-30 Q60,-60 160,-10" stroke="#fff" stroke-width="14" fill="none" stroke-linecap="round"/>${[0, 1, 2, 3].map(k => `<path d="M${-30 + k * 34},${-96 + k * 10} l34,22 M${-30 + k * 34},${-74 + k * 10} l34,-22" stroke="#fff" stroke-width="6" stroke-linecap="round"/><circle cx="${-32 + k * 34}" cy="${-96 + k * 10}" r="5" fill="#1d2a5a"/>`).join('')}
+  <path d="M30,-130 q-40,-50 -10,-70 M40,-128 q30,-40 60,-20" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round"/></g>`;
+}
+scenes.ma_zapatos = function (t) {
+  let s = MAALL() + sky(t) + madridBlock(-20, 700, 660, 480, '#efe2c6') + madridBlock(640, 700, 640, 520, '#e9d4b8') + madridBlock(1280, 700, 660, 460, '#f0e4cc') + street(700) + maCrowd(t, 81, 12, 740, 860);
+  s += `<rect width="${W}" height="${H}" fill="#1d2a5a" opacity=".35"/>`;
+  // tarjeta de viaje: «En tu mochila» con las zapatillas cómodas
+  const b = S(t, 2) * 6;
+  s += `<g transform="translate(960,${560 + b}) rotate(-1.5)"><rect x="-610" y="-370" width="1220" height="740" rx="40" fill="#000" opacity=".25" transform="translate(14,16)"/><rect x="-610" y="-370" width="1220" height="740" rx="40" fill="#fffaf0" stroke="#1d2a5a" stroke-width="8"/>
+  <rect x="-610" y="-370" width="1220" height="120" rx="40" fill="#c60b1e"/><rect x="-610" y="-300" width="1220" height="50" fill="#c60b1e"/><text x="0" y="-290" font-family="Fredoka" font-weight="700" font-size="58" text-anchor="middle" fill="#ffc400">Consejo de viaje</text>
+  ${[...Array(9)].map((_, k) => `<line x1="-560" y1="${-200 + k * 56}" x2="560" y2="${-200 + k * 56}" stroke="#ecdfc4" stroke-width="3"/>`).join('')}
+  <g transform="translate(-300,40)">${zapatilla(0, -20, 1.05, '#4f7fe0')}</g>
+  <g transform="translate(300,40)"><rect x="-190" y="-230" width="380" height="380" rx="70" fill="#c8323a" stroke="#1d2a5a" stroke-width="7"/><rect x="-150" y="-100" width="300" height="170" rx="30" fill="#a8242c" stroke="#1d2a5a" stroke-width="5"/><path d="M-100,-230 Q-100,-300 0,-300 Q100,-300 100,-230" stroke="#1d2a5a" stroke-width="18" fill="none"/>
+  <g transform="translate(0,${-150 - Math.abs(S(t, 2)) * 30}) scale(.42)">${zapatilla(0, 0, 1, '#4f7fe0')}</g><rect x="-120" y="-40" width="240" height="20" rx="8" fill="#1d2a5a" opacity=".35"/></g>
+  <text x="0" y="300" font-family="Fredoka" font-weight="700" font-size="52" text-anchor="middle" fill="#1d2a5a">¡Zapatos cómodos en la mochila!</text></g>`;
+  return s;
+};
+scenes.ma_bernabeu = function (t) {
+  let s = MAALL() + sky(t, 'day', [1650, 120]);
+  // Paseo de la Castellana: árboles al fondo
+  for (let i = 0; i < 9; i++) s += rTree(60 + i * 230, 560, .5, 'green', t, 1200 + i);
+  s += `<g transform="translate(960,800)">`;
+  // cuerpo del estadio: piel de lamas de acero curvas que brillan
+  s += `<path d="M-900,0 L-900,-360 Q-900,-470 -760,-480 L760,-480 Q900,-470 900,-360 L900,0Z" fill="#a9b2ba"/>`;
+  for (let k = 0; k < 15; k++) { const y = -460 + k * 30; s += `<path d="M-900,${y} Q0,${y - 26 + Math.sin(k) * 6} 900,${y}" stroke="${k % 2 ? '#dfe5ea' : '#c3cbd2'}" stroke-width="18" fill="none"/>`; }
+  const gl = ((t / L) % 1) * 2200 - 1100;
+  s += `<path d="M${gl - 60},-480 L${gl + 40},-480 L${gl - 40},0 L${gl - 140},0Z" fill="#fff" opacity=".25"/>`;
+  // cubierta curva y pantalla de vídeo
+  s += `<path d="M-920,-470 Q0,-600 920,-470 L900,-440 Q0,-560 -900,-440Z" fill="#7d8790"/><path d="M-880,-480 Q0,-590 880,-480" stroke="#eef2f5" stroke-width="6" fill="none"/>`;
+  s += `<rect x="-470" y="-400" width="940" height="140" rx="10" fill="#14243e"/><rect x="-460" y="-390" width="920" height="120" rx="6" fill="#1d3f7a"/><text x="0" y="-310" font-family="Fredoka" font-weight="700" font-size="56" text-anchor="middle" fill="#fff" letter-spacing="3">ESTADIO SANTIAGO BERNABÉU</text>`;
+  s += `${[...Array(24)].map((_, i) => `<circle cx="${-450 + i * 39}" cy="-382" r="3" fill="#fff" opacity="${.3 + .7 * Math.abs(S(t, 4, i))}"/>`).join('')}`;
+  // torres de esquina con rampas en espiral
+  s += [-790, 790].map(x => `<g transform="translate(${x},0)"><rect x="-80" y="-430" width="160" height="430" rx="70" fill="#c9d0d6"/>${[...Array(8)].map((_, k) => `<path d="M-80,${-30 - k * 52} Q0,${-60 - k * 52} 80,${-56 - k * 52}" stroke="#8d969e" stroke-width="10" fill="none"/>`).join('')}<rect x="-80" y="-430" width="160" height="30" rx="14" fill="#b2bac1"/></g>`).join('');
+  // accesos con números de puerta y taquillas
+  s += [-520, -260, 0, 260, 520].map((x, i) => `<g transform="translate(${x},0)"><rect x="-80" y="-150" width="160" height="150" fill="#2b3038"/><rect x="-70" y="-140" width="140" height="140" fill="#46505c"/>${[...Array(6)].map((_, k) => `<line x1="${-60 + k * 24}" y1="-140" x2="${-60 + k * 24}" y2="0" stroke="#2b3038" stroke-width="4"/>`).join('')}<rect x="-40" y="-196" width="80" height="40" rx="8" fill="#fff"/><text x="0" y="-166" font-family="Fredoka" font-weight="700" font-size="30" text-anchor="middle" fill="#1d3f7a">P ${i + 1}</text></g>`).join('');
+  s += `</g>` + street(800);
+  // banderines y aficionados con bufandas
+  s += `${[...Array(14)].map((_, i) => `<path d="M${i * 140},250 l70,46 l70,-46" fill="${i % 2 ? '#fff' : '#1d3f7a'}" stroke="#555" stroke-width="2" opacity=".9"/>`).join('')}<path d="M0,250 Q960,300 1920,250" stroke="#555" stroke-width="3" fill="none"/>`;
+  s += farola(80, 1000, .8) + farola(1840, 1000, .8);
+  s += [...Array(10)].map((_, i) => { const x = 160 + i * 175, y = 940 + (i % 3) * 45, sc = 1.25 + (i % 3) * .15;
+    return rP(x, y, sc, t, { ph: i, top: i % 3 ? '#fff' : '#1d3f7a', bot: '#2b3a67', dir: i % 2 ? 1 : -1 }) + `<g transform="translate(${x},${y}) scale(${sc})"><path d="M-14,-118 Q0,-108 14,-118 L16,-110 Q0,-100 -16,-110Z" fill="${i % 2 ? '#1d3f7a' : '#fff'}"/><path d="M8,-112 L12,-70 L4,-70Z" fill="${i % 2 ? '#1d3f7a' : '#fff'}"/></g>`; }).join('');
+  return s + rLabel('¡A muchos niños les encanta el fútbol!', W / 2, 1030, 38);
+};

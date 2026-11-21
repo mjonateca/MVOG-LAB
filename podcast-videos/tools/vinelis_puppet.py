@@ -279,6 +279,24 @@ def madrid_body(img):
     cv2.line(lay, (404, 760), (552, 760), (40, 40, 200, 255), 8, cv2.LINE_AA)
     return over(img, lay)
 
+# ---------- zapatos (pedido de Vinelis 21-nov: que no salga descalza) ----------
+def shoes(img, col=(46, 16, 200, 255), dark=(30, 10, 120, 255)):
+    lay = np.zeros_like(img)
+    L = np.array([(410, 1013), (409, 998), (418, 986), (438, 976), (462, 973), (477, 981), (481, 998), (480, 1013)], np.int32)
+    R = np.array([(509, 1013), (510, 994), (517, 978), (540, 970), (556, 978), (566, 994), (569, 1013)], np.int32)
+    for poly in (L, R):
+        cv2.fillPoly(lay, [poly], col, cv2.LINE_AA)
+        cv2.polylines(lay, [poly], True, (20, 10, 40, 255), 3, cv2.LINE_AA)
+        x0, x1 = poly[:, 0].min(), poly[:, 0].max()
+        cv2.rectangle(lay, (int(x0) - 1, 1009), (int(x1) + 1, 1016), dark, -1, cv2.LINE_AA)
+    cv2.line(lay, (440, 980), (470, 984), (20, 10, 40, 255), 6, cv2.LINE_AA)
+    cv2.line(lay, (522, 978), (552, 976), (20, 10, 40, 255), 6, cv2.LINE_AA)
+    for c in ((456, 982), (538, 977)):
+        cv2.circle(lay, c, 5, (210, 210, 220, 255), -1, cv2.LINE_AA)
+    cv2.ellipse(lay, (428, 992), (8, 4), -20, 0, 360, (255, 255, 255, 110), -1, cv2.LINE_AA)
+    cv2.ellipse(lay, (552, 988), (8, 4), 20, 0, 360, (255, 255, 255, 110), -1, cv2.LINE_AA)
+    return over(img, lay)
+
 def flower(lay, cx, cy, r, col=(40, 40, 210, 255), core=(30, 30, 170, 255), n=10):
     for k in range(n):
         a = k * (360 / n) * math.pi / 180
@@ -419,6 +437,7 @@ for pose, (la, ra) in POSES.items():
         gap = (yy > 930) & (yy < 990) & (xx > 360) & (xx < 600) & (((body[..., 2] > body[..., 0] + 25) & (body[..., 1] > 120)) | (body[..., :3].min(2) > 170))
         body[..., 3] *= np.where(gap, 0, 1)
         body = berlin_body(body)
+        body = shoes(body, (40, 70, 120, 255), (25, 40, 70, 255))
     if OUTFIT == 'santodomingo':
         gap = (yy > 930) & (yy < 990) & (xx > 360) & (xx < 600) & (((body[..., 2] > body[..., 0] + 25) & (body[..., 1] > 120)) | (body[..., :3].min(2) > 170))
         body[..., 3] *= np.where(gap, 0, 1)
@@ -427,6 +446,7 @@ for pose, (la, ra) in POSES.items():
         gap = (yy > 930) & (yy < 990) & (xx > 360) & (xx < 600) & (((body[..., 2] > body[..., 0] + 25) & (body[..., 1] > 120)) | (body[..., :3].min(2) > 170))
         body[..., 3] *= np.where(gap, 0, 1)
         body = madrid_body(body)
+        body = shoes(body)
     if OUTFIT == 'paris':
         gap = (yy > 930) & (yy < 990) & (xx > 360) & (xx < 600) & (((body[..., 2] > body[..., 0] + 25) & (body[..., 1] > 120)) | (body[..., :3].min(2) > 170))
         body[..., 3] *= np.where(gap, 0, 1)

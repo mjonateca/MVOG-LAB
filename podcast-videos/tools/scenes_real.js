@@ -65,7 +65,7 @@ function rP(x, y, s, t, o = {}) {
     <path d="M${-hr},${hc - 1} Q${-hr},${hc - hr - 4} 0,${hc - hr - 2} Q${hr},${hc - hr - 4} ${hr},${hc - 1} Q${hr * .55},${hc - hr * .55} 0,${hc - hr * .6} Q${-hr * .55},${hc - hr * .55} ${-hr},${hc - 1}Z" fill="${hair}"/>
     ${o.longhair ? `<path d="M${-hr},${hc - 2} Q${-hr - 3},${hc + hr + 6} ${-hr + 4},${hc + hr + 10} L${-hr + 6},${hc} Z M${hr},${hc - 2} Q${hr + 3},${hc + hr + 6} ${hr - 4},${hc + hr + 10} L${hr - 6},${hc}Z" fill="${hair}"/>` : ''}
     ${o.bun ? `<circle cx="0" cy="${hc - hr - 4}" r="${hr * .45}" fill="${hair}"/>` : ''}
-    <circle cx="${hr * .45}" cy="${hc + 1}" r="1.6" fill="#222"/>${cap}`;
+    <circle cx="${-hr * .36}" cy="${hc + 1}" r="1.7" fill="#222"/><circle cx="${hr * .36}" cy="${hc + 1}" r="1.7" fill="#222"/>${cap}`;
   return `<g transform="translate(${x},${y + bob}) scale(${s * dir},${s})">${rShadow(0, 0, child ? 16 : 20)}${legs}
     <g transform="rotate(${bow} 0 ${hip})">${bag}${torso}${head}</g>${o.umbrella ? `<path d="M2,${sh - 10} L2,${hc - 40}" stroke="#333" stroke-width="2"/><path d="M-34,${hc - 34} Q2,${hc - 70} 38,${hc - 34}Z" fill="${o.umbrella}"/>` : ''}</g>`;
 }

@@ -1,5 +1,5 @@
 {
- "audio": "berlin.mp3",
+ "audio": "berlin_v3.mp3",
  "transcript": "transcript_fixed.json",
  "workdir": ".",
  "out": "berlin-para-ninos-mi-pequeno-atlas.mp4",
@@ -241,7 +241,7 @@
   ],
   [
    757.3,
-   "be_outro"
+   "cierre"
   ]
  ],
  "stage": {
@@ -496,6 +496,16 @@
     1630,
     1.0
    ]
+  ],
+  "cierre": [
+   [
+    1730,
+    0.62
+   ]
   ]
+ },
+ "book": {
+  "start": 626.8,
+  "end": 706.3
  }
 }

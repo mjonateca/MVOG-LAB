@@ -125,6 +125,103 @@ def blend(dst, src, x, y):
     reg = dst[y0:y1, x0:x1].astype(np.uint16)
     dst[y0:y1, x0:x1] = ((s[..., :3].astype(np.uint16) * al + reg * (255 - al)) // 255).astype(np.uint8)
 
+# ---------- modo libro (cuento: ilustración en la hoja izquierda, texto en la derecha) ----------
+BOOK = cfg.get('book')   # {'start': t0, 'end': t1}
+if BOOK:
+    BX0, BY0, BX1, BY1 = 90, 118, W - 90, H - 40          # libro abierto
+    SPX = W // 2                                            # lomo
+    PG = (BX0 + 30, BY0 + 24, BX1 - 30, BY1 - 34)           # área de las dos hojas
+    _bg = Image.new('RGB', (W, H), (122, 78, 46)); _d = ImageDraw.Draw(_bg)
+    for k in range(0, H, 6): _d.line([(0, k), (W, k)], fill=(122 + (k * 7) % 14, 78 + (k * 5) % 10, 46), width=6)
+    _d.rounded_rectangle([BX0 - 6, BY0 + 8, BX1 + 6, BY1 + 14], 26, fill=(60, 34, 20))          # sombra
+    _d.rounded_rectangle([BX0, BY0, BX1, BY1], 24, fill=(166, 28, 40))                          # tapa
+    for k in range(6): _d.rounded_rectangle([PG[0] - 4 + k, PG[1] + 6 - k, PG[2] + 4 - k, PG[3] + 6 - k], 10, fill=(225 - k * 4, 214 - k * 4, 190 - k * 4))  # canto de las hojas
+    _d.rectangle([PG[0], PG[1], PG[2], PG[3]], fill=(253, 247, 232))
+    BOOKBG = np.array(_bg)
+    for k in range(70):      # sombra del lomo
+        a = (1 - k / 70) ** 2 * 0.28
+        for xx in (SPX - k - 1, SPX + k):
+            BOOKBG[PG[1]:PG[3], xx] = (BOOKBG[PG[1]:PG[3], xx] * (1 - a)).astype(np.uint8)
+    BOOKBG[PG[1]:PG[3], SPX - 1:SPX + 1] = (150, 130, 110)
+    font_bk = ImageFont.truetype(os.path.join(TOOLS, 'fredoka-600.ttf'), 42)
+    font_bk_t = ImageFont.truetype(os.path.join(TOOLS, 'fredoka-700.ttf'), 34)
+    TXW = (PG[2] - SPX) - 120
+    # páginas de texto: frases del cuento agrupadas en hojas de hasta 11 líneas
+    # frases completas del cuento (a partir de las palabras), para que cada línea se lea entera
+    bcues, _cur = [], []
+    for w_ in words:
+        if not (BOOK['start'] - 0.2 <= w_['s'] < BOOK['end']): continue
+        _cur.append(w_)
+        if re.search(r'[.!?…]$', w_['w'].strip()):
+            bcues.append((_cur[0]['s'], _cur[-1]['e'], ''.join(x['w'] for x in _cur).strip())); _cur = []
+    if _cur: bcues.append((_cur[0]['s'], _cur[-1]['e'], ''.join(x['w'] for x in _cur).strip()))
+    def _wrap(txt):
+        ws, ln, out = txt.split(), '', []
+        for w_ in ws:
+            if font_bk.getlength((ln + ' ' + w_).strip()) > TXW: out.append(ln); ln = w_
+            else: ln = (ln + ' ' + w_).strip()
+        return out + ([ln] if ln else [])
+    PAGES = []; cur = []; nl = 0
+    for c in bcues:
+        L_ = _wrap(c[2])
+        if cur and nl + len(L_) > 12: PAGES.append(cur); cur = []; nl = 0
+        cur.append((c[0], c[1], L_)); nl += len(L_) + 0.4
+    if cur: PAGES.append(cur)
+    PSTART = [max(BOOK['start'], pg[0][0] - 0.3) for pg in PAGES]; PSTART[0] = BOOK['start']
+    _pcache = {}
+    def page_img(pi, active):
+        key = (pi, active)
+        if key in _pcache: return _pcache[key]
+        if len(_pcache) > 40: _pcache.clear()
+        im = Image.new('RGB', (PG[2] - SPX, PG[3] - PG[1]), (253, 247, 232)); d = ImageDraw.Draw(im)
+        y = 60
+        for ci_, (cs, ce, L_) in enumerate(PAGES[pi]):
+            col = (29, 42, 90) if ci_ <= active else (170, 176, 196)
+            for ln in L_:
+                d.text((60, y), ln, font=font_bk, fill=col); y += 54
+            y += 16
+        d.text((im.width / 2, im.height - 40), str(2 * pi + 2), font=font_bk_t, fill=(160, 140, 110), anchor='mm')
+        arr = np.array(im)
+        for k in range(50): arr[:, k] = (arr[:, k] * (1 - (1 - k / 50) ** 2 * 0.22)).astype(np.uint8)
+        _pcache[key] = arr; return arr
+    def left_page(scene_fr, pi):
+        pw, ph = SPX - PG[0], PG[3] - PG[1]
+        im = np.zeros((ph, pw, 3), np.uint8); im[:] = (253, 247, 232)
+        iw = pw - 90; ih = int(iw * 2 / 3); ix = 45; iy = (ph - ih) // 2 - 24
+        _cw = int(scene_fr.shape[0] * 3 / 2); _x0 = (scene_fr.shape[1] - _cw) // 2; scene_fr = scene_fr[:, _x0:_x0 + _cw]
+        im[iy - 10:iy + ih + 10, ix - 10:ix + iw + 10] = (122, 78, 46)
+        im[iy:iy + ih, ix:ix + iw] = cv2.resize(scene_fr, (iw, ih), interpolation=cv2.INTER_AREA)
+        pil = Image.fromarray(im); ImageDraw.Draw(pil).text((pw / 2, ph - 40), str(2 * pi + 1), font=font_bk_t, fill=(160, 140, 110), anchor='mm')
+        im = np.array(pil)
+        for k in range(50): im[:, pw - 1 - k] = (im[:, pw - 1 - k] * (1 - (1 - k / 50) ** 2 * 0.22)).astype(np.uint8)
+        return im
+    def book_frame(scene_fr, t):
+        pi = max(i for i, ps in enumerate(PSTART) if ps <= t)
+        act = 0
+        for k, (cs, ce, L_) in enumerate(PAGES[pi]):
+            if cs - 0.1 <= t: act = k
+        out_ = BOOKBG.copy()
+        lp = left_page(scene_fr, pi); rp = page_img(pi, act)
+        out_[PG[1]:PG[3], PG[0]:SPX] = lp; out_[PG[1]:PG[3], SPX:PG[2]] = rp
+        TT = 0.7; dt = t - PSTART[pi]
+        if pi > 0 and dt < TT:     # pasar la hoja: la página derecha anterior gira sobre el lomo
+            k = dt / TT
+            if k < 0.5:
+                old = page_img(pi - 1, len(PAGES[pi - 1]) - 1); ww = int((PG[2] - SPX) * math.cos(k * math.pi))
+                if ww > 2:
+                    sq = cv2.resize(old, (ww, PG[3] - PG[1])); sq = (sq * (0.75 + 0.25 * (1 - k * 2))).astype(np.uint8)
+                    out_[PG[1]:PG[3], SPX:SPX + ww] = sq
+                out_[PG[1]:PG[3], PG[0]:SPX] = left_page(scene_fr, pi - 1) if True else lp
+            else:
+                ww = int((SPX - PG[0]) * -math.cos(k * math.pi))
+                if ww > 2:
+                    sq = cv2.resize(lp, (ww, PG[3] - PG[1])); sq = (sq * (0.75 + 0.25 * (k * 2 - 1))).astype(np.uint8)
+                    old_l = left_page(scene_fr, pi - 1); out_[PG[1]:PG[3], PG[0]:SPX] = old_l
+                    out_[PG[1]:PG[3], SPX - ww:SPX] = sq
+        fade = min(1.0, (t - BOOK['start']) / 0.6, (BOOK['end'] - t) / 0.6)
+        if fade < 1: out_ = cv2.addWeighted(out_, max(0, fade), scene_fr, 1 - max(0, fade), 0)
+        return out_
+
 # ---------- scenes ----------
 sched = sorted(cfg['schedule'], key=lambda e: e[0])
 def scene_at(t):
@@ -186,6 +283,7 @@ if GAP:
     for a_, b_ in zip(words, words[1:]):
         if b_['s'] - a_['e'] >= GAP:
             HIDE.append([a_['e'] + 0.35, b_['s'] - 0.35])
+if BOOK: HIDE.append([BOOK['start'] + 0.1, BOOK['end'] - 0.1])
 def visible(t, ramp=0.45):
     v = 1.0
     for a, b in HIDE:
@@ -233,6 +331,8 @@ for f in range(f0, f1):
             pf = loop_frame(prev[-1][1], f)
             k = seg_t / XF
             fr = cv2.addWeighted(fr, k, pf, 1 - k, 0)
+    if BOOK and BOOK['start'] <= t < BOOK['end']:
+        fr = book_frame(fr, t)
     is_card = scene in ('intro', 'outro')
     if not is_card:
         blend(fr, chip, 30, 26)

@@ -1,5 +1,5 @@
 {
- "audio": "santo-domingo.mp3",
+ "audio": "santo-domingo_v3.mp3",
  "transcript": "transcript_fixed.json",
  "workdir": ".",
  "out": "santo-domingo-para-ninos-mi-pequeno-atlas.mp4",
@@ -257,7 +257,7 @@
   ],
   [
    923.0,
-   "sd_outro"
+   "cierre"
   ]
  ],
  "stage": {
@@ -575,6 +575,12 @@
    [
     1820,
     0.55
+   ]
+  ],
+  "cierre": [
+   [
+    1730,
+    0.62
    ]
   ]
  }
