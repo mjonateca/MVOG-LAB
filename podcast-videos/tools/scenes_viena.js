@@ -211,7 +211,7 @@ scenes.vi_caballos = function (t) {
 scenes.vi_potro = function (t) {
   let s = VIALL() + rSky('day') + rSun(1650, 140) + `<rect x="0" y="560" width="${W}" height="520" fill="url(#viGrass)"/>` + `<path d="M0,700 L${W},700" stroke="#8a6a46" stroke-width="8"/>${[...Array(40)].map((_, i) => `<line x1="${i * 50}" y1="640" x2="${i * 50}" y2="710" stroke="#8a6a46" stroke-width="5"/>`).join('')}<path d="M0,650 L${W},650" stroke="#8a6a46" stroke-width="6"/>`;
   s += lipizzaner(820, 960, 1.9, t, {}) + lipizzaner(1300, 990, 1.1, t, { col: '#3a2a22', dir: -1 });
-  return s + rArrowLabel('Potro: nace oscuro', 1580, 640, 1340, 790, 30) + rArrowLabel('De mayor: blanco', 340, 520, 640, 760, 30) + rLabel('Nacen oscuros y se vuelven blancos como la nieve', W / 2, 140, 40);
+  return s + rArrowLabel('Potro: nace oscuro', 1250, 560, 1330, 790, 30) + rArrowLabel('De mayor: blanco', 340, 520, 640, 760, 30) + rLabel('Nacen oscuros y se vuelven blancos como la nieve', W / 2, 140, 40);
 };
 scenes.vi_cabriola = function (t) {
   const p = (t / L * 2) % 1, j = Math.sin(p * Math.PI) * 160;
@@ -302,7 +302,7 @@ scenes.vi_pregunta = function (t) {
   let s = VIALL() + `<rect width="${W}" height="${H}" fill="#2b3a67"/>` + [...Array(14)].map((_, i) => `<text x="${(i * 157) % W}" y="${((i * 97) + t / L * 300) % H}" font-family="Fredoka" font-weight="700" font-size="${60 + (i % 3) * 20}" fill="${AT_RED}" opacity=".35">?</text>`).join('');
   s += `<g transform="translate(960,260)"><rect x="-600" y="-90" width="1200" height="180" rx="36" fill="#fff"/><text y="20" font-family="Fredoka" font-weight="700" font-size="56" text-anchor="middle" fill="#2b3a67">Si vinierais a Viena, ¿qué haríais primero?</text></g>`;
   const opt = (x, txt, inner) => `<g transform="translate(${x},680)"><rect x="-260" y="-200" width="520" height="400" rx="30" fill="#fff" stroke="${AT_RED}" stroke-width="6"/>${inner}<text y="160" font-family="Fredoka" font-weight="700" font-size="32" text-anchor="middle" fill="#2b3a67">${txt}</text></g>`;
-  s += opt(360, 'Ver bailar un caballo blanco', `<g transform="translate(-20,90)">${lipizzaner(0, 0, .9, t, { rear: 20 })}</g>`) + opt(960, 'Perderse en el laberinto', `<g transform="translate(0,20)">${[...Array(4)].map((_, k) => `<rect x="${-140 + k * 20}" y="${-110 + k * 30}" width="${280 - k * 40}" height="14" fill="#2f6a2a"/>`).join('')}<rect x="-140" y="-110" width="14" height="140" fill="#2f6a2a"/><rect x="126" y="-110" width="14" height="140" fill="#2f6a2a"/></g>`) + opt(1560, 'Probar la tarta Sacher', `<g transform="translate(0,30)">${sacher(0, 0, .9)}</g>`);
+  s += `<g transform="translate(40,120) scale(.8)">` + opt(360, 'Ver bailar un caballo blanco', `<g transform="translate(-20,90)">${lipizzaner(0, 0, .9, t, { rear: 20 })}</g>`) + opt(960, 'Perderse en el laberinto', `<g transform="translate(0,20)">${[...Array(4)].map((_, k) => `<rect x="${-140 + k * 20}" y="${-110 + k * 30}" width="${280 - k * 40}" height="14" fill="#2f6a2a"/>`).join('')}<rect x="-140" y="-110" width="14" height="140" fill="#2f6a2a"/><rect x="126" y="-110" width="14" height="140" fill="#2f6a2a"/></g>`) + opt(1560, 'Probar la tarta Sacher', `<g transform="translate(0,30)">${sacher(0, 0, .9)}</g>`) + `</g>`;
   return s;
 };
 scenes.vi_despedida = function (t) {
@@ -312,10 +312,12 @@ scenes.vi_despedida = function (t) {
 scenes.vi_resumen = function (t) {
   const card = (i, inner, label) => { const x = 140 + i * 430, r = (i - 1.5) * 3; return `<g transform="translate(${x},${360 + (i % 2) * 70}) rotate(${r})"><rect x="-4" y="-2" width="380" height="440" fill="#000" opacity=".25"/><rect x="-12" y="-12" width="380" height="440" fill="#fff"/><circle cx="178" cy="-4" r="12" fill="#e8352a"/><svg x="0" y="0" width="356" height="330" viewBox="0 0 356 330">${inner}</svg><text x="178" y="390" font-family="Fredoka" font-weight="700" font-size="32" text-anchor="middle" fill="#2b3a67">${label}</text></g>`; };
   let s = VIALL() + `<rect width="${W}" height="${H}" fill="#b9895a"/><rect x="30" y="30" width="${W - 60}" height="${H - 60}" fill="none" stroke="#7a5232" stroke-width="30"/>`;
+  s += `<g transform="translate(30,60) scale(.8)">`;
   s += card(0, `<rect width="356" height="330" fill="#3a4a5a"/><g transform="translate(178,150) scale(.8)"><circle cx="0" cy="-20" r="46" fill="#e8c4a0"/><path d="M-50,-20 Q-50,-76 0,-76 Q50,-76 50,-20 Q40,-50 0,-52 Q-40,-50 -50,-20Z" fill="#f4f0e8"/><circle cx="-16" cy="-20" r="4" fill="#222"/><circle cx="16" cy="-20" r="4" fill="#222"/><path d="M-80,130 Q-80,40 0,30 Q80,40 80,130Z" fill="${AT_RED}"/></g>`, 'Mozart de niño');
   s += card(1, `<rect width="356" height="330" fill="#8ac8e8"/><rect y="230" width="356" height="100" fill="#7aa85a"/><g transform="translate(140,270) scale(.6)"><ellipse cx="0" cy="-70" rx="90" ry="70" fill="#f4f4f0"/><circle cx="0" cy="-170" r="60" fill="#f4f4f0"/><circle cx="-46" cy="-216" r="20" fill="#1a1a1a"/><circle cx="46" cy="-216" r="20" fill="#1a1a1a"/><ellipse cx="-22" cy="-176" rx="14" ry="18" fill="#1a1a1a"/><ellipse cx="22" cy="-176" rx="14" ry="18" fill="#1a1a1a"/></g>`, 'El zoo más antiguo');
   s += card(2, `<rect width="356" height="330" fill="#f8f4ea"/><g transform="translate(150,300) scale(.9)">${lipizzaner(0, 0, 1, 0, { rear: 22 })}</g>`, 'Caballos que bailan');
   s += card(3, `<rect width="356" height="330" fill="#fdf3dc"/><g transform="translate(170,200)">${sacher(0, 0, .9)}</g>`, 'La tarta Sacher');
+  s += `</g>`;
   return s + rLabel('Hoy hemos…', W / 2, 140, 44);
 };
 scenes.vi_cuaderno = function (t) {
