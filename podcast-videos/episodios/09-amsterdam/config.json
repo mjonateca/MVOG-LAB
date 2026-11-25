@@ -1,0 +1,538 @@
+{
+ "audio": "amsterdam.mp3",
+ "transcript": "transcript_fixed.json",
+ "workdir": ".",
+ "out": "amsterdam-para-ninos-mi-pequeno-atlas.mp4",
+ "chip": "Mi Pequeño Atlas  ·  Capítulo 9: Ámsterdam",
+ "spreaker_episode_id": 76294267,
+ "outfit": "amsterdam",
+ "char_scale": 1.25,
+ "hide_silence": 3.0,
+ "subtitles": false,
+ "others": [
+  [
+   46.13,
+   90.75,
+   "Sanne"
+  ],
+  [
+   106.83,
+   186.33,
+   "Sanne"
+  ],
+  [
+   199.53,
+   272.45,
+   "Sanne"
+  ],
+  [
+   286.49,
+   362.53,
+   "Sanne"
+  ],
+  [
+   374.85,
+   451.01,
+   "Sanne"
+  ],
+  [
+   460.53,
+   542.05,
+   "Sanne"
+  ],
+  [
+   553.21,
+   655.73,
+   "Sanne"
+  ]
+ ],
+ "hide": [
+  [
+   363.2,
+   451.7
+  ]
+ ],
+ "schedule": [
+  [
+   0,
+   "am_intro"
+  ],
+  [
+   17.6,
+   "am_mapa"
+  ],
+  [
+   22.5,
+   "am_canal"
+  ],
+  [
+   27.5,
+   "am_barcos_bicis"
+  ],
+  [
+   32.3,
+   "am_invitada"
+  ],
+  [
+   52.5,
+   "am_agua"
+  ],
+  [
+   65.6,
+   "am_bicis"
+  ],
+  [
+   74.3,
+   "am_tiposbici"
+  ],
+  [
+   81.4,
+   "am_timbres"
+  ],
+  [
+   88.5,
+   "vuelo"
+  ],
+  [
+   96.0,
+   "am_canal"
+  ],
+  [
+   106.8,
+   "am_dique"
+  ],
+  [
+   121.6,
+   "am_anillos"
+  ],
+  [
+   127.0,
+   "am_casas"
+  ],
+  [
+   136.2,
+   "am_inclinadas"
+  ],
+  [
+   144.0,
+   "am_pilotes"
+  ],
+  [
+   158.0,
+   "am_estrechas"
+  ],
+  [
+   167.9,
+   "am_gancho"
+  ],
+  [
+   186.9,
+   "am_barcocasa"
+  ],
+  [
+   219.0,
+   "am_barcomuseo"
+  ],
+  [
+   229.8,
+   "am_desayuno_patos"
+  ],
+  [
+   241.6,
+   "am_nemo"
+  ],
+  [
+   249.9,
+   "am_nemo_dentro"
+  ],
+  [
+   260.4,
+   "am_nemo_techo"
+  ],
+  [
+   272.4,
+   "am_cuadros"
+  ],
+  [
+   291.8,
+   "am_rijks"
+  ],
+  [
+   298.6,
+   "am_ronda"
+  ],
+  [
+   324.7,
+   "am_vangogh"
+  ],
+  [
+   349.0,
+   "am_consejo"
+  ],
+  [
+   363.2,
+   "am_comida"
+  ],
+  [
+   383.1,
+   "am_hagelslag"
+  ],
+  [
+   401.0,
+   "am_stroopwafel"
+  ],
+  [
+   418.6,
+   "am_poffertjes"
+  ],
+  [
+   429.1,
+   "am_queso"
+  ],
+  [
+   451.7,
+   "am_tulipanes"
+  ],
+  [
+   487.4,
+   "am_keukenhof"
+  ],
+  [
+   513.7,
+   "am_bloemenmarkt"
+  ],
+  [
+   525.6,
+   "am_vondelpark"
+  ],
+  [
+   536.7,
+   "am_tulipan_amarillo"
+  ],
+  [
+   542.5,
+   "am_secretos"
+  ],
+  [
+   556.6,
+   "am_anafrank"
+  ],
+  [
+   588.4,
+   "am_casa_estrecha"
+  ],
+  [
+   608.4,
+   "am_begijnhof"
+  ],
+  [
+   633.7,
+   "am_pregunta"
+  ],
+  [
+   651.3,
+   "am_despedida"
+  ],
+  [
+   668.4,
+   "am_resumen"
+  ],
+  [
+   682.5,
+   "am_cuaderno"
+  ],
+  [
+   697.8,
+   "am_atardecer"
+  ],
+  [
+   704.2,
+   "cierre"
+  ]
+ ],
+ "stage": {
+  "am_intro": [
+   [
+    1710,
+    0.98
+   ],
+   [
+    240,
+    0.95
+   ]
+  ],
+  "am_mapa": [
+   [
+    330,
+    1.0
+   ]
+  ],
+  "am_canal": [
+   [
+    300,
+    0.9
+   ],
+   [
+    1620,
+    0.9
+   ]
+  ],
+  "am_barcos_bicis": [
+   [
+    1700,
+    0.8
+   ]
+  ],
+  "am_invitada": [
+   [
+    300,
+    0.9
+   ]
+  ],
+  "am_agua": [
+   [
+    300,
+    0.9
+   ]
+  ],
+  "am_bicis": [
+   [
+    1720,
+    0.8
+   ]
+  ],
+  "am_tiposbici": [
+   [
+    960,
+    0.6,
+    40
+   ]
+  ],
+  "am_timbres": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "am_dique": [
+   [
+    1720,
+    0.8
+   ]
+  ],
+  "am_anillos": [
+   [
+    300,
+    0.9
+   ]
+  ],
+  "am_casas": [
+   [
+    1720,
+    0.8
+   ]
+  ],
+  "am_inclinadas": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "am_pilotes": [
+   [
+    960,
+    0.7
+   ]
+  ],
+  "am_estrechas": [
+   [
+    300,
+    0.9
+   ]
+  ],
+  "am_gancho": [
+   [
+    300,
+    0.9
+   ]
+  ],
+  "am_barcocasa": [
+   [
+    300,
+    0.85
+   ],
+   [
+    1720,
+    0.85
+   ]
+  ],
+  "am_barcomuseo": [
+   [
+    960,
+    0.8
+   ]
+  ],
+  "am_desayuno_patos": [
+   [
+    1720,
+    0.75
+   ]
+  ],
+  "am_nemo": [
+   [
+    300,
+    0.9
+   ]
+  ],
+  "am_nemo_dentro": [
+   [
+    1200,
+    0.75
+   ]
+  ],
+  "am_nemo_techo": [
+   [
+    1650,
+    0.85
+   ]
+  ],
+  "am_cuadros": [
+   [
+    960,
+    0.8
+   ]
+  ],
+  "am_rijks": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "am_ronda": [
+   [
+    1720,
+    0.6
+   ]
+  ],
+  "am_vangogh": [
+   [
+    960,
+    0.75
+   ]
+  ],
+  "am_consejo": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "am_queso": [
+   [
+    1760,
+    0.75
+   ]
+  ],
+  "am_tulipanes": [
+   [
+    300,
+    0.9
+   ]
+  ],
+  "am_keukenhof": [
+   [
+    1500,
+    0.8
+   ]
+  ],
+  "am_bloemenmarkt": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "am_vondelpark": [
+   [
+    1720,
+    0.85
+   ]
+  ],
+  "am_tulipan_amarillo": [
+   [
+    400,
+    0.9
+   ]
+  ],
+  "am_secretos": [
+   [
+    300,
+    0.9
+   ]
+  ],
+  "am_anafrank": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "am_casa_estrecha": [
+   [
+    1720,
+    0.75
+   ]
+  ],
+  "am_begijnhof": [
+   [
+    1500,
+    0.85
+   ]
+  ],
+  "am_pregunta": [
+   [
+    960,
+    0.6,
+    40
+   ]
+  ],
+  "am_despedida": [
+   [
+    300,
+    0.95
+   ],
+   [
+    1630,
+    0.95
+   ]
+  ],
+  "am_resumen": [
+   [
+    960,
+    0.6,
+    40
+   ]
+  ],
+  "am_cuaderno": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "am_atardecer": [
+   [
+    1500,
+    0.9
+   ]
+  ],
+  "cierre": [
+   [
+    1730,
+    0.62
+   ]
+  ],
+  "vuelo": [
+   [
+    1660,
+    0.95
+   ]
+  ]
+ }
+}

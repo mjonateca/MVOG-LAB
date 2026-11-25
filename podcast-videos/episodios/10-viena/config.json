@@ -1,0 +1,483 @@
+{
+ "audio": "viena.mp3",
+ "transcript": "transcript_fixed.json",
+ "workdir": ".",
+ "out": "viena-para-ninos-mi-pequeno-atlas.mp4",
+ "chip": "Mi Pequeño Atlas  ·  Capítulo 10: Viena",
+ "spreaker_episode_id": 76403064,
+ "outfit": "viena",
+ "char_scale": 1.25,
+ "hide_silence": 3.0,
+ "subtitles": false,
+ "others": [
+  [
+   41.24,
+   81.84,
+   "Lucas"
+  ],
+  [
+   101.1,
+   180.4,
+   "Lucas"
+  ],
+  [
+   195.26,
+   265.62,
+   "Lucas"
+  ],
+  [
+   278.29,
+   353.15,
+   "Lucas"
+  ],
+  [
+   368.11,
+   455.08,
+   "Lucas"
+  ],
+  [
+   470.58,
+   537.06,
+   "Lucas"
+  ],
+  [
+   550.12,
+   660.82,
+   "Lucas"
+  ]
+ ],
+ "hide": [
+  [
+   365.6,
+   451.0
+  ]
+ ],
+ "schedule": [
+  [
+   0,
+   "vi_intro"
+  ],
+  [
+   17.2,
+   "vi_mapa"
+  ],
+  [
+   30.5,
+   "vi_invitado"
+  ],
+  [
+   46.0,
+   "vi_cajamusica"
+  ],
+  [
+   54.9,
+   "vi_salon"
+  ],
+  [
+   58.6,
+   "vi_olores"
+  ],
+  [
+   68.3,
+   "vi_stephansdom"
+  ],
+  [
+   82.8,
+   "vi_musica_calle"
+  ],
+  [
+   101.1,
+   "vi_hofburg"
+  ],
+  [
+   110.4,
+   "vi_compositores"
+  ],
+  [
+   121.2,
+   "vi_mozart_nino"
+  ],
+  [
+   142.1,
+   "vi_vals"
+  ],
+  [
+   156.7,
+   "vi_danubio"
+  ],
+  [
+   169.7,
+   "vi_strauss"
+  ],
+  [
+   173.5,
+   "vi_sala_dorada"
+  ],
+  [
+   181.6,
+   "vi_schonbrunn"
+  ],
+  [
+   209.3,
+   "vi_jardines"
+  ],
+  [
+   225.1,
+   "vi_zoo"
+  ],
+  [
+   237.5,
+   "vi_pandas"
+  ],
+  [
+   249.9,
+   "vi_zoo"
+  ],
+  [
+   267.8,
+   "vi_caballos"
+  ],
+  [
+   287.9,
+   "vi_potro"
+  ],
+  [
+   307.2,
+   "vi_caballos"
+  ],
+  [
+   319.3,
+   "vi_cabriola"
+  ],
+  [
+   351.3,
+   "vi_cafe"
+  ],
+  [
+   365.6,
+   "vi_franz"
+  ],
+  [
+   398.8,
+   "vi_sacher"
+  ],
+  [
+   417.7,
+   "vi_strudel"
+  ],
+  [
+   431.1,
+   "vi_cafe"
+  ],
+  [
+   457.9,
+   "vi_prater"
+  ],
+  [
+   485.1,
+   "vi_cabina"
+  ],
+  [
+   507.9,
+   "vi_tiovivo"
+  ],
+  [
+   517.9,
+   "vi_isla"
+  ],
+  [
+   537.0,
+   "vi_secretos"
+  ],
+  [
+   553.5,
+   "vi_coro"
+  ],
+  [
+   586.0,
+   "vi_hundertwasser"
+  ],
+  [
+   612.3,
+   "vi_palmenhaus"
+  ],
+  [
+   637.8,
+   "vi_pregunta"
+  ],
+  [
+   657.2,
+   "vi_despedida"
+  ],
+  [
+   675.6,
+   "vi_resumen"
+  ],
+  [
+   691.7,
+   "vi_cuaderno"
+  ],
+  [
+   707.9,
+   "vi_atardecer"
+  ],
+  [
+   714.0,
+   "cierre"
+  ]
+ ],
+ "stage": {
+  "vi_intro": [
+   [
+    1710,
+    0.98
+   ],
+   [
+    240,
+    0.95
+   ]
+  ],
+  "vi_mapa": [
+   [
+    1650,
+    1.0
+   ]
+  ],
+  "vi_invitado": [
+   [
+    300,
+    0.9
+   ]
+  ],
+  "vi_cajamusica": [
+   [
+    1700,
+    0.8
+   ]
+  ],
+  "vi_salon": [
+   [
+    1720,
+    0.7
+   ]
+  ],
+  "vi_olores": [
+   [
+    1720,
+    0.8
+   ]
+  ],
+  "vi_stephansdom": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "vi_musica_calle": [
+   [
+    1700,
+    0.8
+   ]
+  ],
+  "vi_hofburg": [
+   [
+    1720,
+    0.75
+   ]
+  ],
+  "vi_compositores": [
+   [
+    960,
+    0.55,
+    40
+   ]
+  ],
+  "vi_mozart_nino": [
+   [
+    1700,
+    0.75
+   ]
+  ],
+  "vi_vals": [
+   [
+    1720,
+    0.7
+   ]
+  ],
+  "vi_danubio": [
+   [
+    1720,
+    0.85
+   ]
+  ],
+  "vi_strauss": [
+   [
+    1650,
+    0.85
+   ]
+  ],
+  "vi_sala_dorada": [
+   [
+    1760,
+    0.55,
+    40
+   ]
+  ],
+  "vi_schonbrunn": [
+   [
+    1760,
+    0.7
+   ]
+  ],
+  "vi_jardines": [
+   [
+    1720,
+    0.8
+   ]
+  ],
+  "vi_zoo": [
+   [
+    1720,
+    0.75
+   ]
+  ],
+  "vi_pandas": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "vi_caballos": [
+   [
+    960,
+    0.65
+   ]
+  ],
+  "vi_potro": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "vi_cabriola": [
+   [
+    1720,
+    0.6
+   ]
+  ],
+  "vi_cafe": [
+   [
+    1700,
+    0.75
+   ]
+  ],
+  "vi_franz": [
+   [
+    1720,
+    0.8
+   ]
+  ],
+  "vi_sacher": [
+   [
+    1700,
+    0.75
+   ]
+  ],
+  "vi_strudel": [
+   [
+    300,
+    0.75
+   ]
+  ],
+  "vi_prater": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "vi_cabina": [
+   [
+    1720,
+    0.75
+   ]
+  ],
+  "vi_tiovivo": [
+   [
+    1700,
+    0.8
+   ]
+  ],
+  "vi_isla": [
+   [
+    1720,
+    0.85
+   ]
+  ],
+  "vi_secretos": [
+   [
+    300,
+    0.9
+   ]
+  ],
+  "vi_coro": [
+   [
+    1780,
+    0.6
+   ]
+  ],
+  "vi_hundertwasser": [
+   [
+    1760,
+    0.75
+   ]
+  ],
+  "vi_palmenhaus": [
+   [
+    1720,
+    0.8
+   ]
+  ],
+  "vi_pregunta": [
+   [
+    960,
+    0.6,
+    40
+   ]
+  ],
+  "vi_despedida": [
+   [
+    300,
+    0.95
+   ],
+   [
+    1630,
+    0.95
+   ]
+  ],
+  "vi_resumen": [
+   [
+    960,
+    0.6,
+    40
+   ]
+  ],
+  "vi_cuaderno": [
+   [
+    300,
+    0.85
+   ]
+  ],
+  "vi_atardecer": [
+   [
+    960,
+    0.9
+   ]
+  ],
+  "cierre": [
+   [
+    1730,
+    0.62
+   ]
+  ]
+ }
+}

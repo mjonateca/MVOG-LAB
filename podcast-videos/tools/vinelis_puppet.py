@@ -444,6 +444,74 @@ def sp_head(img):
     flower(lay, 404, 358, 18, (60, 225, 255, 255), (20, 170, 230, 255), 5)
     return over(img, lay)
 
+# ---------- Ámsterdam: vestido naranja (Koningsdag), delantal blanco, tulipán y zuecos ----------
+def ams_body(img):
+    lay = np.zeros_like(img)
+    dress = np.array([(415, 626), (450, 610), (478, 640), (506, 610), (541, 626), (556, 700), (552, 760), (590, 912), (366, 912), (404, 760), (400, 700)], np.int32)
+    cv2.fillPoly(lay, [dress], (30, 120, 245, 255), cv2.LINE_AA)
+    cv2.polylines(lay, [dress], True, (20, 80, 180, 255), 3, cv2.LINE_AA)
+    apron = np.array([(430, 720), (526, 720), (548, 900), (408, 900)], np.int32)
+    cv2.fillPoly(lay, [apron], (245, 245, 248, 255), cv2.LINE_AA)
+    cv2.polylines(lay, [apron], True, (200, 200, 210, 255), 2, cv2.LINE_AA)
+    for y in (760, 800, 840, 880): cv2.line(lay, (420, y), (536, y), (230, 200, 120, 255), 2, cv2.LINE_AA)
+    cv2.line(lay, (404, 716), (552, 716), (245, 245, 248, 255), 10, cv2.LINE_AA)
+    cv2.polylines(lay, [np.array([(438, 618), (478, 650), (518, 618)], np.int32)], False, (245, 245, 248, 255), 8, cv2.LINE_AA)
+    return over(img, lay)
+
+def ams_head(img):
+    lay = np.zeros_like(img)
+    cv2.line(lay, (378, 410), (360, 440), (60, 140, 60, 255), 5, cv2.LINE_AA)
+    cv2.ellipse(lay, (352, 428), (16, 7), -40, 0, 360, (60, 150, 60, 255), -1, cv2.LINE_AA)
+    tul = np.array([(362, 392), (370, 368), (380, 384), (390, 366), (398, 392), (392, 410), (368, 410)], np.int32)
+    cv2.fillPoly(lay, [tul], (60, 40, 220, 255), cv2.LINE_AA)
+    cv2.polylines(lay, [tul], True, (40, 20, 160, 255), 2, cv2.LINE_AA)
+    return over(img, lay)
+
+# ---------- Viena: dirndl (corpiño rojo, falda verde, delantal blanco, blusa de mangas abullonadas) ----------
+def vie_body(img):
+    lay = np.zeros_like(img)
+    skirt = np.array([(404, 740), (552, 740), (592, 912), (364, 912)], np.int32)
+    cv2.fillPoly(lay, [skirt], (60, 120, 40, 255), cv2.LINE_AA)
+    cv2.polylines(lay, [skirt], True, (40, 80, 25, 255), 3, cv2.LINE_AA)
+    blouse = np.array([(415, 626), (450, 610), (478, 640), (506, 610), (541, 626), (556, 700), (554, 744), (402, 744), (400, 700)], np.int32)
+    cv2.fillPoly(lay, [blouse], (248, 248, 250, 255), cv2.LINE_AA)
+    bod = np.array([(420, 660), (536, 660), (552, 744), (404, 744)], np.int32)
+    cv2.fillPoly(lay, [bod], (40, 40, 190, 255), cv2.LINE_AA)
+    cv2.polylines(lay, [bod], True, (25, 25, 120, 255), 3, cv2.LINE_AA)
+    for k in range(4):
+        y = 672 + k * 18; cv2.line(lay, (468, y), (488, y + 9), (40, 190, 235, 255), 3, cv2.LINE_AA); cv2.line(lay, (488, y), (468, y + 9), (40, 190, 235, 255), 3, cv2.LINE_AA)
+    apron = np.array([(434, 744), (522, 744), (540, 904), (416, 904)], np.int32)
+    cv2.fillPoly(lay, [apron], (246, 246, 248, 255), cv2.LINE_AA)
+    for x in range(440, 540, 16): cv2.line(lay, (x, 750), (x - 4 + (x - 478) // 10, 900), (215, 215, 222, 255), 2, cv2.LINE_AA)
+    cv2.line(lay, (404, 744), (552, 744), (40, 160, 225, 255), 8, cv2.LINE_AA)
+    cv2.circle(lay, (520, 748), 9, (40, 160, 225, 255), -1, cv2.LINE_AA)
+    return over(img, lay)
+
+def vie_shoulders(img):
+    lay = np.zeros_like(img)
+    for cx in (424, 532):
+        cv2.ellipse(lay, (cx, 634), (26, 26), 0, 0, 360, (248, 248, 250, 255), -1, cv2.LINE_AA)
+        cv2.ellipse(lay, (cx, 634), (26, 26), 0, 30, 150, (215, 215, 225, 255), 3, cv2.LINE_AA)
+    return over(img, lay)
+
+def clean_legs(body, y0=905):
+    """Debajo de la falda deja solo dos espinillas limpias (quita restos del vestido original)."""
+    sk = (62, 105, 168)
+    legs = np.zeros_like(body)
+    for (x0, x1) in ((452, 446), (526, 536)):
+        poly = np.array([(x0 - 13, y0 - 5), (x0 + 13, y0 - 5), (x1 + 9, 978), (x1 - 9, 978)], np.int32)
+        cv2.fillPoly(legs, [poly], (*sk, 255), cv2.LINE_AA)
+        cv2.polylines(legs, [poly], True, (40, 70, 120, 255), 2, cv2.LINE_AA)
+    body[..., 3] *= np.where((yy > y0) & (yy < 985) & (xx > 380) & (xx < 580), 0, 1)
+    return over(body, legs)
+
+def shoulder_caps(img, col, edge):
+    lay = np.zeros_like(img)
+    for cx in (424, 532):
+        cv2.ellipse(lay, (cx, 632), (26, 28), 0, 0, 360, col, -1, cv2.LINE_AA)
+        cv2.ellipse(lay, (cx, 632), (26, 28), 0, 30, 150, edge, 3, cv2.LINE_AA)
+    return over(img, lay)
+
 # crop window (union of poses) and output scale
 CX0, CY0, CX1, CY1 = 60, 230, 900, 1030
 SCALE = 0.72
@@ -490,6 +558,14 @@ for pose, (la, ra) in POSES.items():
         body[..., 3] *= np.where(gap, 0, 1)
         body = madrid_body(body)
         body = shoes(body)
+    if OUTFIT in ('amsterdam', 'viena'):
+        gap = (yy > 930) & (yy < 990) & (xx > 360) & (xx < 600) & (((body[..., 2] > body[..., 0] + 25) & (body[..., 1] > 120)) | (body[..., :3].min(2) > 170))
+        body[..., 3] *= np.where(gap, 0, 1)
+        body = clean_legs(body, 910)
+        if OUTFIT == 'amsterdam':
+            body = ams_body(body); body = shoes(body, (40, 200, 240, 255), (20, 140, 190, 255))
+        else:
+            body = vie_body(body); body = shoes(body, (40, 40, 40, 255), (15, 15, 15, 255))
     if OUTFIT == 'paris':
         gap = (yy > 930) & (yy < 990) & (xx > 360) & (xx < 600) & (((body[..., 2] > body[..., 0] + 25) & (body[..., 1] > 120)) | (body[..., :3].min(2) > 170))
         body[..., 3] *= np.where(gap, 0, 1)
@@ -510,6 +586,10 @@ for pose, (la, ra) in POSES.items():
         body = sp_head(body)
     if OUTFIT == 'ottawa':
         body = berlin_hat(body, (40, 40, 200, 255), (240, 240, 245, 255), (200, 200, 210, 255), leaf=True)
+    if OUTFIT == 'amsterdam':
+        body = shoulder_caps(body, (30, 120, 245, 255), (20, 80, 180, 255)); body = ams_head(body)
+    if OUTFIT == 'viena':
+        body = vie_shoulders(body); body = madrid_head(body)
     if OUTFIT == 'paris':
         body = paris_sleeve(body, 'L', la); body = paris_sleeve(body, 'R', ra); body = paris_beret(body)
     for m in (0, 1, 2):
