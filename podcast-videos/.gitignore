@@ -14,3 +14,4 @@ render.log
 drive/
 seg/
 models/
+episodios/*/*.out
