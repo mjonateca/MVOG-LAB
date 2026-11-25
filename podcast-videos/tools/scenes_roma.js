@@ -320,3 +320,140 @@ scenes.ro_outro = function (t) {
   <text x="0" y="-20" font-family="Fredoka" font-weight="700" font-size="104" text-anchor="middle" fill="#2f9a4a" stroke="#2b3a67" stroke-width="3" paint-order="stroke">Ciao, Roma!</text>
   <text x="0" y="90" font-family="Fredoka" font-weight="600" font-size="52" text-anchor="middle" fill="#2b3a67">Nos vemos en el próximo viaje ✈</text></g>`;
 };
+
+/* =====================================================================
+   v4 (25-nov) — más detalle en los monumentos (petición de Vinelis):
+   Coliseo, Fontana di Trevi, Panteón, Foro, San Pedro y Capilla Sixtina.
+   ===================================================================== */
+function roColumn(x, base, h, w = 40, order = 'corintio', col = '#efe6cc') { // columna con basa, fuste estriado y capitel
+  let s = `<rect x="${x - w * .65}" y="${base - w * .35}" width="${w * 1.3}" height="${w * .35}" fill="#d9cca8"/><rect x="${x - w / 2}" y="${base - h + w * .5}" width="${w}" height="${h - w * .85}" fill="${col}"/>`;
+  for (let k = 1; k < 5; k++) s += `<line x1="${x - w / 2 + k * w / 5}" y1="${base - h + w * .55}" x2="${x - w / 2 + k * w / 5}" y2="${base - w * .4}" stroke="#d2c4a0" stroke-width="2"/>`;
+  s += `<rect x="${x + w * .25}" y="${base - h + w * .5}" width="${w * .25}" height="${h - w * .85}" fill="#000" opacity=".07"/>`;
+  if (order == 'corintio') s += `<path d="M${x - w * .75},${base - h} L${x + w * .75},${base - h} L${x + w * .55},${base - h + w * .55} L${x - w * .55},${base - h + w * .55}Z" fill="#e2d4b0"/>${[-1, 0, 1].map(k => `<path d="M${x + k * w * .4},${base - h + w * .5} q${-w * .2},${-w * .3} 0,${-w * .45}" stroke="#bfae86" stroke-width="2.5" fill="none"/>`).join('')}`;
+  else if (order == 'jonico') s += `<rect x="${x - w * .7}" y="${base - h + w * .2}" width="${w * 1.4}" height="${w * .3}" fill="#e2d4b0"/><circle cx="${x - w * .62}" cy="${base - h + w * .38}" r="${w * .18}" fill="none" stroke="#bfae86" stroke-width="2.5"/><circle cx="${x + w * .62}" cy="${base - h + w * .38}" r="${w * .18}" fill="none" stroke="#bfae86" stroke-width="2.5"/>`;
+  else s += `<rect x="${x - w * .65}" y="${base - h + w * .2}" width="${w * 1.3}" height="${w * .3}" fill="#e2d4b0"/>`;
+  return s;
+}
+function statueRO(x, y, s = 1, col = '#f2efe6') { // estatua clásica sencilla sobre el ático
+  return `<g transform="translate(${x},${y}) scale(${s})" fill="${col}"><rect x="-16" y="-8" width="32" height="8" fill="#d9cca8"/><path d="M-12,-8 L-14,-60 Q0,-70 14,-60 L12,-8Z"/><circle cx="0" cy="-76" r="10"/><path d="M12,-58 L26,-82" stroke="${col}" stroke-width="6" stroke-linecap="round"/><path d="M-14,-56 Q-18,-34 -10,-20" stroke="#000" stroke-opacity=".12" stroke-width="3" fill="none"/></g>`;
+}
+function colosseum(cx, base, s = 1) {
+  let o = `<g transform="translate(${cx},${base}) scale(${s})">`;
+  // anillo interior visible por la parte en ruinas
+  o += `<path d="M380,-430 Q560,-380 640,-250 L640,0 L380,0Z" fill="#b8a27a"/>`;
+  for (let tier = 0; tier < 3; tier++) for (let i = 0; i < 4; i++) { const x = 420 + i * 52, y0 = -tier * 110; o += `<path d="M${x},${y0} L${x},${y0 - 70} Q${x + 18},${y0 - 95} ${x + 36},${y0 - 70} L${x + 36},${y0}Z" fill="#6a5640"/>`; }
+  o += `<path d="M380,-430 l40,30 l-20,40 l30,30 l-10,50 l40,20 l-20,60 l40,40 l-30,60 l40,40 L380,0Z" fill="#a8946c"/>`;
+  // fachada exterior: tres pisos de arcos con medias columnas y el ático con ventanas
+  o += `<path d="M-620,0 L-620,-470 Q-100,-500 380,-470 L380,0Z" fill="url(#roTrav)"/>`;
+  const orders = ['toscano', 'jonico', 'corintio'];
+  for (let tier = 0; tier < 3; tier++) { const y0 = -tier * 118;
+    for (let i = 0; i < 14; i++) { const x = -604 + i * 70;
+      o += `<path d="M${x + 14},${y0 - 6} L${x + 14},${y0 - 74} Q${x + 35},${y0 - 104} ${x + 56},${y0 - 74} L${x + 56},${y0 - 6}Z" fill="#4a3a2c"/><path d="M${x + 14},${y0 - 74} Q${x + 35},${y0 - 104} ${x + 56},${y0 - 74}" stroke="#c9b48a" stroke-width="5" fill="none"/>`;
+      if (tier > 0 && i % 2 == 0) o += statueRO(x + 35, y0 - 8, .55, '#e8e0cc');
+      o += roColumn(x, y0 - 6, 104, 13, orders[tier], '#e6d6b0'); }
+    o += `<rect x="-620" y="${y0 - 120}" width="1000" height="14" fill="#d9c69c"/><rect x="-620" y="${y0 - 108}" width="1000" height="3" fill="#bfae86"/><rect x="-620" y="${y0 - 8}" width="1000" height="8" fill="#cdb88e"/>`; }
+  o += `<rect x="-620" y="-470" width="1000" height="118" fill="#e2d0a8"/>`;
+  for (let i = 0; i < 14; i++) { const x = -604 + i * 70; o += `<rect x="${x - 4}" y="-470" width="8" height="118" fill="#d0bc94"/>${i % 2 ? `<rect x="${x + 24}" y="-440" width="22" height="34" fill="#6a5640"/>` : ''}`; }
+  o += `<rect x="-630" y="-478" width="1010" height="12" fill="#cdb88e"/>`;
+  // textura de bloques y manchas de piedra antigua
+  for (let k = 0; k < 40; k++) o += `<rect x="${-600 + (k * 97) % 960}" y="${-460 + (k * 61) % 440}" width="${10 + (k % 4) * 6}" height="5" fill="#000" opacity=".05"/>`;
+  return o + `</g>`;
+}
+function trevi(cx, base, s = 1, t = 0) {
+  let o = `<g transform="translate(${cx},${base}) scale(${s})"><rect x="-700" y="-640" width="1400" height="640" fill="url(#roTrav)"/>`;
+  // palacio Poli: ventanas con frontones entre pilastras corintias
+  for (const x of [-620, -530, -440, 440, 530, 620]) o += roColumn(x, -150, 470, 30, 'corintio', '#efe6cc');
+  for (const x of [-575, -485, 485, 575]) o += `<path d="M${x - 30},-520 L${x},-548 L${x + 30},-520Z" fill="#e2d4b0"/><rect x="${x - 26}" y="-516" width="52" height="86" fill="#4a5664"/><rect x="${x - 30}" y="-430" width="60" height="8" fill="#e2d4b0"/><rect x="${x - 26}" y="-360" width="52" height="80" fill="#4a5664"/><rect x="${x - 30}" y="-280" width="60" height="8" fill="#e2d4b0"/>`;
+  // arco del triunfo central con columnas y el nicho de Océano
+  o += `<rect x="-300" y="-640" width="600" height="490" fill="#ece0c2"/>`;
+  for (const x of [-260, -180, 180, 260]) o += roColumn(x, -150, 480, 44, 'corintio', '#f4ecd6');
+  o += `<path d="M-130,-150 L-130,-470 Q0,-570 130,-470 L130,-150Z" fill="#c9b894"/><path d="M-110,-470 Q0,-550 110,-470" stroke="#e8dcc0" stroke-width="10" fill="none"/>${[...Array(7)].map((_, k) => `<path d="M0,-470 L${-100 + k * 33},${-540 + Math.abs(k - 3) * 18}" stroke="#d8cab0" stroke-width="3"/>`).join('')}`;
+  o += `<g transform="translate(0,-290)" fill="#f6f2e8"><circle cx="0" cy="-118" r="22"/><path d="M-12,-140 Q0,-160 14,-138 Q22,-120 10,-96Z" fill="#e8e2d0"/><path d="M-36,-96 Q0,-110 36,-96 L44,30 L-44,30Z"/><path d="M-36,-90 L-74,-40 M36,-90 L60,-130" stroke="#f6f2e8" stroke-width="16" stroke-linecap="round"/><path d="M-50,30 Q-80,70 -40,96 L60,96 Q90,60 50,30Z" fill="#eee6d4"/></g>`;
+  // ático con inscripción y cuatro estatuas; escudo papal encima
+  o += `<rect x="-720" y="-660" width="1440" height="28" fill="#e2d4b0"/><rect x="-300" y="-740" width="600" height="84" fill="#e8dcc0"/><text x="0" y="-686" font-family="Fredoka" font-weight="600" font-size="32" text-anchor="middle" fill="#8a7a5a" letter-spacing="8">AQVA VIRGO</text>`;
+  for (const x of [-220, -73, 73, 220]) o += statueRO(x, -740, 1.1);
+  o += `<g transform="translate(0,-760)"><ellipse rx="44" ry="34" fill="#e2d4b0"/><path d="M-20,-34 L0,-62 L20,-34Z" fill="#d9c69c"/></g>`;
+  // tritones con caballos y rocas con plantas
+  o += [-210, 210].map(x => { const d = x < 0 ? -1 : 1; return `<g transform="translate(${x},-120)" fill="#f2efe6"><path d="M${-70 * d},10 Q${-20 * d},-60 ${40 * d},-40 L${70 * d},-80 L${90 * d},-60 L${70 * d},-20 Q${50 * d},30 ${-60 * d},30Z"/><path d="M${70 * d},-80 l${18 * d},-20 M${78 * d},-72 l${22 * d},-12" stroke="#f2efe6" stroke-width="8" stroke-linecap="round"/><path d="M${-20 * d},-30 L${-30 * d},20 M${20 * d},-34 L${20 * d},20" stroke="#f2efe6" stroke-width="12" stroke-linecap="round"/><circle cx="${-60 * d}" cy="-70" r="14"/><path d="M${-60 * d},-56 L${-56 * d},0" stroke="#f2efe6" stroke-width="18"/></g>`; }).join('');
+  o += `<path d="M-700,-150 Q-560,-110 -460,-140 Q-380,-90 -300,-120 Q-200,-60 -100,-110 Q0,-50 100,-110 Q200,-60 300,-120 Q380,-90 460,-140 Q560,-110 700,-150 L700,-60 L-700,-60Z" fill="#cfc2a4"/>`;
+  for (let k = 0; k < 18; k++) o += `<path d="M${-640 + k * 75},${-110 - (k % 3) * 10} q-10,-24 6,-30 q4,16 -6,30Z" fill="#5a8a3a"/>`;
+  // cascadas
+  o += `${[...Array(12)].map((_, i) => `<path d="M${-200 + i * 36},${-140} q4,${30 + (i % 3) * 14} 0,${76}" stroke="#d8f0f8" stroke-width="7" fill="none" opacity="${.55 + .45 * Math.abs(S(t, 4, i))}"/>`).join('')}<path d="M-120,-180 Q0,-160 120,-180 L110,-150 Q0,-130 -110,-150Z" fill="#9ad4e4" opacity=".8"/>`;
+  o += `<rect x="-760" y="-60" width="1520" height="60" fill="url(#roWater)"/>${[...Array(10)].map((_, i) => `<path d="M${-700 + ((i * 160 + t / L * 120) % 1400)},-34 q20,-6 40,0" stroke="#e8f8fc" stroke-width="3" fill="none"/>`).join('')}<rect x="-780" y="-8" width="1560" height="24" fill="#d9ccb0"/><rect x="-780" y="-8" width="1560" height="6" fill="#e8dcc0"/></g>`;
+  return o;
+}
+scenes.ro_panteon = function (t) {
+  let s = ROALL() + rSky('day') + rSun(1650, 140) + romanHouse(-20, 760, 420, 520, { col: '#e8b070' }) + romanHouse(1520, 760, 420, 540, { col: '#d98a5a' });
+  s += `<g transform="translate(960,780)">`;
+  s += `<path d="M-400,-470 Q-400,-790 0,-810 Q400,-790 400,-470Z" fill="#bfb49c"/>${[0, 1, 2, 3].map(k => `<path d="M${-400 + k * 14},${-470 - k * 30} Q0,${-560 - k * 30} ${400 - k * 14},${-470 - k * 30}" stroke="#a89c84" stroke-width="5" fill="none"/>`).join('')}<ellipse cx="0" cy="-806" rx="44" ry="10" fill="#8a8070"/>`;
+  s += `<rect x="-420" y="-470" width="840" height="470" fill="#cfc2a4"/>`;
+  s += `<rect x="-460" y="-470" width="920" height="470" fill="#d9ccb0"/><rect x="-150" y="-330" width="300" height="330" fill="#3a2e22"/><rect x="-130" y="-310" width="125" height="310" fill="#6a5434"/><rect x="5" y="-310" width="125" height="310" fill="#6a5434"/>${[0, 1, 2, 3].map(k => `<rect x="-120" y="${-300 + k * 76}" width="105" height="60" fill="none" stroke="#8a7044" stroke-width="4"/><rect x="15" y="${-300 + k * 76}" width="105" height="60" fill="none" stroke="#8a7044" stroke-width="4"/>`).join('')}`;
+  for (let i = 0; i < 8; i++) s += roColumn(-420 + i * 120, 0, 430, 50, 'corintio', '#ece2c8');
+  s += `<rect x="-480" y="-490" width="960" height="34" fill="#e2d4b0"/><rect x="-480" y="-470" width="960" height="6" fill="#bfae86"/><path d="M-500,-490 L0,-640 L500,-490Z" fill="#e8dcc0" stroke="#c9b894" stroke-width="8"/><path d="M-430,-500 L0,-620 L430,-500Z" fill="#ded0b0"/>
+  <text x="0" y="-462" font-family="Fredoka" font-weight="600" font-size="30" text-anchor="middle" fill="#8a7a5a" letter-spacing="6">M·AGRIPPA·L·F·COS·TERTIVM·FECIT</text></g>`;
+  s += cobbles(780);
+  // fuente con obelisco de la Piazza della Rotonda
+  s += `<g transform="translate(1500,1000)"><ellipse rx="200" ry="34" fill="#d9ccb0"/><ellipse cy="-6" rx="180" ry="26" fill="url(#roWater)"/><rect x="-40" y="-120" width="80" height="110" fill="#e2d4b0"/><path d="M-18,-120 L-12,-380 L12,-380 L18,-120Z" fill="#d6c6a2"/><path d="M-12,-380 L0,-410 L12,-380Z" fill="#c9b894"/>${[-1, 1].map(d => `<path d="M${d * 40},-60 q${d * 40},-20 ${d * 70},20" stroke="#d8f0f8" stroke-width="6" fill="none" opacity=".8"/>`).join('')}</g>`;
+  return s + pCrowd(t, 59, 12, 830, 1060) + rLabel('El Panteón: casi 2.000 años', W / 2, 90, 40);
+};
+scenes.ro_foro = function (t) {
+  let s = ROALL() + rSky('day') + rSun(1600, 160) + rClouds(t, [[400, 120, .7]]);
+  s += `<path d="M0,620 Q400,560 900,600 Q1400,560 1920,620 L1920,700 L0,700Z" fill="#8aa86a"/>`;
+  for (let i = 0; i < 6; i++) s += `<g transform="translate(${80 + i * 330},640)"><path d="M0,0 L0,-120" stroke="#6b4a36" stroke-width="10"/><ellipse cx="0" cy="-140" rx="${70 + (i % 2) * 20}" ry="34" fill="#4a7a3a"/></g>`;
+  for (let i = 0; i < 4; i++) s += `<path d="M${260 + i * 460},660 q-18,-160 0,-220 q18,60 0,220Z" fill="#3a6a32"/>`;
+  s += `<rect x="0" y="660" width="${W}" height="420" fill="#c9b48a"/>`;
+  // Templo de Saturno: 8 columnas jónicas con su arquitrabe
+  s += `<g transform="translate(560,860)"><rect x="-300" y="-30" width="600" height="30" fill="#d9cca8"/>`;
+  for (let i = 0; i < 6; i++) s += roColumn(-250 + i * 100, -30, 470, 44, 'jonico', '#ece2c8');
+  s += `<rect x="-290" y="-560" width="580" height="60" fill="#e2d4b0"/><rect x="-290" y="-520" width="580" height="8" fill="#c9b894"/><path d="M-290,-560 l40,-20 l60,10 l50,-14 l70,6 l40,-12 l90,12 l50,-8 L290,-560Z" fill="#e2d4b0"/></g>`;
+  // Arco de Septimio Severo: tres arcos, columnas y relieves
+  s += `<g transform="translate(1340,860)"><rect x="-300" y="-430" width="600" height="430" fill="#e2d0a8"/><path d="M-90,0 L-90,-250 Q0,-340 90,-250 L90,0Z" fill="#6a5a44"/>${[-1, 1].map(d => `<path d="M${d * 140},0 L${d * 140},-160 Q${d * 195},-220 ${d * 250},-160 L${d * 250},0Z" fill="#6a5a44"/>`).join('')}`;
+  for (const x of [-270, -115, 115, 270]) s += roColumn(x, 0, 320, 34, 'corintio', '#ece2c8');
+  s += `${[-1, 1].map(d => `<rect x="${d > 0 ? 100 : -250}" y="-300" width="150" height="70" fill="#d6c4a0"/>${[...Array(5)].map((_, k) => `<path d="M${(d > 0 ? 112 : -238) + k * 28},-240 v-40 m0,0 a6,6 0 1,1 0.1,0" stroke="#b8a27a" stroke-width="4" fill="none"/>`).join('')}`).join('')}<rect x="-310" y="-470" width="620" height="50" fill="#efe2c4"/><rect x="-300" y="-560" width="600" height="96" fill="#e8dcc0"/><text x="0" y="-500" font-family="Fredoka" font-weight="700" font-size="30" text-anchor="middle" fill="#8a7a5a" letter-spacing="6">SENATVS·POPVLVSQVE</text></g>`;
+  for (let i = 0; i < 10; i++) s += `<g transform="translate(${100 + i * 190},${900 + (i % 3) * 50})"><rect x="0" y="0" width="${60 + (i % 4) * 20}" height="${26 + (i % 2) * 16}" rx="5" fill="#d9cca8" stroke="#b8a888" stroke-width="3"/>${i % 3 == 0 ? `<rect x="10" y="-60" width="26" height="60" fill="#e6dcc0" stroke="#c9b894" stroke-width="2"/>` : ''}</g>`;
+  return s + pCrowd(t, 23, 10, 900, 1060) + rLabel('La ciudad eterna: más de 2.700 años', W / 2, 90, 40);
+};
+scenes.ro_vaticano = function (t) {
+  let s = ROALL() + rSky('day') + rSun(1650, 140) + rClouds(t, [[300, 120, .7]]);
+  s += `<g transform="translate(960,640) scale(.82)">`;
+  s += `<rect x="-150" y="-460" width="300" height="80" fill="#e2d4b0"/>${[...Array(8)].map((_, i) => `<rect x="${-140 + i * 38}" y="-450" width="14" height="60" fill="#efe6cc"/>`).join('')}<path d="M-210,-460 Q-210,-760 0,-780 Q210,-760 210,-460Z" fill="url(#roDome)"/>${[-160, -90, -30, 30, 90, 160].map(x => `<path d="M${x},-462 Q${x * .55},-700 0,-776" stroke="#6a8494" stroke-width="5" fill="none"/>`).join('')}<rect x="-30" y="-850" width="60" height="76" fill="#e2d4b0"/><path d="M-36,-850 Q0,-890 36,-850Z" fill="url(#roDome)"/><path d="M-5,-920 h10 v40 h-10Z M-18,-906 h36 v10 h-36Z" fill="#d9b14a"/>`;
+  s += `<rect x="-560" y="-360" width="1120" height="360" fill="url(#roTrav)"/>`;
+  for (let i = 0; i < 12; i++) s += roColumn(-520 + i * 94.5, 0, 330, 34, 'corintio', '#efe6cc');
+  s += `<path d="M-160,-360 L0,-440 L160,-360Z" fill="#e8dcc0" stroke="#c9b894" stroke-width="6"/><rect x="-580" y="-380" width="1160" height="30" fill="#e2d4b0"/>${[...Array(13)].map((_, i) => statueRO(-540 + i * 90, -380, .9)).join('')}`;
+  s += [-1, 0, 1].map(k => `<path d="M${k * 200 - 50},0 L${k * 200 - 50},-140 Q${k * 200},-190 ${k * 200 + 50},-140 L${k * 200 + 50},0Z" fill="#4a3a2c"/>`).join('');
+  s += `<rect x="-60" y="-300" width="120" height="70" fill="#3a3a3a"/><rect x="-54" y="-294" width="108" height="58" fill="#8ab0c8" opacity=".6"/></g>`;
+  for (const d of [-1, 1]) { s += `<path d="M${960 + d * 460},640 Q${960 + d * 780},700 ${960 + d * 840},960" stroke="#e2d4b0" stroke-width="80" fill="none"/>`;
+    for (let i = 0; i < 12; i++) { const k = i / 11, x = 960 + d * (470 + k * 380), y = 640 + k * k * 300; s += `<rect x="${x - 7}" y="${y - 70}" width="14" height="74" fill="#efe6cc"/>${statueRO(x, y - 80, .6 + k * .3)}`; } }
+  s += `<path d="M520,640 L1400,640 L1720,1080 L200,1080Z" fill="#d9ccb0"/>${[...Array(6)].map((_, k) => `<path d="M960,${720 + k * 40} L${520 - k * 60},1080 M960,${720 + k * 40} L${1400 + k * 60},1080" stroke="#cdbf9e" stroke-width="3" opacity=".7"/>`).join('')}`;
+  s += `<g transform="translate(960,880)"><rect x="-40" y="-40" width="80" height="40" fill="#cdbf9e"/><path d="M-18,-40 L-10,-330 L10,-330 L18,-40Z" fill="#d6c6a2"/><path d="M-10,-330 L0,-360 L10,-330Z" fill="#cdbf9e"/><path d="M-4,-380 h8 v20 h-8Z M-10,-374 h20 v6 h-20Z" fill="#d9b14a"/></g>`;
+  for (const x of [700, 1220]) s += `<g transform="translate(${x},900)"><ellipse rx="80" ry="16" fill="#cdbf9e"/><ellipse cy="-4" rx="70" ry="12" fill="url(#roWater)"/><path d="M0,-10 L0,-90" stroke="#d9cca8" stroke-width="14"/><ellipse cy="-90" rx="40" ry="10" fill="#d9cca8"/>${[-1, 1].map(d => `<path d="M0,-96 q${d * 30},-20 ${d * 44},20" stroke="#d8f0f8" stroke-width="4" fill="none" opacity="${.6 + .4 * Math.abs(S(t, 4, d))}"/>`).join('')}</g>`;
+  return s + pCrowd(t, 47, 16, 720, 1060) + rLabel('El Vaticano: el país más pequeño del mundo', W / 2, 1010, 38);
+};
+scenes.ro_sixtina = function (t) {
+  let s = ROALL() + `<rect width="${W}" height="${H}" fill="#cdb894"/>`;
+  // bóveda pintada: paneles con profetas, cielo y figuras (pintada por Miguel Ángel hace más de 500 años)
+  const figs = (x, y, w, h, k) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${['#c8a878', '#9ab4c4', '#d0b084', '#b88a64'][k % 4]}" stroke="#8a6a46" stroke-width="10"/>${[0, 1].map(j => `<g transform="translate(${x + w * (.3 + j * .4)},${y + h * .75})"><circle cy="-${h * .45}" r="${h * .08}" fill="#e2b48e"/><path d="M-${w * .1},0 Q-${w * .12},-${h * .4} 0,-${h * .37} Q${w * .12},-${h * .4} ${w * .1},0Z" fill="${['#c8323a', '#2f5aa0', '#e8b84a', '#5a8a4a'][(k + j) % 4]}"/></g>`).join('')}`;
+  for (let i = 0; i < 5; i++) s += figs(40 + i * 376, 40, 340, 240, i);
+  s += `<g transform="translate(960,520)"><rect x="-800" y="-200" width="1600" height="360" fill="#a8c4d4" stroke="#8a6a46" stroke-width="16"/><rect x="-800" y="40" width="1600" height="120" fill="#a8b47a"/>
+  <path d="M-700,110 Q-560,-10 -300,40 L-170,30" stroke="#e2b48e" stroke-width="42" fill="none" stroke-linecap="round"/><path d="M-560,60 L-520,130 M-420,40 L-400,120" stroke="#e2b48e" stroke-width="26" stroke-linecap="round"/><circle cx="-700" cy="70" r="34" fill="#e2b48e"/><path d="M-170,30 l40,-10 M-170,30 l40,6" stroke="#e2b48e" stroke-width="12" stroke-linecap="round"/>
+  <ellipse cx="520" cy="-30" rx="240" ry="120" fill="#c8506a" opacity=".85"/>${[...Array(6)].map((_, k) => `<circle cx="${400 + k * 50}" cy="${-60 + (k % 2) * 40}" r="20" fill="#f0c8a8"/>`).join('')}
+  <path d="M720,-40 Q560,-70 300,-20 L150,-16" stroke="#e8c8a0" stroke-width="42" fill="none" stroke-linecap="round"/><circle cx="720" cy="-60" r="36" fill="#e8c8a0"/><path d="M700,-90 Q740,-110 760,-70" stroke="#f4f4f4" stroke-width="16" fill="none"/><path d="M150,-16 l-40,-10 M150,-16 l-40,6" stroke="#e8c8a0" stroke-width="12" stroke-linecap="round"/></g>`;
+  for (let i = 0; i < 6; i++) s += `<rect x="${60 + i * 320}" y="700" width="200" height="60" fill="#8a6a46"/><rect x="${70 + i * 320}" y="710" width="180" height="40" fill="#cdb894"/>`;
+  s += `<rect x="0" y="760" width="${W}" height="320" fill="#a8946a"/>${[...Array(10)].map((_, i) => `<path d="M${i * 220},760 L${i * 220 - 160},1080" stroke="#98845a" stroke-width="3"/>`).join('')}`;
+  return s + pCrowd(t, 53, 12, 820, 1060) + rLabel('Capilla Sixtina: pintada hace más de 500 años', W / 2, 1010, 38);
+};
+// la familia come sentada a la mesa de la trattoria (no de pie)
+scenes.ro_familia = function (t) {
+  let s = ROALL() + rSky('day') + romanHouse(0, 640, W, 560, { col: '#d98a5a', ivy: true }) + cobbles(640);
+  s += `<path d="M200,560 L1720,560 L1760,620 L160,620Z" fill="#2f6a3a"/>${[...Array(16)].map((_, i) => `<path d="M${160 + i * 100},620 q50,26 100,0" fill="#2f6a3a"/>`).join('')}<text x="960" y="600" font-family="Fredoka" font-weight="600" font-size="34" text-anchor="middle" fill="#f4e6c0">TRATTORIA</text>`;
+  s += [260, 1660].map(x => `<g transform="translate(${x},720)"><rect x="-40" y="-90" width="80" height="90" fill="#6b4a36"/><ellipse cx="0" cy="-90" rx="60" ry="14" fill="#8a6a46"/>${[0, 1, 2].map(k => `<circle cx="${-26 + k * 26}" cy="-112" r="16" fill="${['#d9343a', '#e8b45a', '#5a8a3a'][k]}"/>`).join('')}</g>`).join('');
+  const people = [[420, { ph: 1, top: '#2b3a67', child: false }], [640, { ph: 2, top: '#c94f6d', longhair: true, child: false, talk: true }], [860, { ph: 3, top: '#5a6a5a', longhair: true, child: false, hair: '#d9d6d0' }], [1080, { ph: 4, top: '#f2c14e' }], [1300, { ph: 5, top: '#e8e2d4', child: false, talk: true }], [1520, { ph: 6, top: '#4f7fe0' }]];
+  for (const [x] of people) s += `<g transform="translate(${x},780)"><rect x="-34" y="-110" width="68" height="14" rx="5" fill="#6b4a36"/><rect x="-30" y="-110" width="8" height="110" fill="#6b4a36"/><rect x="22" y="-110" width="8" height="110" fill="#6b4a36"/></g>`;
+  for (const [x, o] of people) s += rSit(x, 808, o.child === false ? 1.55 : 1.45, t, Object.assign({ mode: 'banco' }, o));
+  // mesa con mantel de cuadros (tapa las piernas: están sentados)
+  s += `<rect x="300" y="790" width="1320" height="22" fill="#fbfbf7"/><path d="M300,812 L1620,812 L1640,930 L280,930Z" fill="#fbfbf7"/>${[...Array(12)].map((_, i) => `<path d="M${300 + i * 110},812 l55,0 l2,118 l-55,0Z" fill="#d9343a" opacity=".85"/>`).join('')}${[...Array(3)].map((_, j) => `<rect x="280" y="${840 + j * 32}" width="1360" height="14" fill="#d9343a" opacity=".35"/>`).join('')}`;
+  s += `<rect x="330" y="930" width="16" height="100" fill="#6b4a36"/><rect x="1574" y="930" width="16" height="100" fill="#6b4a36"/>`;
+  s += `${[420, 640, 860, 1080, 1300, 1520].map((x, i) => `<ellipse cx="${x}" cy="796" rx="62" ry="13" fill="#fbfbf7" stroke="#ddd" stroke-width="2"/>${i % 2 ? `<ellipse cx="${x}" cy="792" rx="40" ry="8" fill="#e8b45a"/><path d="M${x - 20},790 q20,-10 40,0" stroke="#d9343a" stroke-width="4" fill="none"/>` : `<circle cx="${x}" cy="788" r="20" fill="#e8b45a"/><circle cx="${x - 6}" cy="784" r="4" fill="#d9343a"/><circle cx="${x + 7}" cy="790" r="4" fill="#5a8a3a"/>`}<rect x="${x + 70}" y="764" width="16" height="28" rx="3" fill="#cfe8f8" opacity=".85"/>`).join('')}`;
+  s += `<g transform="translate(960,792)"><ellipse rx="56" ry="12" fill="#b8844a"/>${[...Array(5)].map((_, k) => `<ellipse cx="${-30 + k * 15}" cy="-8" rx="14" ry="8" fill="#e8c27a"/>`).join('')}</g>`;
+  return s + rLabel('La familia: comer juntos, hablar y reír', W / 2, 90, 40);
+};
