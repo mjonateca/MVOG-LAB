@@ -2,11 +2,11 @@
 
 **Para:** Cloud
 **De:** Vinelis, vía Bibi
-**Fecha:** 18 de noviembre de 2026 · **Actualizado:** 21 de noviembre de 2026 (protagonista: Binelis)
+**Fecha:** 18 de noviembre de 2026 · **Actualizado:** 21 de noviembre de 2026 (protagonista: Vinelis)
 
 ## La idea
 
-Cada capítulo del podcast, tal como está en Spotify, también va a estar en YouTube, pero **con imagen gráfica para niños**: un video tipo caricatura que va mostrando la historia mientras suena el audio del capítulo. El niño ve la ciudad, los lugares y a Binelis mientras escucha la narración.
+Cada capítulo del podcast, tal como está en Spotify, también va a estar en YouTube, pero **con imagen gráfica para niños**: un video tipo caricatura que va mostrando la historia mientras suena el audio del capítulo. El niño ve la ciudad, los lugares y a Vinelis mientras escucha la narración.
 
 ## 1. El audio manda
 
@@ -17,7 +17,7 @@ Cada capítulo del podcast, tal como está en Spotify, también va a estar en Yo
 ## 2. Estilo visual
 
 - **Caricatura animada con movimiento real**: los personajes y la ciudad se mueven de verdad (caminan, señalan, reaccionan). No vale una imagen fija con zoom.
-- **Binelis es la protagonista fija** en todos los videos de YouTube: la caricatura de Vinelis, una niña de pelo rizado vestida de exploradora, que narra con la voz de Vinelis. Su cara es siempre la misma y su ropa se adapta al destino de cada capítulo (con zapatos). **Atlas, el niño explorador, queda solo para los Reels de Instagram** y no aparece en los videos de YouTube.
+- **Vinelis es la protagonista fija** en todos los videos de YouTube: la caricatura de Vinelis, una niña de pelo rizado vestida de exploradora, que narra con la voz de Vinelis. Su cara es siempre la misma y su ropa se adapta al destino de cada capítulo (con zapatos). **Atlas, el niño explorador, queda solo para los Reels de Instagram** y no aparece en los videos de YouTube.
 - La ciudad llena toda la pantalla, con los **colores vivos de la foto de perfil** del canal.
 - Nada de imágenes realistas ni de fotos de archivo: todo dibujo animado infantil.
 - **Sin subtítulos quemados en el video:** el video NO lleva el texto dibujado en la imagen. En su lugar, entrega el archivo **.srt** con el texto exacto, sincronizado con la voz. Bibi sube ese .srt a YouTube al publicar (y no borra los subtítulos automáticos de YouTube).
@@ -25,15 +25,15 @@ Cada capítulo del podcast, tal como está en Spotify, también va a estar en Yo
 
 ## 3. Estructura de cada video
 
-1. **Intro (primeros 10 segundos):** Binelis presenta la ciudad y el título del capítulo. Gancho inmediato: una curiosidad o una pregunta.
+1. **Intro (primeros 10 segundos):** Vinelis presenta la ciudad y el título del capítulo. Gancho inmediato: una curiosidad o una pregunta.
 2. **La historia:** escenas que cambian con cada momento de la narración. Cada lugar o curiosidad importante tiene su propia escena.
 3. **Actividad en familia:** al final del capítulo, como en el podcast, la actividad para hacer en casa.
-4. **Cierre:** Binelis se despide, invita a suscribirse y a ver el siguiente capítulo. Cierre común con el logo de Mi Pequeño Atlas, invitación a escuchar el podcast y las portadas de los libros publicados.
+4. **Cierre:** Vinelis se despide, invita a suscribirse y a ver el siguiente capítulo. Cierre común con el logo de Mi Pequeño Atlas, invitación a escuchar el podcast y las portadas de los libros publicados.
 
 ## 4. Formato técnico
 
 - Video largo: **1920×1080 (16:9), MP4, 30 fps**.
-- Miniatura aparte en **1280×720 (JPG o PNG)**: la ciudad a pantalla completa, Binelis pequeña abajo a la izquierda, texto gigante de 1–4 palabras (ej. «¡ATENAS!»). Si no puedes hacerla, Bibi la genera.
+- Miniatura aparte en **1280×720 (JPG o PNG)**: la ciudad a pantalla completa, Vinelis pequeña abajo a la izquierda, texto gigante de 1–4 palabras (ej. «¡ATENAS!»). Si no puedes hacerla, Bibi la genera.
 - Nombre del archivo: `ciudad-para-ninos-mi-pequeno-atlas.mp4` (ej. `atenas-para-ninos-mi-pequeno-atlas.mp4`).
 - No incluir anuncios dentro del video. Los anuncios los gestiona la plataforma, no el video.
 
@@ -71,4 +71,4 @@ Además del video largo, de cada capítulo salen **2–3 Shorts**:
 
 ---
 
-**Resumen en una frase:** el audio del podcast tal cual, con una caricatura animada que cuenta la misma historia en imágenes, con Binelis siempre igual, y el video se entrega en Drive para revisión antes de publicarse.
+**Resumen en una frase:** el audio del podcast tal cual, con una caricatura animada que cuenta la misma historia en imágenes, con Vinelis siempre igual, y el video se entrega en Drive para revisión antes de publicarse.

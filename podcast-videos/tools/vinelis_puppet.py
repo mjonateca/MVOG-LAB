@@ -248,6 +248,36 @@ def roma_body(img):
     for x in (430, 520): cv2.circle(lay, (x, 716), 5, (90, 200, 245, 255), -1, cv2.LINE_AA)
     return over(img, lay)
 
+def roma_skirt(img):
+    """Falda limpia de la túnica (blanca con el paño rojo), tapa el fondo blanco del dibujo original."""
+    lay = np.zeros_like(img)
+    sk = np.array([(404, 690), (552, 690), (566, 800), (582, 908), (374, 908), (390, 800)], np.int32)
+    cv2.fillPoly(lay, [sk], (238, 242, 246, 255), cv2.LINE_AA)
+    for x in range(400, 570, 26): cv2.line(lay, (x, 720), (x - 6 + (x - 478) // 8, 900), (210, 216, 224, 255), 3, cv2.LINE_AA)
+    red = np.array([(404, 700), (510, 700), (486, 800), (470, 908), (378, 908), (392, 800)], np.int32)
+    cv2.fillPoly(lay, [red], (40, 40, 185, 255), cv2.LINE_AA)
+    for x in range(390, 480, 22): cv2.line(lay, (x + 8, 720), (x - 4, 900), (30, 30, 150, 255), 3, cv2.LINE_AA)
+    cv2.polylines(lay, [sk], True, (150, 155, 165, 255), 2, cv2.LINE_AA)
+    cv2.line(lay, (404, 716), (552, 716), (40, 160, 225, 255), 9, cv2.LINE_AA)
+    cv2.circle(lay, (478, 716), 11, (30, 140, 210, 255), -1, cv2.LINE_AA)
+    return over(img, lay)
+
+def roma_toga(img):
+    """Parte alta de la túnica, dibujada encima de los brazos: hombros redondeados (tapa las juntas) y palio rojo."""
+    lay = np.zeros_like(img)
+    white, shade, red = (238, 242, 246, 255), (205, 212, 220, 255), (40, 40, 185, 255)
+    top = np.array([(424, 614), (452, 606), (478, 626), (504, 606), (532, 614), (548, 640), (544, 700), (412, 700), (408, 640)], np.int32)
+    cv2.fillPoly(lay, [top], white, cv2.LINE_AA)
+    for cx in (424, 532):
+        cv2.ellipse(lay, (cx, 632), (26, 28), 0, 0, 360, white, -1, cv2.LINE_AA)
+        cv2.ellipse(lay, (cx, 632), (26, 28), 0, 30, 150, shade, 3, cv2.LINE_AA)
+    cv2.polylines(lay, [np.array([(452, 606), (478, 628), (504, 606)], np.int32)], False, shade, 3, cv2.LINE_AA)
+    pall = np.array([(520, 610), (548, 630), (510, 690), (470, 730), (452, 712), (496, 668)], np.int32)
+    cv2.fillPoly(lay, [pall], red, cv2.LINE_AA)
+    cv2.polylines(lay, [pall], True, (25, 25, 120, 255), 2, cv2.LINE_AA)
+    cv2.circle(lay, (532, 624), 8, (40, 170, 230, 255), -1, cv2.LINE_AA)
+    return over(img, lay)
+
 def roma_wreath(img):
     lay = np.zeros_like(img)
     cx, cy, rx, ry = 478, 420, 112, 70
@@ -424,7 +454,20 @@ for pose, (la, ra) in POSES.items():
         body[..., 3] *= np.where(gap, 0, 1)
         body = kimono_body(body)
     if OUTFIT == 'roma':
-        body = roma_body(body)
+        gap = (yy > 905) & (yy < 1000) & (xx > 400) & (xx < 560) & (((body[..., 2] > body[..., 0] + 25) & (body[..., 1] > 120)) | (body[..., :3].min(2) > 170) )
+        skin = (body[..., 2] > 110) & (body[..., 2] > body[..., 1] + 15) & (body[..., 1] > body[..., 0] + 5) & (body[..., 1] > 70)
+        legzone = (yy > 905) & (yy < 982) & (xx > 380) & (xx < 580)
+        body[..., 3] *= np.where(gap | (legzone & ~skin), 0, 1)
+        sk = np.median(body[(yy > 930) & (yy < 960) & (xx > 380) & (xx < 580) & (body[..., 3] > 200)][:, :3], axis=0) if False else (62, 105, 168)
+        legs = np.zeros_like(body)
+        for (x0, x1) in ((452, 446), (526, 536)):
+            poly = np.array([(x0 - 13, 900), (x0 + 13, 900), (x1 + 9, 978), (x1 - 9, 978)], np.int32)
+            cv2.fillPoly(legs, [poly], (*sk, 255), cv2.LINE_AA)
+            cv2.polylines(legs, [poly], True, (40, 70, 120, 255), 2, cv2.LINE_AA)
+        body[..., 3] *= np.where((yy > 905) & (yy < 985) & (xx > 380) & (xx < 580), 0, 1)
+        body = over(body, legs)
+        body = roma_body(body); body = roma_skirt(body)
+        body = shoes(body, (40, 75, 125, 255), (25, 45, 80, 255))
     if OUTFIT == 'ottawa':
         gap = (yy > 930) & (yy < 990) & (xx > 360) & (xx < 600) & (((body[..., 2] > body[..., 0] + 25) & (body[..., 1] > 120)) | (body[..., :3].min(2) > 170))
         body[..., 3] *= np.where(gap, 0, 1)
@@ -456,7 +499,7 @@ for pose, (la, ra) in POSES.items():
     if OUTFIT == 'kimono':
         body = kimono_sleeve(body, 'L', la); body = kimono_sleeve(body, 'R', ra)
     if OUTFIT == 'roma':
-        body = roma_wreath(body)
+        body = roma_toga(body); body = roma_wreath(body)
     if OUTFIT == 'madrid':
         body = madrid_head(body); body = madrid_shawl(body)
     if OUTFIT == 'santodomingo':

@@ -2,7 +2,7 @@
    logo de Mi Pequeño Atlas, los libros publicados con sus portadas reales,
    colores vivos e invitación clara a escuchar el podcast y conseguir los libros.
    Vinelis queda abajo a la derecha (stage [[1730, .62]]). */
-const CIERRE_LIBROS = ['tokio', 'roma', 'paris', 'santodomingo'];
+const CIERRE_LIBROS = ['tokio', 'paris', 'roma', 'santodomingo'];
 // precarga: imágenes en el documento para que el evento load espere por ellas
 document.write('<div style="position:absolute;left:-9999px">' +
   ['logo-640.png', ...CIERRE_LIBROS.map(k => `libros/${k}.jpg`)].map(f => `<img src="../assets/${f}">`).join('') + '</div>');
@@ -47,11 +47,13 @@ scenes.cierre = function (t) {
   <text x="0" y="96" font-family="Fredoka" font-weight="600" font-size="38" text-anchor="middle" fill="#2b3a67">Un viaje nuevo en tu app de podcasts</text></g>`;
   // estantería con los libros
   s += `<rect x="650" y="868" width="900" height="34" rx="8" fill="url(#ciShelf)" stroke="#5a3a1a" stroke-width="4"/><rect x="670" y="902" width="24" height="40" fill="#8a5a2b"/><rect x="1506" y="902" width="24" height="40" fill="#8a5a2b"/>`;
+  // portadas reales de los libros (Gumroad): Tokio, París y Roma cuadradas, Santo Domingo vertical
+  const CIERRE_TAM = { tokio: [210, 210], paris: [210, 210], roma: [210, 210], santodomingo: [186, 279] };
   CIERRE_LIBROS.forEach((k, i) => {
-    const x = 700 + i * 212, f = S(t, 2, i * 1.3) * 8, rot = [-4, 2, -2, 4][i];
-    s += `<g transform="translate(${x + 95},${866 + f}) rotate(${rot})"><rect x="-95" y="-300" width="200" height="300" rx="6" fill="#000" opacity=".25" transform="translate(8,6)"/>
-    <image href="../assets/libros/${k}.jpg" x="-95" y="-300" width="200" height="300" preserveAspectRatio="xMidYMid slice"/>
-    <rect x="-95" y="-300" width="200" height="300" rx="4" fill="none" stroke="#1d2a5a" stroke-width="4"/><rect x="-95" y="-300" width="12" height="300" fill="#000" opacity=".18"/></g>`;
+    const [bw, bh] = CIERRE_TAM[k] || [200, 300], x = 702 + i * 214, f = S(t, 2, i * 1.3) * 8, rot = [-4, 2, -2, 4][i];
+    s += `<g transform="translate(${x + 105},${866 + f}) rotate(${rot})"><rect x="${-bw / 2}" y="${-bh}" width="${bw}" height="${bh}" rx="6" fill="#000" opacity=".25" transform="translate(8,6)"/>
+    <image href="../assets/libros/${k}.jpg" x="${-bw / 2}" y="${-bh}" width="${bw}" height="${bh}" preserveAspectRatio="xMidYMid slice"/>
+    <rect x="${-bw / 2}" y="${-bh}" width="${bw}" height="${bh}" rx="4" fill="none" stroke="#1d2a5a" stroke-width="4"/><rect x="${-bw / 2}" y="${-bh}" width="12" height="${bh}" fill="#000" opacity=".18"/></g>`;
   });
   // cinta de los libros
   s += `<g transform="translate(1100,980)"><rect x="-470" y="-50" width="940" height="96" rx="48" fill="#ffd23f" stroke="#1d2a5a" stroke-width="6"/>

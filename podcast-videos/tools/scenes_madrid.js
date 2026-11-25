@@ -533,3 +533,82 @@ scenes.ma_bernabeu = function (t) {
     return rP(x, y, sc, t, { ph: i, top: i % 3 ? '#fff' : '#1d3f7a', bot: '#2b3a67', dir: i % 2 ? 1 : -1 }) + `<g transform="translate(${x},${y}) scale(${sc})"><path d="M-14,-118 Q0,-108 14,-118 L16,-110 Q0,-100 -16,-110Z" fill="${i % 2 ? '#1d3f7a' : '#fff'}"/><path d="M8,-112 L12,-70 L4,-70Z" fill="${i % 2 ? '#1d3f7a' : '#fff'}"/></g>`; }).join('');
   return s + rLabel('¡A muchos niños les encanta el fútbol!', W / 2, 1030, 38);
 };
+
+/* =====================================================================
+   v4 (25-nov) — correcciones de Vinelis: personas sentadas de verdad
+   (de frente, con cara) y niños que juegan pasándose la pelota.
+   ===================================================================== */
+// persona sentada de frente. mode 'suelo' = piernas cruzadas en el suelo; 'banco' = sentada en un banco (piernas colgando)
+function rSit(x, y, s, t, o = {}) {
+  const skin = o.skin || RSKIN[(o.ph || 0) % RSKIN.length], hair = o.hair || RHAIRC[(o.ph || 0) % RHAIRC.length];
+  const top = o.top || '#4f7fe0', bot = o.bot || '#2b3a67', shoe = o.shoe || '#222', child = o.child !== false;
+  const k = child ? 1 : 1.2, nod = S(t, 2, o.ph || 0) * 1.5, mouth = o.talk ? 2 + Math.abs(S(t, 8, o.ph || 0)) * 3 : 0;
+  let legs;
+  if (o.mode == 'banco') legs = `<path d="M-10,8 L-11,${40 * k} M10,8 L11,${40 * k}" stroke="${bot}" stroke-width="10" stroke-linecap="round"/><ellipse cx="-12" cy="${42 * k}" rx="8" ry="5" fill="${shoe}"/><ellipse cx="12" cy="${42 * k}" rx="8" ry="5" fill="${shoe}"/><path d="M-21,-10 Q-22,10 -10,12 Q0,8 0,-4 Q0,8 10,12 Q22,10 21,-10Z" fill="${bot}"/><ellipse cx="-11" cy="6" rx="9" ry="7" fill="${bot}" stroke="#000" stroke-opacity=".18" stroke-width="2"/><ellipse cx="11" cy="6" rx="9" ry="7" fill="${bot}" stroke="#000" stroke-opacity=".18" stroke-width="2"/>`;
+  else legs = `<path d="M-34,-4 Q-6,-14 18,0 M34,-4 Q6,-14 -18,0" stroke="${bot}" stroke-width="12" fill="none" stroke-linecap="round"/><ellipse cx="-36" cy="-2" rx="7" ry="5" fill="${shoe}"/><ellipse cx="36" cy="-2" rx="7" ry="5" fill="${shoe}"/>`;
+  const by = o.mode == 'banco' ? -6 : -8;
+  return `<g transform="translate(${x},${y}) scale(${s * k})">${o.mode == 'banco' ? '' : `<ellipse cx="0" cy="2" rx="44" ry="7" fill="#000" opacity=".15"/>`}${legs}
+  <g transform="translate(0,${by}) rotate(${nod} 0 0)">
+    <path d="M-15,-56 Q0,-62 15,-56 L17,0 L-17,0Z" fill="${top}"/>
+    <path d="M-14,-52 Q-26,-30 ${o.mode == 'banco' ? -20 : -26},-4" stroke="${top}" stroke-width="8" fill="none" stroke-linecap="round"/><circle cx="${o.mode == 'banco' ? -20 : -26}" cy="-2" r="4.5" fill="${skin}"/>
+    <path d="M14,-52 Q26,-30 ${o.mode == 'banco' ? 20 : 26},-4" stroke="${top}" stroke-width="8" fill="none" stroke-linecap="round"/><circle cx="${o.mode == 'banco' ? 20 : 26}" cy="-2" r="4.5" fill="${skin}"/>
+    <rect x="-4" y="-66" width="8" height="10" fill="${skin}"/>
+    <circle cx="0" cy="-80" r="15" fill="${skin}"/>
+    <path d="M-15,-81 Q-15,-100 0,-98 Q15,-100 15,-81 Q8,-89 0,-90 Q-8,-89 -15,-81Z" fill="${hair}"/>${o.longhair ? `<path d="M-15,-82 Q-19,-62 -12,-58 L-10,-80Z M15,-82 Q19,-62 12,-58 L10,-80Z" fill="${hair}"/>` : ''}
+    <circle cx="-5.5" cy="-80" r="1.8" fill="#222"/><circle cx="5.5" cy="-80" r="1.8" fill="#222"/>
+    ${mouth ? `<ellipse cx="0" cy="-72" rx="3.5" ry="${mouth / 2 + 1}" fill="#7a2a22"/>` : `<path d="M-4,-73 Q0,-69 4,-73" stroke="#7a2a22" stroke-width="1.6" fill="none"/>`}
+    <circle cx="-9" cy="-75" r="2.5" fill="#e88a7a" opacity=".5"/><circle cx="9" cy="-75" r="2.5" fill="#e88a7a" opacity=".5"/>
+  </g></g>`;
+}
+function banco(x, y, s = 1) { // banco de parque madrileño (madera verde y patas de hierro)
+  return `<g transform="translate(${x},${y}) scale(${s})"><ellipse cx="0" cy="44" rx="120" ry="8" fill="#000" opacity=".15"/>
+  <path d="M-100,0 L-104,44 M100,0 L104,44 M-90,-50 L-96,0 M90,-50 L96,0" stroke="#2b3038" stroke-width="7"/>
+  ${[0, 1, 2].map(k => `<rect x="-112" y="${-56 + k * 16}" width="224" height="11" rx="4" fill="#3f7a4a"/>`).join('')}<rect x="-116" y="-8" width="232" height="12" rx="4" fill="#356a40"/><rect x="-116" y="2" width="232" height="8" rx="3" fill="#2b5a35"/></g>`;
+}
+// niños jugando a la pelota: la pelota viaja de un niño a otro (pase con arco) y cada uno corre hacia ella
+function juegoPelota(t, kids, ballR = 22) {
+  const n = kids.length, u = (t / L * n) % n, i = Math.floor(u), f = u - i, a = kids[i], b = kids[(i + 1) % n];
+  const bx = a.x + (b.x - a.x) * f, gy = a.y + (b.y - a.y) * f, by = gy - 12 - Math.sin(f * Math.PI) * 110;
+  let s = '';
+  const order = kids.map((k, j) => [k, j]).sort((p, q) => p[0].y - q[0].y);
+  for (const [k, j] of order) {
+    const near = j == i ? Math.max(0, 1 - f * 4) : j == (i + 1) % n ? Math.max(0, f * 2 - 1) : 0;
+    const dx = near * (j == i ? 18 : -18) * Math.sign(b.x - a.x || 1), dir = (bx >= k.x ? 1 : -1);
+    s += rP(k.x + dx, k.y, k.s, t, { ph: k.ph, child: true, top: k.top, skin: k.skin, bot: k.bot, longhair: k.longhair, dir, walk: near > .05 || !!k.run, wave: j != i && j != (i + 1) % n && k.wave });
+  }
+  return s + ball(bx, by, ballR);
+}
+scenes.ma_arbol = function (t) {
+  let s = MAALL() + sky(t) + grass(620) + rTree(200, 640, .6, 'green', t, 912) + rTree(1720, 640, .6, 'green', t, 913) + rTree(960, 830, 2.0, 'green', t, 911);
+  s += `<ellipse cx="960" cy="900" rx="520" ry="60" fill="#3f7a2a" opacity=".35"/>`;
+  // Lucas cuenta una tradición; Gabriel, Saúl y Martina le escuchan sentados bajo el árbol
+  s += rSit(640, 960, 2.2, t, { ph: 3, top: '#4fb3f6', skin: '#9c6a48' }) + rSit(860, 940, 2.1, t, { ph: 2, top: '#f2c14e', skin: '#c99470' }) + rSit(1080, 940, 2.1, t, { ph: 1, top: '#fff', skin: '#f1cfae', talk: true }) + rSit(1300, 960, 2.2, t, { ph: 4, top: '#c8323a', skin: '#e3b48e', longhair: true });
+  s += ball(1480, 990, 24);
+  return s;
+};
+scenes.ma_retiro_ninos = function (t) {
+  let s = MAALL() + retiro(t, false);
+  s += juegoPelota(t, [{ x: 520, y: 1000, s: 1.6, ph: 1, top: '#4fb3f6', skin: '#9c6a48' }, { x: 1180, y: 1040, s: 1.7, ph: 3, top: '#f2c14e', skin: '#c99470' }, { x: 860, y: 975, s: 1.5, ph: 5, top: '#fff', bot: '#2b3a67' }]);
+  s += rP(1640, 1060, 1.7, t, ESC({ ph: 2, child: true, top: '#c8323a', longhair: true, dir: -1, wave: true }));
+  s += farola(90, 1000, .7) + farola(1830, 1000, .7);
+  return s + rLabel('Parque del Retiro', 330, 80, 40);
+};
+scenes.ma_juntos = function (t) {
+  let s = MAALL() + sky(t) + grass(640) + [...Array(6)].map((_, i) => rTree(100 + i * 340, 660, .6, 'green', t, 990 + i)).join('');
+  s += juegoPelota(t, [{ x: 560, y: 990, s: 2.0, ph: 1, top: '#4fb3f6', skin: '#9c6a48' }, { x: 900, y: 930, s: 1.8, ph: 5, top: '#fff' }, { x: 1360, y: 1000, s: 2.0, ph: 3, top: '#f2c14e', skin: '#c99470' }, { x: 1080, y: 1040, s: 2.1, ph: 2, top: '#c8323a', longhair: true }], 26);
+  return s + rLabel('Siempre hay algo que nos conecta: ¡jugar juntos!', W / 2, 80, 38);
+};
+scenes.ma_ninos = function (t) {
+  let s = MAALL() + sky(t) + `<g transform="translate(420,700)"><rect x="-340" y="-360" width="680" height="360" fill="#e9c89a"/>${[...Array(8)].map((_, i) => `<rect x="${-310 + (i % 4) * 160}" y="${-330 + Math.floor(i / 4) * 140}" width="110" height="90" fill="#7aa4c8"/>`).join('')}<rect x="-60" y="-110" width="120" height="110" fill="#6b4a36"/><rect x="-200" y="-410" width="400" height="56" fill="#fff" stroke="#c60b1e" stroke-width="5"/><text x="0" y="-370" font-family="Fredoka" font-weight="700" font-size="40" text-anchor="middle" fill="#c60b1e">COLEGIO</text></g>${esFlag(800, 300, .6)}`;
+  s += grass(700) + rTree(1760, 740, .9, 'green', t, 77) + `<path d="M900,880 L1700,880" stroke="#fff" stroke-width="5"/><rect x="1600" y="760" width="16" height="120" fill="#fff"/><rect x="1600" y="760" width="160" height="12" fill="#fff"/><rect x="1744" y="760" width="16" height="120" fill="#fff"/><path d="M1616,772 L1744,772 L1744,880 L1616,880Z" fill="none" stroke="#ddd" stroke-width="2" stroke-dasharray="8 8"/>`;
+  s += juegoPelota(t, [{ x: 1000, y: 990, s: 1.6, ph: 1, top: '#fff', bot: '#2b3a67' }, { x: 1380, y: 960, s: 1.5, ph: 3, top: '#c8323a' }]);
+  s += banco(330, 990, 1.3) + rSit(270, 982, 1.3, t, { mode: 'banco', ph: 5, top: '#f2c14e', longhair: true }) + `<g transform="translate(300,930) scale(.8)"><path d="M-6,0 L6,0 L0,22Z" fill="#d9a04a"/><circle cx="0" cy="-5" r="9" fill="#f2a9c0"/></g>` + rSit(400, 982, 1.25, t, { mode: 'banco', child: false, ph: 2, top: '#2b3a67', talk: true });
+  return s + rLabel('Colegio, parques, fútbol… ¡y helado!', W / 2, 80, 40);
+};
+scenes.ma_retiro = function (t) {
+  let s = MAALL() + retiro(t, false);
+  s += banco(300, 990, 1.3) + rSit(250, 982, 1.25, t, { mode: 'banco', child: false, ph: 1, top: '#7a5a8a', longhair: true, hair: '#d9d6d0' }) + rSit(350, 982, 1.25, t, { mode: 'banco', child: false, ph: 3, top: '#2b3a67', hair: '#bbb', talk: true });
+  s += banco(1620, 990, 1.3) + rSit(1570, 982, 1.25, t, { mode: 'banco', child: false, ph: 4, top: '#c8323a', longhair: true }) + rSit(1680, 982, 1.3, t, { mode: 'banco', ph: 2, top: '#f2c14e' });
+  s += maCrowd(t, 61, 5, 935, 965);
+  return s + rLabel('Parque del Retiro', W / 2, 80, 44);
+};

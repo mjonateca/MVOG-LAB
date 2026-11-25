@@ -52,11 +52,11 @@ function rP(x, y, s, t, o = {}) {
       <circle cx="${-14 - st * .3}" cy="${hip + 8}" r="4" fill="${skin}"/><circle cx="${14 + st * .3}" cy="${hip + 8}" r="4" fill="${skin}"/>`;
   } else {
     legs = `<path d="M-6,${hip} L${-6 + st},-3 M6,${hip} L${6 - st},-3" stroke="${bot}" stroke-width="${child ? 9 : 11}" stroke-linecap="round"/>
-      <path d="M${-6 + st - 3},-2 h10 M${6 - st - 3},-2 h10" stroke="${shoe}" stroke-width="6" stroke-linecap="round"/>`;
+      <ellipse cx="${-6 + st + 2}" cy="-2" rx="7" ry="3.6" fill="${shoe}"/><ellipse cx="${6 - st + 2}" cy="-2" rx="7" ry="3.6" fill="${shoe}"/>`;
     const arm = o.hold ? `<path d="M-14,${sh + 6} L-12,${(sh + hip) / 2 + 6} L4,${(sh + hip) / 2} M14,${sh + 6} L14,${(sh + hip) / 2 + 6} L6,${(sh + hip) / 2}" stroke="${top}" stroke-width="8" stroke-linecap="round" fill="none"/>${o.hold}`
       : o.wave ? `<path d="M-14,${sh + 6} L${-17 - st * .5},${hip + 4} M14,${sh + 6} L26,${sh - 14 + S(t, 8) * 6} L30,${sh - 36}" stroke="${top}" stroke-width="8" stroke-linecap="round" fill="none"/><circle cx="30" cy="${sh - 40}" r="5" fill="${skin}"/>`
         : `<path d="M-14,${sh + 6} L${-17 - st * .5},${hip + 4} M14,${sh + 6} L${17 + st * .5},${hip + 4}" stroke="${top}" stroke-width="8" stroke-linecap="round"/><circle cx="${-17 - st * .5}" cy="${hip + 7}" r="4.5" fill="${skin}"/><circle cx="${17 + st * .5}" cy="${hip + 7}" r="4.5" fill="${skin}"/>`;
-    torso = `<path d="M-15,${sh + 2} Q0,${sh - 4} 15,${sh + 2} L${child ? 15 : 17},${hip + 4} L${child ? -15 : -17},${hip + 4}Z" fill="${top}"/>
+    torso = `<path d="M-15,${sh + 2} Q0,${sh - 4} 15,${sh + 2} L${child ? 15 : 17},${hip + 4} L${child ? -15 : -17},${hip + 4}Z" fill="${top}"/><path d="M5,${sh + 2} L${child ? 15 : 17},${hip + 4} L${child ? 9 : 10},${hip + 4} Z" fill="#000" opacity=".1"/><path d="M-6,${sh - 1} L0,${sh + 7} L6,${sh - 1}" stroke="#000" stroke-opacity=".25" stroke-width="2" fill="none"/>${child ? '' : `<rect x="-17" y="${hip}" width="34" height="4" fill="#000" opacity=".3"/>`}
       ${o.skirt ? `<path d="M-16,${hip} L16,${hip} L22,${hip + 26} L-22,${hip + 26}Z" fill="${o.skirt}"/>` : ''}${arm}`;
   }
   const bag = o.bag ? `<rect x="${-26}" y="${sh + 2}" width="16" height="${child ? 30 : 34}" rx="5" fill="${o.bag}" stroke="#00000033" stroke-width="2"/>` : '';
@@ -65,7 +65,7 @@ function rP(x, y, s, t, o = {}) {
     <path d="M${-hr},${hc - 1} Q${-hr},${hc - hr - 4} 0,${hc - hr - 2} Q${hr},${hc - hr - 4} ${hr},${hc - 1} Q${hr * .55},${hc - hr * .55} 0,${hc - hr * .6} Q${-hr * .55},${hc - hr * .55} ${-hr},${hc - 1}Z" fill="${hair}"/>
     ${o.longhair ? `<path d="M${-hr},${hc - 2} Q${-hr - 3},${hc + hr + 6} ${-hr + 4},${hc + hr + 10} L${-hr + 6},${hc} Z M${hr},${hc - 2} Q${hr + 3},${hc + hr + 6} ${hr - 4},${hc + hr + 10} L${hr - 6},${hc}Z" fill="${hair}"/>` : ''}
     ${o.bun ? `<circle cx="0" cy="${hc - hr - 4}" r="${hr * .45}" fill="${hair}"/>` : ''}
-    <circle cx="${-hr * .36}" cy="${hc + 1}" r="1.7" fill="#222"/><circle cx="${hr * .36}" cy="${hc + 1}" r="1.7" fill="#222"/>${cap}`;
+    <circle cx="${-hr * .36}" cy="${hc + 1}" r="2.1" fill="#fff"/><circle cx="${hr * .36}" cy="${hc + 1}" r="2.1" fill="#fff"/><circle cx="${-hr * .36}" cy="${hc + 1.3}" r="1.5" fill="#222"/><circle cx="${hr * .36}" cy="${hc + 1.3}" r="1.5" fill="#222"/><path d="M${-hr * .3},${hc + hr * .45} Q0,${hc + hr * .72} ${hr * .3},${hc + hr * .45}" stroke="#7a2a22" stroke-width="1.3" fill="none" stroke-linecap="round"/><circle cx="${-hr * .55}" cy="${hc + hr * .35}" r="${hr * .16}" fill="#e88a7a" opacity=".45"/><circle cx="${hr * .55}" cy="${hc + hr * .35}" r="${hr * .16}" fill="#e88a7a" opacity=".45"/>${cap}`;
   return `<g transform="translate(${x},${y + bob}) scale(${s * dir},${s})">${rShadow(0, 0, child ? 16 : 20)}${legs}
     <g transform="rotate(${bow} 0 ${hip})">${bag}${torso}${head}</g>${o.umbrella ? `<path d="M2,${sh - 10} L2,${hc - 40}" stroke="#333" stroke-width="2"/><path d="M-34,${hc - 34} Q2,${hc - 70} 38,${hc - 34}Z" fill="${o.umbrella}"/>` : ''}</g>`;
 }
